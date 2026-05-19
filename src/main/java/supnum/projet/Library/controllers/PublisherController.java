@@ -4,14 +4,18 @@ import supnum.projet.Library.dto.PublisherDTO;
 import supnum.projet.Library.dto.PublisherResponseDTO;
 import supnum.projet.Library.services.PublisherService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/publishers")
+@Validated
 public class PublisherController {
     private final PublisherService service;
 
@@ -32,7 +36,7 @@ public class PublisherController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable @NotNull @Positive Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

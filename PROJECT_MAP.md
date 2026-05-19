@@ -188,6 +188,15 @@ These are the features **100% complete and functional** (files exist on disk):
     - **Endpoint-level RBAC (`@PreAuthorize`):** All state-changing endpoints (`POST`, `DELETE`) on `BookController`, `AuthorController`, `CategoryController`, `PublisherController` are restricted to `hasRole('ADMIN')`. `BorrowController` (`/checkout`, `/{id}/return`, `/{id}/renew`) and `ReservationController` (`POST /api/reservations`, `POST /{id}/cancel`) require `hasAnyRole('ADMIN','USER')` so standard members can self-service. Read endpoints (`GET /api/books`, `GET /api/authors`, `GET /api/categories`, `GET /api/publishers`, `GET /api/reservations/queue/{bookId}`) remain just-authenticated via the fallback rule.
     - **Schema-drift fix:** `application.properties` flipped from `spring.jpa.hibernate.ddl-auto=update` to `validate`. Hibernate now strictly checks the live MySQL schema against entity mappings at boot and fails fast on drift instead of silently mutating production tables. The test profile (`application-test.properties`) keeps `create-drop` so unit tests stay portable on H2.
     - **Verification:** `./mvnw clean compile` green after Step 1; `./mvnw compile` green after Step 2; `./mvnw test` green after Step 3 (`Tests run: 1, Failures: 0, Errors: 0`).
+17. **Environment & Input-Validation Hardening (fix/p0-architecture-hardening)** — DevSecOps remediation closing the remaining HIGH/MEDIUM findings:
+    - **Externalized DB credentials:** `application.properties` line 3 now reads `spring.datasource.password=${DB_PASSWORD:Supnum}` so production deploys can inject the secret via env var while local developers still get the default fallback. `application-test.properties` continues to override the datasource entirely for H2, so this change has no impact on the test profile.
+    - **`@Validated` on all 6 controllers:** Class-level annotation is required for Jakarta constraints (`@NotNull`, `@Positive`, `@NotBlank`) on raw `@PathVariable` / `@RequestParam` primitives to be enforced.
+    - **Per-parameter constraints:**
+      - `AuthorController.delete`, `CategoryController.delete`, `PublisherController.delete`, `ReservationController.cancel`, `ReservationController.getQueue`, `BorrowController.returnBook`, `BorrowController.renew` — `@PathVariable Long` is now `@PathVariable @NotNull @Positive Long`.
+      - `BorrowController.checkout` — `@RequestParam memberId` is `@NotNull @Positive`; `@RequestParam barcode` is `@NotBlank`.
+      - `BookController` carries `@Validated` for consistency even though it currently has no primitive params requiring constraints.
+    - **Out of scope (flagged):** `ConstraintViolationException` is not yet wired in `GlobalExceptionHandler` — a malformed primitive currently falls to the generic `Exception` handler returning 500. Mapping it to 400 is a recommended follow-up.
+    - **Verification:** `./mvnw clean compile` green after Step 1; `./mvnw compile` green after Step 2; `./mvnw test` green after Step 3 (`Tests run: 1, Failures: 0, Errors: 0`).
 
 ---
 
@@ -251,7 +260,8 @@ Key dependency rules:
 | **CSRF disabled** | HIGH | `csrf.disable()` — no CSRF protection. Acceptable for REST API with Basic Auth, but risky if a browser client is added. |
 | **HTTP Basic Auth only** | MEDIUM | No JWT, OAuth2, or token-based auth. Credentials sent in every request (base64 encoded, not encrypted without HTTPS). |
 | **Entities as response objects** | RESOLVED | All 6 controllers now return dedicated `*ResponseDTO` types; entities no longer cross the REST boundary. See item #15 in IMPLEMENTED_FEATURES. |
-| **Password stored in source** | LOW | `application.properties` contains `spring.datasource.password=Supnum` in plaintext. |
+| **Password stored in source** | RESOLVED | `application.properties` now reads `spring.datasource.password=${DB_PASSWORD:Supnum}`; production overrides via env var, local dev keeps a default. See item #17. |
+| **Missing input validation on controller primitives** | RESOLVED | All 6 controllers are `@Validated`; every `Long` path/request param carries `@NotNull` + `@Positive` and `BorrowController.checkout.barcode` carries `@NotBlank`. See item #17. |
 
 ### Code design risks
 

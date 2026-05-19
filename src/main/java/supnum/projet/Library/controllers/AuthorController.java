@@ -4,14 +4,18 @@ import supnum.projet.Library.dto.AuthorDTO;
 import supnum.projet.Library.dto.AuthorResponseDTO;
 import supnum.projet.Library.services.AuthorService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/authors")
+@Validated
 public class AuthorController {
     private final AuthorService service;
 
@@ -32,7 +36,7 @@ public class AuthorController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable @NotNull @Positive Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
