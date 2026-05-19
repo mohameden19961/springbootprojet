@@ -129,10 +129,20 @@ spring.sql.init.schema-locations=classpath:schema.sql
 
 Bon développement à toute l'équipe ! Lisez vos fichiers Markdown personnels pour démarrer.
 
-## 🤝 Contributions
-Pour toute contribution :
+## 🤝 Contributions & Workflow Git
 
-- Créer une branche feature
-- Respecter l'architecture en place
-- Tester les modifications
-- Créer une pull request
+Pour assurer la qualité du code, la branche `main` est protégée. Aucun push direct n'est autorisé sur `main`. Vous devez suivre scrupuleusement ce workflow :
+
+1. **Créer votre branche locale** à partir de `main` :
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b feature/taches-[votre-matricule]
+   ```
+2. **Développer et tester** vos modifications localement.
+3. **Pousser votre branche** sur le dépôt distant :
+   ```bash
+   git push origin feature/taches-[votre-matricule]
+   ```
+4. **Créer une Pull Request (PR)** sur GitHub de votre branche vers `main`.
+5. **Attendre la validation** : Le leader (**24068**) examinera votre code. La fusion dans `main` ne sera possible qu'après son approbation explicite.
