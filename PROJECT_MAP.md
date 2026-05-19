@@ -271,6 +271,7 @@ Key dependency rules:
 - `MethodArgumentNotValidException` handled for `@Valid` failures → 400 with field-level error map.
 - Soft delete with `@SQLRestriction` prevents accidental exposure of deleted records.
 - BCrypt password encoding for in-memory users (passwords are not stored in plaintext in the security layer, though they are in source code as encoded strings — the raw `admin123`/`user123` are what's passed through the encoder).
+- **Test-environment MySQL dependency — MITIGATED.** `LibraryApplicationTests` previously required a running local MySQL with the production `supnum`/`Supnum` credentials, causing `mvn test` to fail on any clean checkout. Resolution: H2 added as a `test`-scoped dependency in `pom.xml`; `src/test/resources/application-test.properties` overrides only the datasource and JPA dialect to use an in-memory H2 database (MODE=MySQL) with `ddl-auto=create-drop` and `spring.sql.init.mode=never` (since the production `schema.sql` uses MySQL-only DDL); `LibraryApplicationTests` carries `@ActiveProfiles("test")` to bind the profile. Production `application.properties` and `schema.sql` are unchanged, so deployments still target MySQL.
 
 ---
 
