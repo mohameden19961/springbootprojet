@@ -3,8 +3,8 @@ package supnum.projet.Library.data.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "language")
-public class Language {
+@Table(name = "nationality")
+public class Nationality {
     @Id
     @Column(length = 10, nullable = false)
     private String code;

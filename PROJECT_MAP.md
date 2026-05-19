@@ -175,6 +175,7 @@ These are the features **100% complete and functional** (files exist on disk):
 9. **Application properties** — MySQL datasource config (`library_db`, user `supnum`/`Supnum`, port 3306), Hibernate `ddl-auto=update`, SQL init mode `always`, pagination defaults (page size 20, max 100), server port 8081.
 10. **Context load test** — Basic `@SpringBootTest` smoke test.
 11. **Book Domain (task #24238)** — `Book`, `BookItem` (with `@Version` optimistic locking), `BookAuthor` (with `@EmbeddedId`) entities; `BookItemStatus` and `AuthorRole` enums; `BookRepository`, `BookItemRepository`; `BookDTO` (`@Valid`); `BookService` (`findAll`, `create` with ISBN-duplicate check and FK resolution); `BookController` exposing `GET /api/books` and `POST /api/books`. Production code + tests compile cleanly via `./mvnw clean test-compile`; the existing `LibraryApplicationTests.contextLoads` smoke test requires a running local MySQL (pre-existing environmental dependency, unchanged by this task).
+12. **Reference Entities Domain (task #24139)** — `Language`, `Nationality` (string-PK reference tables, no soft delete); `Category`, `Publisher`, `Author` (Long-PK, soft-deletable via `BaseEntity` + `@SQLRestriction`); `Author.nationality` `@ManyToOne(LAZY)` to `Nationality`. Repositories `LanguageRepository`, `NationalityRepository`, `CategoryRepository` (with `findByName`), `PublisherRepository` (with `findByName`), `AuthorRepository`. DTOs `CategoryDTO`, `AuthorDTO`, `PublisherDTO` (with `@Email` and `@Size`). Services `CategoryService`, `PublisherService`, `AuthorService` exposing `findAll`/`create`/`delete` with name-uniqueness checks and nationality FK resolution; soft-delete via `setDeleted(true)`. Controllers `CategoryController` (`/api/categories`), `PublisherController` (`/api/publishers`), `AuthorController` (`/api/authors`) — `GET`, `POST` (with `@Valid`), `DELETE /{id}`. `./mvnw test` passes against H2 with all reference entities registered.
 
 ---
 
@@ -186,16 +187,15 @@ The following features are **documented in task files (.md)** but **NOT implemen
 
 | Domain | Files Missing | Count |
 |--------|--------------|-------|
-| **Reference Entities** | `Nationality.java` (STUB on disk: `Language.java`, `Category.java`, `Publisher.java`, `Author.java` — minimal `@Entity` + `@Id` only, awaiting task #24139) | 1 |
 | **Member Domain** | `Member.java` | 1 |
 | **Transaction Entities** | `Borrow.java`, `Reservation.java` | 2 |
 | **Enums** | `MemberType.java`, `BorrowStatus.java` | 2 |
-| **Repositories** | `NationalityRepository`, `AuthorRepository`, `MemberRepository`, `BorrowRepository`, `ReservationRepository` (STUB on disk: `LanguageRepository`, `CategoryRepository`, `PublisherRepository` — empty `JpaRepository` extensions to satisfy `BookService` DI) | 5 |
-| **DTOs** | `CategoryDTO.java`, `AuthorDTO.java`, `MemberDTO.java`, `ReservationDTO.java` | 4 |
-| **Services** | `CategoryService.java`, `BorrowService.java`, `ReservationService.java` | 3 |
-| **Controllers** | `CategoryController.java`, `BorrowController.java`, `ReservationController.java` | 3 |
+| **Repositories** | `MemberRepository`, `BorrowRepository`, `ReservationRepository` | 3 |
+| **DTOs** | `MemberDTO.java`, `ReservationDTO.java` | 2 |
+| **Services** | `BorrowService.java`, `ReservationService.java` | 2 |
+| **Controllers** | `BorrowController.java`, `ReservationController.java` | 2 |
 
-**Total pending files: 21 Java source files** (down from 39 — task #24238 contributed 10 files; 8 additional files placed as minimal stubs for FK targets).
+**Total pending files: 14 Java source files** (down from 21 — task #24139 contributed 14 files: 1 new entity, 4 entity upgrades from stub to full structure, 2 new repositories + 2 enhanced repositories, 3 DTOs, 3 services, 3 controllers).
 
 ### Dead code / incomplete references:
 - `schema.sql` references all tables — but the corresponding JPA `@Entity` classes are missing, so Hibernate `ddl-auto=update` cannot generate/validate them.
@@ -257,7 +257,7 @@ Key dependency rules:
 
 | Risk | Type | Details |
 |------|------|---------|
-| **N+1 query problem** | Performance | All `@ManyToOne` relationships use `FetchType.LAZY` (correct), but `findAll()` in services will trigger N+1 if lazy fields are accessed during serialization. No `@EntityGraph` or `JOIN FETCH` used anywhere. |
+| **N+1 query problem** | Performance | All `@ManyToOne` relationships use `FetchType.LAZY` (correct), but `findAll()` in services will trigger N+1 if lazy fields are accessed during serialization. No `@EntityGraph` or `JOIN FETCH` used anywhere. Concrete exposure: `AuthorController.getAll()` returns `List<Author>` directly and Jackson will dereference `Author.nationality` (LAZY) on each row — N queries to `nationality` for N authors. Same pattern applies to `BookController.getAll()` against `Book.language` / `category` / `publisher`. Mitigation deferred to a dedicated task (response DTOs or `@EntityGraph`); `@JsonIgnore` was intentionally NOT applied because it would suppress useful domain data from clients. |
 | **No pagination on list endpoints** | Performance | `BookController.getAll()` and `CategoryController.getAll()` return `List<T>` with no pagination. With thousands of records, this will cause OOM or slow responses. (Global pageable default is set in properties but unused.) |
 | **RuntimeException for business rules** | Design | Business rule violations (quota exceeded, ISBN duplicate, non-available item) throw plain `RuntimeException` — caught by `GlobalExceptionHandler` as 500. These should be domain-specific exceptions mapping to 409 Conflict or 400 Bad Request. |
 | **`@Transactional` on whole service classes** | Design | All services annotated with `@Transactional` at class level. Too broad; should be at method level for read-only operations (`@Transactional(readOnly = true)`). |
@@ -277,14 +277,13 @@ Key dependency rules:
 
 ## SUMMARY
 
-**Completion status:** ~30% (infrastructure layer in place; Book Domain (task #24238) complete; reference entities Language/Category/Publisher/Author exist as compile-only stubs awaiting task #24139; Member/Borrow/Reservation domains still missing).
+**Completion status:** ~55% (infrastructure layer in place; Book Domain (#24238) and Reference Entities Domain (#24139) complete; Member/Borrow/Reservation domains still missing).
 
 **Next critical actions:**
-1. Task #24139 — flesh out reference entities (Nationality, Language, Category, Publisher, Author) with full fields, repositories, DTOs, services, controllers.
-2. Task #24014 — Member & Borrow domain.
-3. Task #24157 — Reservation & queue domain.
-4. Add `Pageable` support to `BookController.getAll()` (currently returns full `List<Book>`).
-5. Fix N+1 risks by adding `@EntityGraph` or `JOIN FETCH` queries on Book lookups.
-6. Migrate from in-memory auth to persistent user storage.
-7. Add response DTOs to prevent entity exposure (currently `Book` is returned directly).
-8. Replace business-rule `RuntimeException` (ISBN duplicate) in `BookService.create` with a domain exception mapped to 409 Conflict.
+1. Task #24014 — Member & Borrow domain.
+2. Task #24157 — Reservation & queue domain.
+3. Add `Pageable` support to `BookController.getAll()`, `AuthorController.getAll()`, `CategoryController.getAll()`, `PublisherController.getAll()` (all return full `List<T>`).
+4. Fix N+1 / lazy-serialization risks by adding `@EntityGraph` or response DTOs on `Book` and `Author` list endpoints.
+5. Migrate from in-memory auth to persistent user storage.
+6. Add response DTOs to prevent entity exposure (entities are returned directly across the project).
+7. Replace business-rule `RuntimeException` (ISBN-duplicate, category-name-duplicate, publisher-name-duplicate) with domain exceptions mapped to 409 Conflict.
