@@ -169,12 +169,12 @@ git push origin feature/votre-nom
 → Attendez mon approbation
 
 ──────────────────────────
-⛔ RÈGLES IMPORTANTES
+RÈGLES IMPORTANTES
 ──────────────────────────
 
-❌ Ne jamais pusher directement sur main
-❌ Ne jamais merger vous-mêmes
-✅ Toujours travailler sur votre propre branche
-✅ Une PR par fonctionnalité
+Ne jamais pusher directement sur main
+Ne jamais merger vous-mêmes
+Toujours travailler sur votre propre branche
+Une PR par fonctionnalité
 
-Si vous avez des questions, contactez-moi.
+
