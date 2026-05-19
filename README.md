@@ -129,20 +129,52 @@ spring.sql.init.schema-locations=classpath:schema.sql
 
 Bon développement à toute l'équipe ! Lisez vos fichiers Markdown personnels pour démarrer.
 
-## 🤝 Contributions & Workflow Git
+## Contributions & Workflow Git
 
-Pour assurer la qualité du code, la branche `main` est protégée. Aucun push direct n'est autorisé sur `main`. Vous devez suivre scrupuleusement ce workflow :
+Salut l'équipe 👋
 
-1. **Créer votre branche locale** à partir de `main` :
-   ```bash
-   git checkout main
-   git pull origin main
-   git checkout -b feature/taches-[votre-matricule]
-   ```
-2. **Développer et tester** vos modifications localement.
-3. **Pousser votre branche** sur le dépôt distant :
-   ```bash
-   git push origin feature/taches-[votre-matricule]
-   ```
-4. **Créer une Pull Request (PR)** sur GitHub de votre branche vers `main`.
-5. **Attendre la validation** : Le leader (**24068**) examinera votre code. La fusion dans `main` ne sera possible qu'après son approbation explicite.
+Voici comment on va travailler ensemble sur le projet. Lisez bien avant de commencer à coder.
+
+──────────────────────────
+🔧 WORKFLOW À SUIVRE
+──────────────────────────
+
+1️⃣ Récupérer le projet
+```bash
+git clone <lien-du-repo>
+cd <nom-du-repo>
+```
+
+2️⃣ Créer votre branche (OBLIGATOIRE)
+```bash
+git checkout -b feature/votre-nom
+```
+Exemple : `git checkout -b feature/taches-24139`
+
+3️⃣ Coder + committer
+```bash
+git add .
+git commit -m "Description de ce que vous avez fait"
+```
+
+4️⃣ Pusher votre branche
+```bash
+git push origin feature/votre-nom
+```
+
+5️⃣ Ouvrir une Pull Request sur GitHub
+→ Allez sur le repo GitHub
+→ Cliquez sur "Compare & pull request"
+→ Décrivez ce que vous avez fait
+→ Attendez mon approbation
+
+──────────────────────────
+⛔ RÈGLES IMPORTANTES
+──────────────────────────
+
+❌ Ne jamais pusher directement sur main
+❌ Ne jamais merger vous-mêmes
+✅ Toujours travailler sur votre propre branche
+✅ Une PR par fonctionnalité
+
+Si vous avez des questions, contactez-moi.
