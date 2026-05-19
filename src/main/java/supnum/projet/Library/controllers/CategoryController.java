@@ -1,7 +1,7 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Category;
 import supnum.projet.Library.dto.CategoryDTO;
+import supnum.projet.Library.dto.CategoryResponseDTO;
 import supnum.projet.Library.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +19,13 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> getAll() {
-        return service.findAll();
+    public List<CategoryResponseDTO> getAll() {
+        return service.findAll().stream().map(CategoryResponseDTO::from).toList();
     }
 
     @PostMapping
-    public ResponseEntity<Category> create(@Valid @RequestBody CategoryDTO dto) {
-        return ResponseEntity.ok(service.create(dto));
+    public ResponseEntity<CategoryResponseDTO> create(@Valid @RequestBody CategoryDTO dto) {
+        return ResponseEntity.ok(CategoryResponseDTO.from(service.create(dto)));
     }
 
     @DeleteMapping("/{id}")

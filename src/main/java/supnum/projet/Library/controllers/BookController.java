@@ -1,7 +1,7 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Book;
 import supnum.projet.Library.dto.BookDTO;
+import supnum.projet.Library.dto.BookResponseDTO;
 import supnum.projet.Library.services.BookService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +20,12 @@ public class BookController {
     }
 
     @GetMapping
-    public List<Book> getAll() {
-        return service.findAll();
+    public List<BookResponseDTO> getAll() {
+        return service.findAll().stream().map(BookResponseDTO::from).toList();
     }
 
     @PostMapping
-    public ResponseEntity<Book> create(@Valid @RequestBody BookDTO dto) {
-        return ResponseEntity.ok(service.create(dto));
+    public ResponseEntity<BookResponseDTO> create(@Valid @RequestBody BookDTO dto) {
+        return ResponseEntity.ok(BookResponseDTO.from(service.create(dto)));
     }
 }

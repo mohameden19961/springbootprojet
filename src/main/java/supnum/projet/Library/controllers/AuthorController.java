@@ -1,7 +1,7 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Author;
 import supnum.projet.Library.dto.AuthorDTO;
+import supnum.projet.Library.dto.AuthorResponseDTO;
 import supnum.projet.Library.services.AuthorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +19,13 @@ public class AuthorController {
     }
 
     @GetMapping
-    public List<Author> getAll() {
-        return service.findAll();
+    public List<AuthorResponseDTO> getAll() {
+        return service.findAll().stream().map(AuthorResponseDTO::from).toList();
     }
 
     @PostMapping
-    public ResponseEntity<Author> create(@Valid @RequestBody AuthorDTO dto) {
-        return ResponseEntity.ok(service.create(dto));
+    public ResponseEntity<AuthorResponseDTO> create(@Valid @RequestBody AuthorDTO dto) {
+        return ResponseEntity.ok(AuthorResponseDTO.from(service.create(dto)));
     }
 
     @DeleteMapping("/{id}")

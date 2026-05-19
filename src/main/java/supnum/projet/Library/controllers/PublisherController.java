@@ -1,7 +1,7 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Publisher;
 import supnum.projet.Library.dto.PublisherDTO;
+import supnum.projet.Library.dto.PublisherResponseDTO;
 import supnum.projet.Library.services.PublisherService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +19,13 @@ public class PublisherController {
     }
 
     @GetMapping
-    public List<Publisher> getAll() {
-        return service.findAll();
+    public List<PublisherResponseDTO> getAll() {
+        return service.findAll().stream().map(PublisherResponseDTO::from).toList();
     }
 
     @PostMapping
-    public ResponseEntity<Publisher> create(@Valid @RequestBody PublisherDTO dto) {
-        return ResponseEntity.ok(service.create(dto));
+    public ResponseEntity<PublisherResponseDTO> create(@Valid @RequestBody PublisherDTO dto) {
+        return ResponseEntity.ok(PublisherResponseDTO.from(service.create(dto)));
     }
 
     @DeleteMapping("/{id}")

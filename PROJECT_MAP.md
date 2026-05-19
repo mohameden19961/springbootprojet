@@ -48,7 +48,7 @@ Cross-cutting concerns:
 - **Exception Handling:** `@RestControllerAdvice` catches exceptions from all layers.
 - **Soft Delete:** `BaseEntity` `@MappedSuperclass` provides `deleted` flag; `@SQLRestriction("deleted = false")` on entities.
 
-The architecture is **not** hexagonal — there are no ports/adapters. DTOs are used minimally (only for create input). Entities are returned directly in responses (no response DTOs).
+The architecture is **not** hexagonal — there are no ports/adapters. Input DTOs are used for `@Valid` create/update bodies. **Response DTOs** are now used in all 6 controllers — no entity is leaked across the REST boundary.
 
 ---
 
@@ -178,6 +178,11 @@ These are the features **100% complete and functional** (files exist on disk):
 12. **Reference Entities Domain (task #24139)** — `Language`, `Nationality` (string-PK reference tables, no soft delete); `Category`, `Publisher`, `Author` (Long-PK, soft-deletable via `BaseEntity` + `@SQLRestriction`); `Author.nationality` `@ManyToOne(LAZY)` to `Nationality`. Repositories `LanguageRepository`, `NationalityRepository`, `CategoryRepository` (with `findByName`), `PublisherRepository` (with `findByName`), `AuthorRepository`. DTOs `CategoryDTO`, `AuthorDTO`, `PublisherDTO` (with `@Email` and `@Size`). Services `CategoryService`, `PublisherService`, `AuthorService` exposing `findAll`/`create`/`delete` with name-uniqueness checks and nationality FK resolution; soft-delete via `setDeleted(true)`. Controllers `CategoryController` (`/api/categories`), `PublisherController` (`/api/publishers`), `AuthorController` (`/api/authors`) — `GET`, `POST` (with `@Valid`), `DELETE /{id}`. `./mvnw test` passes against H2 with all reference entities registered.
 13. **Member & Borrow Domain (task #24014)** — `MemberType` (`STUDENT`, `TEACHER`, `EXTERNAL`) and `BorrowStatus` (`ACTIVE`, `RETURNED`, `OVERDUE`, `LOST`) enums. `Member` entity (Long-PK, soft-deletable; unique email; `memberType`; `maxBorrows`). `Borrow` entity (Long-PK, **no `BaseEntity` / no soft delete**, matches schema; `@ManyToOne` to `Member` and `BookItem`; `renewalCount` default 0; `status` default `ACTIVE`; no temporal columns by spec). `MemberRepository.findByEmail`; `BorrowRepository.countByMemberAndStatus`. `MemberDTO` with `@Email`, `@NotBlank`, `@NotNull`, `@Positive` validations. `BorrowService` enforces three business rules: (1) `BookItem.status == AVAILABLE` before checkout, (2) member active-borrow count `< maxBorrows`, (3) max 3 renewals; transitions `BookItem.status` between `AVAILABLE` and `BORROWED` on checkout/return. `BorrowController` exposes `POST /api/borrows/checkout?memberId=&barcode=`, `POST /api/borrows/{id}/return`, `POST /api/borrows/{id}/renew`. `./mvnw test` passes against H2.
 14. **Reservation & Queue Domain (task #24157)** — `Reservation` entity (Long-PK, **no `BaseEntity`** to match schema; `@ManyToOne(LAZY)` to `Member` and `Book` (parent title, not `BookItem`); `queuePosition` integer; `status` default `PENDING`). Reuses the pre-existing `ReservationStatus` enum (`PENDING`, `READY`, `CANCELLED`, `COMPLETED`). `ReservationRepository.findByBookAndStatusOrderByQueuePositionAsc` (FIFO ordering) and `findMaxQueuePositionForBook` (JPQL with `COALESCE(MAX, 0)`). `ReservationDTO` with `@NotNull` on `memberId` and `bookId`. `ReservationService` computes next queue position atomically inside `@Transactional` `reserve`; `cancel` rejects non-`PENDING` reservations; `getQueueForBook` returns ordered active queue. `ReservationController` exposes `POST /api/reservations`, `POST /api/reservations/{id}/cancel`, `GET /api/reservations/queue/{bookId}`. `./mvnw test` passes — full 11-entity context boots on H2.
+15. **P0 Architecture Hardening (fix/p0-architecture-hardening)** — Three audit-driven mitigations applied surgically:
+    - **N+1 fix via `@EntityGraph`:** `BookRepository.findAll()` overridden with `@EntityGraph(attributePaths = {"language","category","publisher"})`; `AuthorRepository.findAll()` with `@EntityGraph(attributePaths = {"nationality"})`; `ReservationRepository.findByBookAndStatusOrderByQueuePositionAsc(...)` with `@EntityGraph(attributePaths = {"member","book"})`. `CategoryRepository`/`PublisherRepository` left untouched (no lazy relationships on those entities); `BorrowRepository` left untouched (no list endpoint exists).
+    - **Response DTOs (no entity leaking):** Six new DTOs in `dto/` — `BookResponseDTO`, `AuthorResponseDTO`, `CategoryResponseDTO`, `PublisherResponseDTO`, `BorrowResponseDTO`, `ReservationResponseDTO` — each with a static `from(Entity)` factory. All 6 controllers now return `List<*ResponseDTO>` or `ResponseEntity<*ResponseDTO>` instead of raw JPA entities; services keep their entity-returning signatures and mapping happens at the controller boundary.
+    - **GlobalExceptionHandler hardening:** Added `@ExceptionHandler` for `DataIntegrityViolationException` → 409 Conflict and for `OptimisticLockingFailureException` / `jakarta.persistence.OptimisticLockException` → 409 Conflict. Response bodies are generic French messages — raw SQL / stack traces are never echoed back. The pre-existing `ResourceNotFoundException`, `MethodArgumentNotValidException`, and generic-`Exception` handlers are unchanged.
+    - **Verification:** `./mvnw clean compile` green after Step 1; `./mvnw compile` green after Step 2 (55 sources, was 49); `./mvnw test` green after Step 3 (`Tests run: 1, Failures: 0, Errors: 0`).
 
 ---
 
@@ -238,21 +243,21 @@ Key dependency rules:
 | **Hardcoded credentials** | MEDIUM | `admin`/`admin123` and `user`/`user123` are in plaintext source. Anyone with repo access sees them. |
 | **CSRF disabled** | HIGH | `csrf.disable()` — no CSRF protection. Acceptable for REST API with Basic Auth, but risky if a browser client is added. |
 | **HTTP Basic Auth only** | MEDIUM | No JWT, OAuth2, or token-based auth. Credentials sent in every request (base64 encoded, not encrypted without HTTPS). |
-| **Entities as response objects** | HIGH | `Category`, `Book`, `Borrow`, etc. are returned directly from controllers. No response DTOs. This exposes internal field structure and can leak `deleted` flag, `version`, internal IDs. |
+| **Entities as response objects** | RESOLVED | All 6 controllers now return dedicated `*ResponseDTO` types; entities no longer cross the REST boundary. See item #15 in IMPLEMENTED_FEATURES. |
 | **Password stored in source** | LOW | `application.properties` contains `spring.datasource.password=Supnum` in plaintext. |
 
 ### Code design risks
 
 | Risk | Type | Details |
 |------|------|---------|
-| **N+1 query problem** | Performance | All `@ManyToOne` relationships use `FetchType.LAZY` (correct), but `findAll()` in services will trigger N+1 if lazy fields are accessed during serialization. No `@EntityGraph` or `JOIN FETCH` used anywhere. Concrete exposure: `AuthorController.getAll()` returns `List<Author>` directly and Jackson will dereference `Author.nationality` (LAZY) on each row — N queries to `nationality` for N authors. Same pattern applies to `BookController.getAll()` against `Book.language` / `category` / `publisher`. Mitigation deferred to a dedicated task (response DTOs or `@EntityGraph`); `@JsonIgnore` was intentionally NOT applied because it would suppress useful domain data from clients. |
+| **N+1 query problem** | RESOLVED | `BookRepository.findAll()`, `AuthorRepository.findAll()`, and `ReservationRepository.findByBookAndStatusOrderByQueuePositionAsc(...)` carry `@EntityGraph` annotations forcing eager fetch of `language`/`category`/`publisher`, `nationality`, and `member`/`book` respectively. Combined with response DTOs that read only the fields they need, lazy-load avalanches on list endpoints are eliminated. |
 | **No pagination on list endpoints** | Performance | `BookController.getAll()` and `CategoryController.getAll()` return `List<T>` with no pagination. With thousands of records, this will cause OOM or slow responses. (Global pageable default is set in properties but unused.) |
 | **RuntimeException for business rules** | Design | Business rule violations (quota exceeded, ISBN duplicate, non-available item) throw plain `RuntimeException` — caught by `GlobalExceptionHandler` as 500. These should be domain-specific exceptions mapping to 409 Conflict or 400 Bad Request. |
 | **`@Transactional` on whole service classes** | Design | All services annotated with `@Transactional` at class level. Too broad; should be at method level for read-only operations (`@Transactional(readOnly = true)`). |
 | **Missing `dueDate`/`returnDate`** | Domain | The `borrow` table has no temporal columns. Overdue detection and renewal limits cannot be enforced without dates. |
 | **No uniqueness validation at DB level on `Member.email`** | Data | Schema has `UNIQUE` on email, but JPA entity does not handle `DataIntegrityViolationException` — a duplicate email will cause an unhandled 500. |
-| **Missing response DTOs** | Maintainability | Entities are exposed directly in REST responses. Any schema change leaks to the API contract. |
-| **Optimistic locking not wired into service** | Concurrency | `@Version` is declared on `BookItem` (planned), but `BorrowService.borrowBook()` does not handle `OptimisticLockException`. Concurrent requests could create double-borrows. |
+| **Missing response DTOs** | RESOLVED | Six `*ResponseDTO`s introduced; all 6 controllers translate at the boundary. |
+| **Optimistic locking not surfaced to client** | RESOLVED | `OptimisticLockingFailureException` / `jakarta.persistence.OptimisticLockException` now map to 409 Conflict in `GlobalExceptionHandler` with a safe generic message. `BorrowService` still does not pre-empt the race (no retry loop), but a concurrent double-borrow now produces a clean 409 instead of a 500 with a stack trace. |
 
 ### Risk mitigations in place
 - `ResourceNotFoundException` properly returns 404.
@@ -271,16 +276,15 @@ Key dependency rules:
 - 11 JPA entities (`BaseEntity` + 10 concrete: `Language`, `Nationality`, `Category`, `Publisher`, `Author`, `Book`, `BookItem`, `BookAuthor`, `Member`, `Borrow`, `Reservation`)
 - 7 enums (`ReservationStatus`, `BookItemStatus`, `AuthorRole`, `MemberType`, `BorrowStatus`)
 - 10 repositories
-- 5 DTOs (`BookDTO`, `CategoryDTO`, `AuthorDTO`, `PublisherDTO`, `MemberDTO`, `ReservationDTO`) — note `MemberDTO` is unused at the controller layer (spec-honored gap)
-- 5 services (`BookService`, `CategoryService`, `AuthorService`, `PublisherService`, `BorrowService`, `ReservationService`)
+- 6 input DTOs (`BookDTO`, `CategoryDTO`, `AuthorDTO`, `PublisherDTO`, `MemberDTO`, `ReservationDTO`) — note `MemberDTO` is unused at the controller layer (spec-honored gap)
+- 6 response DTOs (`BookResponseDTO`, `CategoryResponseDTO`, `AuthorResponseDTO`, `PublisherResponseDTO`, `BorrowResponseDTO`, `ReservationResponseDTO`)
+- 6 services (`BookService`, `CategoryService`, `AuthorService`, `PublisherService`, `BorrowService`, `ReservationService`)
 - 6 controllers (`BookController`, `CategoryController`, `AuthorController`, `PublisherController`, `BorrowController`, `ReservationController`)
 
 **Recommended next actions (outside the spec'd task scope, all noted earlier in this map):**
 1. `Pageable` on all `GET /api/<resource>` list endpoints.
-2. Response DTOs / `@EntityGraph` for lazy-serialization N+1 risks on `Book`, `Author`, `Borrow`, `Reservation`.
-3. Member CRUD endpoints (uses the existing `MemberDTO`).
-4. Catch `OptimisticLockException` in `BorrowService.borrowBook()` → return 409 instead of 500.
-5. Replace business-rule `RuntimeException`s (ISBN duplicate, name duplicates, unavailable item, quota exceeded, renewal limit, non-PENDING cancel) with domain exceptions → 409 Conflict.
-6. Migrate from in-memory auth to a persistent `UserDetailsService`.
-7. Schema migration if overdue detection is needed (add `dueDate` / `returnDate` to `borrow`).
-8. Reservation-to-borrow handoff (auto-promote queue position #1 to `READY` when a `BookItem` returns to `AVAILABLE`).
+2. Member CRUD endpoints (uses the existing `MemberDTO`).
+3. Replace business-rule `RuntimeException`s (ISBN duplicate, name duplicates, unavailable item, quota exceeded, renewal limit, non-PENDING cancel) with domain exceptions → 409 Conflict (the generic-`Exception` handler currently maps them to 500).
+4. Migrate from in-memory auth to a persistent `UserDetailsService`.
+5. Schema migration if overdue detection is needed (add `dueDate` / `returnDate` to `borrow`).
+6. Reservation-to-borrow handoff (auto-promote queue position #1 to `READY` when a `BookItem` returns to `AVAILABLE`).
