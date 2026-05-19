@@ -1,6 +1,7 @@
 package supnum.projet.Library.exceptions;
 
 import jakarta.persistence.OptimisticLockException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,13 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error ->
             errors.put(error.getField(), error.getDefaultMessage()));
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> handleConstraintViolation(ConstraintViolationException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", "Paramètres de requête invalides");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

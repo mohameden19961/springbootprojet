@@ -195,8 +195,8 @@ These are the features **100% complete and functional** (files exist on disk):
       - `AuthorController.delete`, `CategoryController.delete`, `PublisherController.delete`, `ReservationController.cancel`, `ReservationController.getQueue`, `BorrowController.returnBook`, `BorrowController.renew` — `@PathVariable Long` is now `@PathVariable @NotNull @Positive Long`.
       - `BorrowController.checkout` — `@RequestParam memberId` is `@NotNull @Positive`; `@RequestParam barcode` is `@NotBlank`.
       - `BookController` carries `@Validated` for consistency even though it currently has no primitive params requiring constraints.
-    - **Out of scope (flagged):** `ConstraintViolationException` is not yet wired in `GlobalExceptionHandler` — a malformed primitive currently falls to the generic `Exception` handler returning 500. Mapping it to 400 is a recommended follow-up.
-    - **Verification:** `./mvnw clean compile` green after Step 1; `./mvnw compile` green after Step 2; `./mvnw test` green after Step 3 (`Tests run: 1, Failures: 0, Errors: 0`).
+    - **`ConstraintViolationException` mapped:** `GlobalExceptionHandler` now carries an `@ExceptionHandler(ConstraintViolationException.class)` that returns `HttpStatus.BAD_REQUEST` (400) with a fixed French body `{"error":"Paramètres de requête invalides"}`. The handler intentionally does NOT echo `cv.getPropertyPath()` (which would expose `controllerMethod.paramName`) or any per-violation message, so internal method/parameter identifiers cannot leak to the client.
+    - **Verification:** `./mvnw clean compile` green after Step 1; `./mvnw compile` green after Step 2; `./mvnw test` green after Step 3 (`Tests run: 1, Failures: 0, Errors: 0`). Final `./mvnw test` after the exception-mapping step also green.
 
 ---
 
