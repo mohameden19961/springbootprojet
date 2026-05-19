@@ -13,6 +13,93 @@ Ce projet est découpé et organisé en tâches réparties entre 5 membres de l'
 
 Chaque membre possède un fichier `[Matricule].md` dans ce dépôt qui détaille le code et les tâches qu'il doit accomplir.
 
+## 📊 Modèle Conceptuel de Données (MCD)
+
+Le diagramme suivant représente la structure de la base de données et les relations entre les tables :
+
+```mermaid
+erDiagram
+    LANGUAGE {
+        string code PK
+        string name
+    }
+    NATIONALITY {
+        string code PK
+        string name
+    }
+    CATEGORY {
+        bigint id PK
+        string name
+        boolean deleted
+    }
+    PUBLISHER {
+        bigint id PK
+        string name
+        string email
+        boolean deleted
+    }
+    AUTHOR {
+        bigint id PK
+        string name
+        string nationality_code FK
+        boolean deleted
+    }
+    BOOK {
+        bigint id PK
+        string title
+        string isbn
+        string language_code FK
+        bigint category_id FK
+        bigint publisher_id FK
+        boolean deleted
+    }
+    BOOK_ITEM {
+        bigint id PK
+        string barcode
+        string status
+        bigint version
+        boolean deleted
+    }
+    MEMBER {
+        bigint id PK
+        string email
+        string member_type
+        int max_borrows
+        boolean deleted
+    }
+    BOOK_AUTHOR {
+        bigint book_id PK, FK
+        bigint author_id PK, FK
+        string role
+    }
+    RESERVATION {
+        bigint id PK
+        bigint member_id FK
+        bigint book_id FK
+        int queue_position
+        string status
+    }
+    BORROW {
+        bigint id PK
+        bigint member_id FK
+        bigint book_item_id FK
+        int renewal_count
+        string status
+    }
+
+    LANGUAGE ||--o{ BOOK : "possède"
+    NATIONALITY ||--o{ AUTHOR : "a"
+    CATEGORY ||--o{ BOOK : "contient"
+    PUBLISHER ||--o{ BOOK : "publie"
+    BOOK ||--o{ BOOK_AUTHOR : "rédigé par"
+    AUTHOR ||--o{ BOOK_AUTHOR : "a rédigé"
+    BOOK ||--o{ BOOK_ITEM : "contient exemplaires"
+    MEMBER ||--o{ BORROW : "effectue"
+    BOOK_ITEM ||--o{ BORROW : "est associé à"
+    MEMBER ||--o{ RESERVATION : "fait"
+    BOOK ||--o{ RESERVATION : "est concerné par"
+```
+
 ## ⚙️ Configuration de la Base de Données
 
 Le projet est configuré pour fonctionner avec **MySQL**. 
