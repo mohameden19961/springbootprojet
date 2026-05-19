@@ -2,6 +2,9 @@
 
 Bienvenue sur le projet de gestion de bibliothèque ! Ce projet consiste à développer un backend moderne avec **Java, Spring Boot et PostgreSQL/MySQL**.
 
+Pour comprendre les concepts et règles métiers clés du projet, vous pouvez consulter la [📄 Documentation Fonctionnelle](./description.md).
+
+
 ## 👥 Équipe de Développement
 
 Ce projet est découpé et organisé en tâches réparties entre 5 membres de l'équipe :
