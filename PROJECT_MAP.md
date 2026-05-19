@@ -176,6 +176,7 @@ These are the features **100% complete and functional** (files exist on disk):
 10. **Context load test** — Basic `@SpringBootTest` smoke test.
 11. **Book Domain (task #24238)** — `Book`, `BookItem` (with `@Version` optimistic locking), `BookAuthor` (with `@EmbeddedId`) entities; `BookItemStatus` and `AuthorRole` enums; `BookRepository`, `BookItemRepository`; `BookDTO` (`@Valid`); `BookService` (`findAll`, `create` with ISBN-duplicate check and FK resolution); `BookController` exposing `GET /api/books` and `POST /api/books`. Production code + tests compile cleanly via `./mvnw clean test-compile`; the existing `LibraryApplicationTests.contextLoads` smoke test requires a running local MySQL (pre-existing environmental dependency, unchanged by this task).
 12. **Reference Entities Domain (task #24139)** — `Language`, `Nationality` (string-PK reference tables, no soft delete); `Category`, `Publisher`, `Author` (Long-PK, soft-deletable via `BaseEntity` + `@SQLRestriction`); `Author.nationality` `@ManyToOne(LAZY)` to `Nationality`. Repositories `LanguageRepository`, `NationalityRepository`, `CategoryRepository` (with `findByName`), `PublisherRepository` (with `findByName`), `AuthorRepository`. DTOs `CategoryDTO`, `AuthorDTO`, `PublisherDTO` (with `@Email` and `@Size`). Services `CategoryService`, `PublisherService`, `AuthorService` exposing `findAll`/`create`/`delete` with name-uniqueness checks and nationality FK resolution; soft-delete via `setDeleted(true)`. Controllers `CategoryController` (`/api/categories`), `PublisherController` (`/api/publishers`), `AuthorController` (`/api/authors`) — `GET`, `POST` (with `@Valid`), `DELETE /{id}`. `./mvnw test` passes against H2 with all reference entities registered.
+13. **Member & Borrow Domain (task #24014)** — `MemberType` (`STUDENT`, `TEACHER`, `EXTERNAL`) and `BorrowStatus` (`ACTIVE`, `RETURNED`, `OVERDUE`, `LOST`) enums. `Member` entity (Long-PK, soft-deletable; unique email; `memberType`; `maxBorrows`). `Borrow` entity (Long-PK, **no `BaseEntity` / no soft delete**, matches schema; `@ManyToOne` to `Member` and `BookItem`; `renewalCount` default 0; `status` default `ACTIVE`; no temporal columns by spec). `MemberRepository.findByEmail`; `BorrowRepository.countByMemberAndStatus`. `MemberDTO` with `@Email`, `@NotBlank`, `@NotNull`, `@Positive` validations. `BorrowService` enforces three business rules: (1) `BookItem.status == AVAILABLE` before checkout, (2) member active-borrow count `< maxBorrows`, (3) max 3 renewals; transitions `BookItem.status` between `AVAILABLE` and `BORROWED` on checkout/return. `BorrowController` exposes `POST /api/borrows/checkout?memberId=&barcode=`, `POST /api/borrows/{id}/return`, `POST /api/borrows/{id}/renew`. `./mvnw test` passes against H2.
 
 ---
 
@@ -187,15 +188,16 @@ The following features are **documented in task files (.md)** but **NOT implemen
 
 | Domain | Files Missing | Count |
 |--------|--------------|-------|
-| **Member Domain** | `Member.java` | 1 |
-| **Transaction Entities** | `Borrow.java`, `Reservation.java` | 2 |
-| **Enums** | `MemberType.java`, `BorrowStatus.java` | 2 |
-| **Repositories** | `MemberRepository`, `BorrowRepository`, `ReservationRepository` | 3 |
-| **DTOs** | `MemberDTO.java`, `ReservationDTO.java` | 2 |
-| **Services** | `BorrowService.java`, `ReservationService.java` | 2 |
-| **Controllers** | `BorrowController.java`, `ReservationController.java` | 2 |
+| **Transaction Entities** | `Reservation.java` | 1 |
+| **Repositories** | `ReservationRepository` | 1 |
+| **DTOs** | `ReservationDTO.java` | 1 |
+| **Services** | `ReservationService.java` | 1 |
+| **Controllers** | `ReservationController.java` | 1 |
 
-**Total pending files: 14 Java source files** (down from 21 — task #24139 contributed 14 files: 1 new entity, 4 entity upgrades from stub to full structure, 2 new repositories + 2 enhanced repositories, 3 DTOs, 3 services, 3 controllers).
+**Total pending files: 5 Java source files** (down from 14 — task #24014 contributed 9 files: 2 enums, 2 entities, 2 repositories, 1 DTO, 1 service, 1 controller). The remaining 5 belong to task #24157 (Reservation & queue).
+
+### Spec-honored gaps (intentional, not pending):
+- **No `MemberService` / `MemberController`.** Task #24014 defines `MemberDTO` but no service or controller. Members can currently only be persisted via direct repository access — there is no REST endpoint to create or list them. This is the spec's scope, not an omission. If a task later requires Member CRUD, `MemberDTO` is already ready.
 
 ### Dead code / incomplete references:
 - `schema.sql` references all tables — but the corresponding JPA `@Entity` classes are missing, so Hibernate `ddl-auto=update` cannot generate/validate them.
@@ -277,13 +279,14 @@ Key dependency rules:
 
 ## SUMMARY
 
-**Completion status:** ~55% (infrastructure layer in place; Book Domain (#24238) and Reference Entities Domain (#24139) complete; Member/Borrow/Reservation domains still missing).
+**Completion status:** ~80% (infrastructure layer in place; Book Domain (#24238), Reference Entities Domain (#24139), and Member & Borrow Domain (#24014) complete; only Reservation domain (#24157) remains).
 
 **Next critical actions:**
-1. Task #24014 — Member & Borrow domain.
-2. Task #24157 — Reservation & queue domain.
-3. Add `Pageable` support to `BookController.getAll()`, `AuthorController.getAll()`, `CategoryController.getAll()`, `PublisherController.getAll()` (all return full `List<T>`).
-4. Fix N+1 / lazy-serialization risks by adding `@EntityGraph` or response DTOs on `Book` and `Author` list endpoints.
-5. Migrate from in-memory auth to persistent user storage.
-6. Add response DTOs to prevent entity exposure (entities are returned directly across the project).
-7. Replace business-rule `RuntimeException` (ISBN-duplicate, category-name-duplicate, publisher-name-duplicate) with domain exceptions mapped to 409 Conflict.
+1. Task #24157 — Reservation & queue domain (last domain remaining).
+2. Add `Pageable` support to `BookController.getAll()`, `AuthorController.getAll()`, `CategoryController.getAll()`, `PublisherController.getAll()` (all return full `List<T>`).
+3. Fix N+1 / lazy-serialization risks by adding `@EntityGraph` or response DTOs on `Book` and `Author` list endpoints; same risk applies to `Borrow` returned from `/api/borrows/*` (LAZY refs to `Member` and `BookItem`).
+4. Add Member CRUD endpoints (spec gap noted under ORPHANS).
+5. Optimistic-locking handling on `BookItem`: `BorrowService.borrowBook()` mutates `BookItem.status` but does not catch `OptimisticLockException`. Two concurrent checkouts of the same barcode can collide — the `@Version` column is in place, but the service needs to surface the conflict as a 409 instead of bubbling a 500.
+6. Migrate from in-memory auth to persistent user storage.
+7. Add response DTOs to prevent entity exposure (entities are returned directly across the project).
+8. Replace business-rule `RuntimeException` (ISBN-duplicate, name-duplicates, item-unavailable, quota-exceeded, renewal-limit) with domain exceptions mapped to 409 Conflict.
