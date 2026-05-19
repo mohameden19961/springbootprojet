@@ -5,6 +5,7 @@ import supnum.projet.Library.dto.AuthorResponseDTO;
 import supnum.projet.Library.services.AuthorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,11 +25,13 @@ public class AuthorController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthorResponseDTO> create(@Valid @RequestBody AuthorDTO dto) {
         return ResponseEntity.ok(AuthorResponseDTO.from(service.create(dto)));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

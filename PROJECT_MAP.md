@@ -183,6 +183,11 @@ These are the features **100% complete and functional** (files exist on disk):
     - **Response DTOs (no entity leaking):** Six new DTOs in `dto/` — `BookResponseDTO`, `AuthorResponseDTO`, `CategoryResponseDTO`, `PublisherResponseDTO`, `BorrowResponseDTO`, `ReservationResponseDTO` — each with a static `from(Entity)` factory. All 6 controllers now return `List<*ResponseDTO>` or `ResponseEntity<*ResponseDTO>` instead of raw JPA entities; services keep their entity-returning signatures and mapping happens at the controller boundary.
     - **GlobalExceptionHandler hardening:** Added `@ExceptionHandler` for `DataIntegrityViolationException` → 409 Conflict and for `OptimisticLockingFailureException` / `jakarta.persistence.OptimisticLockException` → 409 Conflict. Response bodies are generic French messages — raw SQL / stack traces are never echoed back. The pre-existing `ResourceNotFoundException`, `MethodArgumentNotValidException`, and generic-`Exception` handlers are unchanged.
     - **Verification:** `./mvnw clean compile` green after Step 1; `./mvnw compile` green after Step 2 (55 sources, was 49); `./mvnw test` green after Step 3 (`Tests run: 1, Failures: 0, Errors: 0`).
+16. **P1 Security Gating (fix/p0-architecture-hardening)** — Audit-driven RBAC + schema-drift hardening:
+    - **Method security enabled:** `@EnableMethodSecurity` added to `SecurityConfig` alongside the existing `@EnableWebSecurity`. The filter-chain rule `.anyRequest().authenticated()` is retained as the fallback so any endpoint without a `@PreAuthorize` still requires authentication.
+    - **Endpoint-level RBAC (`@PreAuthorize`):** All state-changing endpoints (`POST`, `DELETE`) on `BookController`, `AuthorController`, `CategoryController`, `PublisherController` are restricted to `hasRole('ADMIN')`. `BorrowController` (`/checkout`, `/{id}/return`, `/{id}/renew`) and `ReservationController` (`POST /api/reservations`, `POST /{id}/cancel`) require `hasAnyRole('ADMIN','USER')` so standard members can self-service. Read endpoints (`GET /api/books`, `GET /api/authors`, `GET /api/categories`, `GET /api/publishers`, `GET /api/reservations/queue/{bookId}`) remain just-authenticated via the fallback rule.
+    - **Schema-drift fix:** `application.properties` flipped from `spring.jpa.hibernate.ddl-auto=update` to `validate`. Hibernate now strictly checks the live MySQL schema against entity mappings at boot and fails fast on drift instead of silently mutating production tables. The test profile (`application-test.properties`) keeps `create-drop` so unit tests stay portable on H2.
+    - **Verification:** `./mvnw clean compile` green after Step 1; `./mvnw compile` green after Step 2; `./mvnw test` green after Step 3 (`Tests run: 1, Failures: 0, Errors: 0`).
 
 ---
 
@@ -239,6 +244,8 @@ Key dependency rules:
 
 | Issue | Severity | Details |
 |-------|----------|---------|
+| **Flat role model (any authenticated user could POST/DELETE)** | RESOLVED | `@EnableMethodSecurity` is active and every write endpoint carries `@PreAuthorize`. Reference-data CRUD is ADMIN-only; Borrow and Reservation actions are ADMIN+USER. See item #16. |
+| **Schema drift via `ddl-auto=update`** | RESOLVED | Production property is now `spring.jpa.hibernate.ddl-auto=validate`; Hibernate verifies and refuses to start on drift instead of silently mutating tables. The test profile overrides this to `create-drop` for portable H2 testing. |
 | **In-memory users** | HIGH | `InMemoryUserDetailsManager` — users are hardcoded and lost on restart. No user persistence, registration, or password recovery. |
 | **Hardcoded credentials** | MEDIUM | `admin`/`admin123` and `user`/`user123` are in plaintext source. Anyone with repo access sees them. |
 | **CSRF disabled** | HIGH | `csrf.disable()` — no CSRF protection. Acceptable for REST API with Basic Auth, but risky if a browser client is added. |

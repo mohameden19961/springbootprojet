@@ -5,6 +5,7 @@ import supnum.projet.Library.dto.ReservationResponseDTO;
 import supnum.projet.Library.services.ReservationService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,11 +21,13 @@ public class ReservationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<ReservationResponseDTO> reserve(@Valid @RequestBody ReservationDTO dto) {
         return ResponseEntity.ok(ReservationResponseDTO.from(service.reserve(dto)));
     }
 
     @PostMapping("/{id}/cancel")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<ReservationResponseDTO> cancel(@PathVariable Long id) {
         return ResponseEntity.ok(ReservationResponseDTO.from(service.cancel(id)));
     }
