@@ -102,7 +102,7 @@ erDiagram
 
 ## ⚙️ Configuration de la Base de Données
 
-Le projet est configuré pour fonctionner avec **MySQL**. 
+Le projet est configuré pour fonctionner avec **MySQL**.
 Dans le fichier `src/main/resources/application.properties`, vous trouverez la configuration suivante :
 
 ```properties
@@ -151,6 +151,16 @@ git checkout -b feature/votre-nom
 ```
 Exemple : `git checkout -b feature/taches-24139`
 
+2️⃣ bis — Se mettre à jour depuis main (important !)
+
+Faites ça régulièrement pour éviter les conflits avec le travail des autres :
+```bash
+git checkout main
+git pull origin main
+git checkout feature/votre-branche
+git merge main
+```
+
 3️⃣ Coder + committer
 ```bash
 git add .
@@ -169,12 +179,13 @@ git push origin feature/votre-nom
 → Attendez mon approbation
 
 ──────────────────────────
-RÈGLES IMPORTANTES
+⛔ RÈGLES IMPORTANTES
 ──────────────────────────
 
-Ne jamais pusher directement sur main
-Ne jamais merger vous-mêmes
-Toujours travailler sur votre propre branche
-Une PR par fonctionnalité
+❌ Ne jamais pusher directement sur `main`
+❌ Ne jamais merger vous-mêmes
+✅ Toujours travailler sur votre propre branche
+✅ Une PR par fonctionnalité
+✅ Se synchroniser avec `main` régulièrement
 
-
+Si vous avez des questions, contactez le leader.
