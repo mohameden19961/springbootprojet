@@ -91,8 +91,8 @@
 \centering
 \vspace*{1cm}
 
-{\LARGE \textbf{République Algérienne Démocratique et Populaire}}\\[0.3cm]
-{\large Ministère de l'Enseignement Supérieur et de la Recherche Scientifique}\\[1cm]
+{\LARGE \textbf{République Islamique de Mauritanie}}\\[0.3cm]
+{\large Institut Supérieur du Numérique (SUPNUM) — Nouakchott}\\[1cm]
 
 \rule{\textwidth}{1pt}\\[0.5cm]
 {\Huge \textbf{Système Intelligent de Gestion de Bibliothèque}}\\[0.3cm]
@@ -108,17 +108,16 @@
 \begin{flushleft}
 \textbf{Équipe de développement :}\\
 \begin{itemize}[leftmargin=*]
-    \item \textbf{24068} - Architecture, Sécurité, Gestion des exceptions (Leader)
-    \item \textbf{24139} - Tables de référence (Language, Nationalité, Catégorie, Éditeur, Auteur)
-    \item \textbf{24238} - Livres et exemplaires (Book, BookItem, BookAuthor)
-    \item \textbf{24014} - Membres et emprunts (Member, Borrow)
-    \item \textbf{24157} - Réservations et file d'attente FIFO (Reservation)
+    \item \textbf{24068} - Abdy Ahmed Lebeid
+    \item \textbf{24139} - Abd Salam Abdel Vetah
+    \item \textbf{24238} - El Hassen Oumeiry
+    \item \textbf{24014} - Haja Sid M'Hamed
+    \item \textbf{24157} - Ahmedou Beddou
 \end{itemize}
 \end{flushleft}
 \end{minipage}\\[1.5cm]
 
-{\large \textbf{Encadrant :}}\\[0.2cm]
-{\large Mr. [Nom de l'encadrant]}\\[1cm]
+
 
 {\large \textbf{Année universitaire : 2025-2026}}\\[0.5cm]
 
@@ -132,7 +131,17 @@
 
 Nous tenons à exprimer notre profonde gratitude à toutes les personnes qui ont contribué à la réalisation de ce projet.
 
-Nous remercions vivement notre encadrant, \textbf{Mr. [Nom]}, pour sa disponibilité, ses conseils éclairés et son accompagnement tout au long de ce travail.
+Nous remercions chaleureusement les membres de notre équipe de développement pour leur collaboration et leur engagement tout au long du projet :
+
+\begin{itemize}
+    \item \textbf{24068} — Architecture, Sécurité, Gestion des exceptions (Leader)
+    \item \textbf{24139} — Tables de référence (Language, Nationalité, Catégorie, Éditeur, Auteur)
+    \item \textbf{24238} — Livres et exemplaires (Book, BookItem, BookAuthor)
+    \item \textbf{24014} — Membres et emprunts (Member, Borrow)
+    \item \textbf{24157} — Réservations et file d'attente FIFO (Reservation)
+\end{itemize}
+
+Leur travail rigoureux et leur esprit d'équipe ont été essentiels à la réussite de ce projet.
 
 Nous remercions également l'administration de l'établissement pour nous avoir fourni les ressources nécessaires au bon déroulement de ce projet.
 
@@ -183,7 +192,6 @@ JWT & JSON Web Token \\
 MCD & Modèle Conceptuel de Données \\
 ORM & Object-Relational Mapping (Mapping Objet-Relationnel) \\
 PK & Primary Key (Clé Primaire) \\
-PR & Pull Request (Demande d'Intégration) \\
 REST & Representational State Transfer \\
 SQL & Structured Query Language \\
 UML & Unified Modeling Language (Langage de Modélisation Unifié) \\
@@ -212,7 +220,6 @@ Les objectifs principaux de ce projet sont :
     \item Implémenter des règles métier précises (quota d'emprunts, file d'attente FIFO, limite de renouvellements)
     \item Assurer l'intégrité des données via le Soft Delete et l'Optimistic Locking
     \item Sécuriser l'API avec Spring Security (Basic Auth)
-    \item Travailler en équipe avec un workflow Git structuré (branches, Pull Requests)
 \end{itemize}
 
 \section{Équipe et répartition des tâches}
@@ -275,97 +282,66 @@ Le Modèle Conceptuel de Données constitue le socle de notre système. Il défi
 
 \begin{figure}[H]
 \centering
-\begin{minipage}{0.9\textwidth}
-\centering
-\begin{tikzpicture}[node distance=1.5cm, auto, every entity/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm, font=\small\bfseries}, every attribute/.style={font=\small}, every relationship/.style={draw, diamond, aspect=2, minimum width=2cm, font=\small\bfseries}]
+\begin{tikzpicture}[
+  entity/.style={draw, rectangle, minimum width=2.2cm, minimum height=0.7cm,
+                 font=\small\bfseries, fill=blue!10},
+  rel/.style={draw, diamond, aspect=2, minimum width=1.8cm,
+              font=\scriptsize\bfseries, fill=yellow!20},
+  attr/.style={draw, ellipse, minimum width=1.4cm, minimum height=0.5cm,
+               font=\scriptsize},
+  >=latex
+]
 
-% --- LANGUE ---
-\node[entity] (LANGUAGE) {LANGUAGE};
-\node[attribute, below left=0.3cm and -0.5cm of LANGUAGE] (lang_code) {code (PK)};
-\node[attribute, below right=0.3cm and -0.5cm of LANGUAGE] (lang_name) {name};
+% Ligne 1 : entités de référence
+\node[entity] (LANG)  at (0,0)    {LANGUAGE};
+\node[entity] (NAT)   at (4,0)    {NATIONALITY};
+\node[entity] (CAT)   at (8,0)    {CATEGORY};
+\node[entity] (PUB)   at (12,0)   {PUBLISHER};
 
-% --- NATIONALITE ---
-\node[entity, right=5cm of LANGUAGE] (NATIONALITY) {NATIONALITY};
-\node[attribute, below left=0.3cm and -0.5cm of NATIONALITY] (nat_code) {code (PK)};
-\node[attribute, below right=0.3cm and -0.5cm of NATIONALITY] (nat_name) {name};
+% Ligne 2 : AUTHOR
+\node[entity] (AUTH)  at (4,-3)   {AUTHOR};
 
-% --- CATEGORIE ---
-\node[entity, right=5cm of NATIONALITY] (CATEGORY) {CATEGORY};
-\node[attribute, below left=0.3cm and -0.5cm of CATEGORY] (cat_id) {id (PK)};
-\node[attribute, below right=0.3cm and -0.5cm of CATEGORY] (cat_name) {name};
+% Ligne 3 : BOOK
+\node[entity] (BOOK)  at (4,-6)   {BOOK};
 
-% ---- AUTEUR ---
-\node[entity, below=3cm of NATIONALITY] (AUTHOR) {AUTHOR};
-\node[attribute, below left=0.3cm and -0.8cm of AUTHOR] (auth_id) {id (PK)};
-\node[attribute, below=0.3cm of AUTHOR] (auth_name) {name};
-\node[attribute, below right=0.3cm and -0.8cm of AUTHOR] (auth_del) {deleted};
+% Ligne 4 : BOOK_ITEM et MEMBER
+\node[entity] (BI)    at (1,-9)   {BOOK\_ITEM};
+\node[entity] (MEM)   at (7,-9)   {MEMBER};
 
-% --- EDITEUR ---
-\node[entity, below=3cm of CATEGORY] (PUBLISHER) {PUBLISHER};
-\node[attribute, below left=0.3cm and -0.8cm of PUBLISHER] (pub_id) {id (PK)};
-\node[attribute, below=0.3cm of PUBLISHER] (pub_name) {name};
-\node[attribute, below right=0.3cm and -0.8cm of PUBLISHER] (pub_del) {deleted};
+% Ligne 5 : BORROW et RESERVATION
+\node[entity] (BOR)   at (1,-12)  {BORROW};
+\node[entity] (RES)   at (7,-12)  {RESERVATION};
 
-% --- RELATION: NATIONALITY -> AUTHOR ---
-\node[relationship, below right=0.5cm and 0.2cm of NATIONALITY] (HAS) {a};
-\draw (NATIONALITY) -- (HAS);
-\draw (HAS) -- (AUTHOR);
+% Relations
+\node[rel] (r_lang) at (2,-3)  {langue};
+\node[rel] (r_nat)  at (4,-1.5){nationalité};
+\node[rel] (r_cat)  at (6,-3)  {catégorie};
+\node[rel] (r_pub)  at (8,-3)  {éditeur};
+\node[rel] (r_ba)   at (1,-4.5){rédigé par};
+\node[rel] (r_cont) at (1,-7.5){contient};
+\node[rel] (r_bor)  at (4,-10.5){emprunte};
+\node[rel] (r_res)  at (5.5,-7.5){réservé};
 
-% --- LIVRE ---
-\node[entity, below=5cm of LANGUAGE] (BOOK) {BOOK};
-\node[attribute, below left=0.3cm and -0.8cm of BOOK] (book_id) {id (PK)};
-\node[attribute, below=0.3cm of BOOK] (book_isbn) {ISBN};
-\node[attribute, below right=0.3cm and -0.8cm of BOOK] (book_del) {deleted};
+% Liens
+\draw (LANG) -- (r_lang) -- (BOOK);
+\draw (NAT)  -- (r_nat)  -- (AUTH);
+\draw (CAT)  -- (r_cat)  -- (BOOK);
+\draw (PUB)  -- (r_pub)  -- (BOOK);
+\draw (BOOK) -- (r_ba)   -- (AUTH);
+\draw (BOOK) -- (r_cont) -- (BI);
+\draw (BI)   -- (r_bor)  -- (MEM);
+\draw (BOR)  -- (BI);
+\draw (BOR)  -- (MEM);
+\draw (BOOK) -- (r_res)  -- (RES);
+\draw (MEM)  -- (RES);
 
-% --- RELATIONS BOOK -> LANGUAGE, CATEGORY, PUBLISHER ---
-\node[relationship, right=0.5cm of LANGUAGE] (LANG_REL) {langue};
-\draw (LANGUAGE) -- (LANG_REL);
-\draw (LANG_REL) -- (BOOK);
-
-\node[relationship, left=0.5cm of CATEGORY] (CAT_REL) {catégorie};
-\draw (CATEGORY) -- (CAT_REL);
-\draw (CAT_REL) -- (BOOK);
-
-\node[relationship, above=0.5cm of PUBLISHER] (PUB_REL) {éditeur};
-\draw (PUBLISHER) -- (PUB_REL);
-\draw (PUB_REL) -- (BOOK);
-
-% --- BOOK_AUTHOR ---
-\node[relationship, left=0.2cm of AUTHOR] (BA_REL) {rédigé par};
-\draw (BOOK) -- (BA_REL);
-\draw (BA_REL) -- (AUTHOR);
-
-% --- BOOK_ITEM ---
-\node[entity, below=2.5cm of BOOK] (BOOKITEM) {BOOK\_ITEM};
-\node[attribute, below left=0.3cm and -0.8cm of BOOKITEM] (bi_id) {id (PK)};
-\node[attribute, below=0.3cm of BOOKITEM] (bi_barcode) {code-barres};
-\node[attribute, below right=0.3cm and -0.8cm of BOOKITEM] (bi_del) {deleted};
-\draw (BOOK) -- (BOOKITEM) node[midway, right] {contient};
-
-% --- MEMBER ---
-\node[entity, right=5cm of BOOKITEM] (MEMBER) {MEMBER};
-\node[attribute, below left=0.3cm and -0.8cm of MEMBER] (mem_id) {id (PK)};
-\node[attribute, below=0.3cm of MEMBER] (mem_email) {email};
-\node[attribute, below right=0.3cm and -0.8cm of MEMBER] (mem_del) {deleted};
-
-% --- BORROW ---
-\node[entity, below=1.5cm of BOOKITEM] (BORROW) {BORROW};
-\node[attribute, below left=0.3cm and -0.8cm of BORROW] (bor_id) {id (PK)};
-\node[attribute, below=0.3cm of BORROW] (bor_status) {status};
-\node[attribute, below right=0.3cm and -0.8cm of BORROW] (bor_renew) {renewals};
-\draw (BOOKITEM) -- (BORROW);
-\draw (MEMBER) -- (BORROW) node[midway, right] {emprunte};
-
-% --- RESERVATION ---
-\node[entity, below=1.5cm of MEMBER] (RESERVATION) {RESERVATION};
-\node[attribute, below left=0.3cm and -0.8cm of RESERVATION] (res_id) {id (PK)};
-\node[attribute, below=0.3cm of RESERVATION] (res_queue) {position};
-\node[attribute, below right=0.3cm and -0.8cm of RESERVATION] (res_status) {status};
-\draw (BOOK) -- (RESERVATION) node[midway, right] {réservé};
-\draw (MEMBER) -- (RESERVATION) node[midway, right] {réserve};
+% Cardinalités
+\node[font=\scriptsize] at (0.5,-2.2) {1,1};
+\node[font=\scriptsize] at (2.5,-4)   {N,N};
+\node[font=\scriptsize] at (2,-9.5)   {1,N};
+\node[font=\scriptsize] at (6,-9.5)   {1,1};
 
 \end{tikzpicture}
-\end{minipage}
 \caption{Modèle Conceptuel de Données du système}
 \label{fig:mcd}
 \end{figure}
@@ -402,39 +378,56 @@ Le diagramme de cas d'utilisation présente les interactions entre les différen
 
 \begin{figure}[H]
 \centering
-\begin{minipage}{0.85\textwidth}
-\centering
-\begin{tikzpicture}[node distance=2cm, every node/.style={font=\small}]
+\begin{tikzpicture}[
+  actor/.style={draw, ellipse, minimum width=2.2cm, minimum height=0.8cm,
+                font=\small\bfseries, fill=green!10},
+  uc/.style={draw, ellipse, minimum width=4cm, minimum height=0.7cm,
+             font=\small, fill=white},
+  >=latex
+]
 
-% --- Acteurs ---
-\node[draw, ellipse, minimum width=2cm, minimum height=1cm] (admin) {Administrateur};
-\node[draw, ellipse, minimum width=2cm, minimum height=1cm, right=4cm of admin] (user) {Utilisateur};
+% Acteurs
+\node[actor] (admin) at (0,0)    {Administrateur};
+\node[actor] (user)  at (12,0)   {Utilisateur};
 
-% --- Système ---
-\draw (admin) -- ++(0,-1.5) -- ++(2,0);
-\draw (admin) -- ++(0,-2.5) -- ++(2,0);
-\draw (user) -- ++(0,-1.5) -- ++(-2,0);
-\draw (user) -- ++(0,-2.5) -- ++(-2,0);
+% Système : rectangle
+\draw[draw=black, thick] (2,-0.5) rectangle (10,-7);
+\node[font=\small\itshape] at (6,0.2) {Système};
 
-% --- Cas d'utilisation ADMIN ---
-\node[draw, ellipse, below=1cm of admin, xshift=2cm, minimum width=4cm] (uc1) {Gérer les livres};
-\node[draw, ellipse, below=0.8cm of uc1, minimum width=4cm] (uc2) {Gérer les auteurs};
-\node[draw, ellipse, below=0.8cm of uc2, minimum width=4cm] (uc3) {Gérer les membres};
-\node[draw, ellipse, below=0.8cm of uc3, minimum width=4cm] (uc4) {Gérer les catégories};
-\node[draw, ellipse, below=0.8cm of uc4, minimum width=4cm] (uc5) {Gérer les éditeurs};
+% Cas d'utilisation Admin (gauche)
+\node[uc] (uc1) at (6,-1.2) {Gérer les livres};
+\node[uc] (uc2) at (6,-2.2) {Gérer les auteurs};
+\node[uc] (uc3) at (6,-3.2) {Gérer les membres};
+\node[uc] (uc4) at (6,-4.2) {Gérer les catégories};
+\node[uc] (uc5) at (6,-5.2) {Gérer les éditeurs};
 
-% --- Cas d'utilisation USER ---
-\node[draw, ellipse, below=1cm of user, xshift=-2cm, minimum width=4cm] (uc6) {Consulter le catalogue};
-\node[draw, ellipse, below=0.8cm of uc6, minimum width=4cm] (uc7) {Emprunter un livre};
-\node[draw, ellipse, below=0.8cm of uc7, minimum width=4cm] (uc8) {Retourner un livre};
-\node[draw, ellipse, below=0.8cm of uc8, minimum width=4cm] (uc9) {Renouveler un prêt};
-\node[draw, ellipse, below=0.8cm of uc9, minimum width=4cm] (uc10) {Réserver un livre};
+% Cas d'utilisation User (droite)
+\node[uc] (uc6)  at (6,-6.2) {Consulter le catalogue};
 
-% --- Inclusions ---
-\draw[dashed,->] (uc7) -- ++(2,0.5) node[right] {<<include>>} -- ++(0,1) node[right] {Vérifier quota};
+\node[uc] (uc7)  at (11,-2)  {Emprunter un livre};
+\node[uc] (uc8)  at (11,-3)  {Retourner un livre};
+\node[uc] (uc9)  at (11,-4)  {Renouveler un prêt};
+\node[uc] (uc10) at (11,-5)  {Réserver un livre};
+\node[uc] (vq)   at (11,-6)  {Vérifier quota};
+
+% Liens acteurs -> cas
+\draw (admin) -- (uc1);
+\draw (admin) -- (uc2);
+\draw (admin) -- (uc3);
+\draw (admin) -- (uc4);
+\draw (admin) -- (uc5);
+\draw (admin) -- (uc6);
+
+\draw (user)  -- (uc7);
+\draw (user)  -- (uc8);
+\draw (user)  -- (uc9);
+\draw (user)  -- (uc10);
+\draw (user)  -- (uc6);
+
+% Include
+\draw[dashed, ->] (uc7) -- node[above, font=\scriptsize]{<<include>>} (vq);
 
 \end{tikzpicture}
-\end{minipage}
 \caption{Diagramme de cas d'utilisation}
 \label{fig:usecase}
 \end{figure}
@@ -445,47 +438,40 @@ La séquence ci-dessous illustre le flux complet d'un emprunt :
 
 \begin{figure}[H]
 \centering
-\begin{minipage}{0.9\textwidth}
-\centering
-\begin{tikzpicture}[node distance=1.2cm, auto, every node/.style={font=\small}]
+\begin{tikzpicture}[>=latex, font=\small]
 
-% Acteurs
-\node (client) {Client HTTP};
-\node[right=3cm of client] (controller) {BorrowController};
-\node[right=3cm of controller] (service) {BorrowService};
-\node[right=3cm of service] (repos) {Repositories};
+% Participants (en-têtes)
+\node[draw, rectangle, minimum width=2.5cm, minimum height=0.7cm,
+      fill=blue!15] (C)  at (0,0)    {Client HTTP};
+\node[draw, rectangle, minimum width=2.5cm, minimum height=0.7cm,
+      fill=blue!15] (CT) at (4,0)    {BorrowController};
+\node[draw, rectangle, minimum width=2.5cm, minimum height=0.7cm,
+      fill=blue!15] (S)  at (8,0)    {BorrowService};
+\node[draw, rectangle, minimum width=2.5cm, minimum height=0.7cm,
+      fill=blue!15] (R)  at (12,0)   {Repositories};
 
-% Lignes de vie
-\draw[dashed] (client) -- ++(0,-8cm);
-\draw[dashed] (controller) -- ++(0,-8cm);
-\draw[dashed] (service) -- ++(0,-8cm);
-\draw[dashed] (repos) -- ++(0,-8cm);
-
-% Flèches
-\draw[->, thick] (client) -- node[above] {POST /checkout} (controller);
-\draw[->, thick] (controller) -- node[above] {borrowBook()} (service);
+% Lignes de vie (verticales)
+\draw[dashed] (C)  -- ++(0,-10);
+\draw[dashed] (CT) -- ++(0,-10);
+\draw[dashed] (S)  -- ++(0,-10);
+\draw[dashed] (R)  -- ++(0,-10);
 
 % Messages
-\draw[->, thick] (service) -- node[above] {findById(memberId)} (repos);
-\draw[<-, thick] (repos) -- node[above] {Member} (service);
-
-\draw[->, thick] (service) -- node[above] {findByBarcode(code)} (repos);
-\draw[<-, thick] (repos) -- node[above] {BookItem} (service);
-
-\draw[->, thick] (service) -- node[above] {check AVAILABLE} (service);
-\draw[->, thick] (service) -- node[above] {countByMemberAndStatus()} (repos);
-\draw[<-, thick] (repos) -- node[above] {activeBorrows} (service);
-
-\draw[->, thick] (service) -- node[above] {check quota} (service);
-\draw[->, thick] (service) -- node[above] {save(item.setBORROWED)} (repos);
-\draw[->, thick] (service) -- node[above] {save(Borrow)} (repos);
-\draw[<-, thick] (repos) -- node[above] {Borrow} (service);
-
-\draw[<-, thick] (service) -- node[above] {Borrow} (controller);
-\draw[<-, thick] (controller) -- node[above] {201 Created} (client);
+\draw[->, thick] (0,-1)  -- node[above, font=\scriptsize]{POST /checkout} (4,-1);
+\draw[->, thick] (4,-2)  -- node[above, font=\scriptsize]{borrowBook()} (8,-2);
+\draw[->, thick] (8,-3)  -- node[above, font=\scriptsize]{findById(memberId)} (12,-3);
+\draw[<-, thick] (8,-3.6)-- node[above, font=\scriptsize]{Member} (12,-3.6);
+\draw[->, thick] (8,-4.5)-- node[above, font=\scriptsize]{findByBarcode()} (12,-4.5);
+\draw[<-, thick] (8,-5.1)-- node[above, font=\scriptsize]{BookItem} (12,-5.1);
+\draw[->, thick] (8,-6)  -- node[above, font=\scriptsize]{countByMemberAndStatus()} (12,-6);
+\draw[<-, thick] (8,-6.6)-- node[above, font=\scriptsize]{activeBorrows} (12,-6.6);
+\draw[->, thick] (8,-7.5)-- node[above, font=\scriptsize]{save(BORROWED)} (12,-7.5);
+\draw[->, thick] (8,-8.2)-- node[above, font=\scriptsize]{save(Borrow)} (12,-8.2);
+\draw[<-, thick] (8,-8.8)-- node[above, font=\scriptsize]{Borrow} (12,-8.8);
+\draw[<-, thick] (4,-9.5)-- node[above, font=\scriptsize]{BorrowDTO} (8,-9.5);
+\draw[<-, thick] (0,-10) -- node[above, font=\scriptsize]{201 Created} (4,-10);
 
 \end{tikzpicture}
-\end{minipage}
 \caption{Diagramme de séquence - Emprunt d'un livre}
 \label{fig:sequence}
 \end{figure}
@@ -573,57 +559,57 @@ Le projet suit une architecture en couches (layered architecture) :
 
 \begin{lstlisting}[caption=Organisation des packages Java]
 src/main/java/supnum/projet/Library/
-├── LibraryApplication.java
-├── controllers/
-│   ├── AuthorController.java
-│   ├── BookController.java
-│   ├── BorrowController.java
-│   ├── CategoryController.java
-│   ├── PublisherController.java
-│   └── ReservationController.java
-├── data/
-│   ├── entities/
-│   │   ├── enums/
-│   │   │   ├── AuthorRole.java
-│   │   │   ├── BookItemStatus.java
-│   │   │   ├── BorrowStatus.java
-│   │   │   ├── MemberType.java
-│   │   │   └── ReservationStatus.java
-│   │   ├── Author.java
-│   │   ├── BaseEntity.java
-│   │   ├── Book.java
-│   │   ├── BookAuthor.java
-│   │   ├── BookItem.java
-│   │   ├── Borrow.java
-│   │   ├── Category.java
-│   │   ├── Language.java
-│   │   ├── Member.java
-│   │   ├── Nationality.java
-│   │   ├── Publisher.java
-│   │   └── Reservation.java
-│   └── repositories/
-│       ├── AuthorRepository.java
-│       ├── BookItemRepository.java
-│       ├── BookRepository.java
-│       ├── BorrowRepository.java
-│       ├── CategoryRepository.java
-│       ├── LanguageRepository.java
-│       ├── MemberRepository.java
-│       ├── NationalityRepository.java
-│       ├── PublisherRepository.java
-│       └── ReservationRepository.java
-├── dto/
-│   ├── AuthorDTO.java
-│   ├── BookDTO.java
-│   ├── CategoryDTO.java
-│   ├── MemberDTO.java
-│   ├── PublisherDTO.java
-│   └── ReservationDTO.java
-├── exceptions/
-│   ├── GlobalExceptionHandler.java
-│   └── ResourceNotFoundException.java
-└── security/
-    └── SecurityConfig.java
++-- LibraryApplication.java
++-- controllers/
+|   +-- AuthorController.java
+|   +-- BookController.java
+|   +-- BorrowController.java
+|   +-- CategoryController.java
+|   +-- PublisherController.java
+|   +-- ReservationController.java
++-- data/
+|   +-- entities/
+|   |   +-- enums/
+|   |   |   +-- AuthorRole.java
+|   |   |   +-- BookItemStatus.java
+|   |   |   +-- BorrowStatus.java
+|   |   |   +-- MemberType.java
+|   |   |   +-- ReservationStatus.java
+|   |   +-- Author.java
+|   |   +-- BaseEntity.java
+|   |   +-- Book.java
+|   |   +-- BookAuthor.java
+|   |   +-- BookItem.java
+|   |   +-- Borrow.java
+|   |   +-- Category.java
+|   |   +-- Language.java
+|   |   +-- Member.java
+|   |   +-- Nationality.java
+|   |   +-- Publisher.java
+|   |   +-- Reservation.java
+|   +-- repositories/
+|       +-- AuthorRepository.java
+|       +-- BookItemRepository.java
+|       +-- BookRepository.java
+|       +-- BorrowRepository.java
+|       +-- CategoryRepository.java
+|       +-- LanguageRepository.java
+|       +-- MemberRepository.java
+|       +-- NationalityRepository.java
+|       +-- PublisherRepository.java
+|       +-- ReservationRepository.java
++-- dto/
+|   +-- AuthorDTO.java
+|   +-- BookDTO.java
+|   +-- CategoryDTO.java
+|   +-- MemberDTO.java
+|   +-- PublisherDTO.java
+|   +-- ReservationDTO.java
++-- exceptions/
+|   +-- GlobalExceptionHandler.java
+|   +-- ResourceNotFoundException.java
++-- security/
+    +-- SecurityConfig.java
 \end{lstlisting}
 
 \section{Spring Security}
@@ -1589,69 +1575,7 @@ Le projet compile avec succès :
 \end{lstlisting}
 
 % ================================================================
-%  CHAPITRE 7 : WORKFLOW GIT
-% ================================================================
-\chapter{Workflow Git}
-
-\section{Stratégie de branches}
-
-Le projet a suivi une stratégie de branches structurée :
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[node distance=1.5cm, auto]
-    \node[draw, rectangle, fill=green!20] (main) {main};
-    \node[draw, rectangle, fill=blue!20, below=0.5cm of main] (dev) {dev};
-    \node[draw, rectangle, fill=orange!20, below left=1cm and -1cm of dev] (feat1) {feature/24157};
-    \node[draw, rectangle, fill=orange!20, below=1cm of dev] (feat2) {feature/taches-24068};
-    \node[draw, rectangle, fill=orange!20, below right=1cm and -1cm of dev] (feat3) {Abdsalam};
-    \node[draw, rectangle, fill=red!20, below=1cm of feat2] (test) {test};
-
-    \draw[->, thick] (feat1) -- node[left] {PR} (main);
-    \draw[->, thick] (feat2) -- node[left] {PR} (main);
-    \draw[->, thick] (feat3) -- node[right] {Merge} (test);
-    \draw[->, thick] (test) -- node[right] {PR \#8} (main);
-    \draw[->, thick] (dev) -- node[right] {PR \#8} (main);
-\end{tikzpicture}
-\caption{Stratégie de branches}
-\label{fig:branches}
-\end{figure}
-
-\subsection{Branches utilisées}
-
-\begin{table}[H]
-\centering
-\caption{Branches du projet}
-\begin{tabularx}{\textwidth}{c X c}
-\hline
-\rowcolor[gray]{0.9}
-\textbf{Branche} & \textbf{Description} & \textbf{Membre} \\
-\hline
-main & Branche principale de production & -- \\
-dev & Branche d'intégration & -- \\
-feature/24157 & Développement réservations & 24157 \\
-feature/taches-24068 & Développement architecture & 24068 (Leader) \\
-Abdsalam & Développement tables de référence & 24139 \\
-test & Branche de test & -- \\
-\hline
-\end{tabularx}
-\end{table}
-
-\section{Historique des Pull Requests}
-
-\begin{enumerate}
-    \item \textbf{PR \#1} : feature/taches-24068 → main (Structure initiale)
-    \item \textbf{PR \#2} : feature/taches-24068 → main (Fix SecurityConfig)
-    \item \textbf{PR \#3} : feature/taches-24068 → main (Configuration DB)
-    \item \textbf{PR \#4} : feature/24157 → main (Réservations)
-    \item \textbf{PR \#5} : feature/taches-24068 → main (Documentation)
-    \item \textbf{PR \#6} : feature/taches-24068 → main (README final)
-    \item \textbf{PR \#7} : feature/24157 → main (Finalisation réservations)
-    \item \textbf{PR \#8} : dev → main (Intégration finale + améliorations)
-\end{enumerate}
-
-% ================================================================
-%  CHAPITRE 8 : CONCLUSION
+%  CHAPITRE 7 : CONCLUSION
 % ================================================================
 \chapter{Conclusion}
 
@@ -1708,7 +1632,7 @@ Le système peut être étendu avec :
     \item Jakarta Persistence API 3.1 Specification. \url{https://jakarta.ee/specifications/persistence/3.1/}
     \item Hibernate ORM Documentation. \url{https://hibernate.org/orm/documentation/6.4/}
     \item UML 2.5 Specification. Object Management Group. \url{https://www.omg.org/spec/UML/}
-    \item Pro Git Book. Scott Chacon and Ben Straub. \url{https://git-scm.com/book/}
+    \item Projet Library Management System — Dépôt GitHub. \url{https://github.com/mohameden19961/springbootprojet}
 \end{enumerate}
 
 % ================================================================
