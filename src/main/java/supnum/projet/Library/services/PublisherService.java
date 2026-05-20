@@ -23,19 +23,19 @@ public class PublisherService {
     }
 
     public Publisher create(PublisherDTO dto) {
-        if(repository.findByName(dto.getName()).isPresent()) {
+        if (repository.findByName(dto.getName()).isPresent()) {
             throw new RuntimeException("Un éditeur avec ce nom existe déjà");
         }
-        Publisher pub = new Publisher();
-        pub.setName(dto.getName());
-        pub.setEmail(dto.getEmail());
-        return repository.save(pub);
+        Publisher publisher = new Publisher();
+        publisher.setName(dto.getName());
+        publisher.setEmail(dto.getEmail());
+        return repository.save(publisher);
     }
 
     public void delete(Long id) {
-        Publisher pub = repository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Éditeur non trouvé"));
-        pub.setDeleted(true);
-        repository.save(pub);
+        Publisher publisher = repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Éditeur non trouvé avec l'id : " + id));
+        publisher.setDeleted(true);
+        repository.save(publisher);
     }
 }

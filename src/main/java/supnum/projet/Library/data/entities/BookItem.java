@@ -4,6 +4,8 @@ import supnum.projet.Library.data.entities.enums.BookItemStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.SQLRestriction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "book_item")
 @SQLRestriction("deleted = false")
@@ -23,6 +25,7 @@ public class BookItem extends BaseEntity {
     @Version
     private Long version;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;

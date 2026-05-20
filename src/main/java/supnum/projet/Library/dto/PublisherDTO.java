@@ -8,11 +8,11 @@ public class PublisherDTO {
     private Long id;
 
     @NotBlank(message = "Le nom de l'éditeur est requis")
-    @Size(max = 100)
+    @Size(max = 100, message = "Le nom ne doit pas dépasser 100 caractères")
     private String name;
 
-    @Email(message = "L'email doit être valide")
-    @Size(max = 100)
+    @Email(message = "L'adresse email n'est pas valide")
+    @Size(max = 100, message = "L'email ne doit pas dépasser 100 caractères")
     private String email;
 
     public Long getId() { return id; }

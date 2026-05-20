@@ -14,31 +14,32 @@ import java.util.List;
 @Service
 @Transactional
 public class AuthorService {
-    private final AuthorRepository repository;
+    private final AuthorRepository authorRepository;
     private final NationalityRepository nationalityRepository;
 
-    public AuthorService(AuthorRepository repository, NationalityRepository nationalityRepository) {
-        this.repository = repository;
+    public AuthorService(AuthorRepository authorRepository, NationalityRepository nationalityRepository) {
+        this.authorRepository = authorRepository;
         this.nationalityRepository = nationalityRepository;
     }
 
     public List<Author> findAll() {
-        return repository.findAll();
+        return authorRepository.findAll();
     }
 
     public Author create(AuthorDTO dto) {
-        Nationality nat = nationalityRepository.findById(dto.getNationalityCode())
-            .orElseThrow(() -> new ResourceNotFoundException("Nationalité introuvable"));
+        Nationality nationality = nationalityRepository.findById(dto.getNationalityCode())
+            .orElseThrow(() -> new ResourceNotFoundException("Nationalité non trouvée avec le code : " + dto.getNationalityCode()));
         Author author = new Author();
         author.setName(dto.getName());
-        author.setNationality(nat);
-        return repository.save(author);
+        author.setNationality(nationality);
+
+        return authorRepository.save(author);
     }
 
     public void delete(Long id) {
-        Author author = repository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé"));
+        Author author = authorRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé avec l'id : " + id));
         author.setDeleted(true);
-        repository.save(author);
+        authorRepository.save(author);
     }
 }
