@@ -62,8 +62,8 @@
 \contentsline {subsection}{\numberline {4.5.5}Fichiers créés par le membre 24157}{36}{subsection.4.5.5}%
 \contentsline {chapter}{\numberline {5}API REST}{37}{chapter.5}%
 \contentsline {section}{\numberline {5.1}Endpoints disponibles}{37}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Schémas de requêtes et réponses}{38}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Création d'un auteur}{38}{subsection.5.2.1}%
+\contentsline {section}{\numberline {5.2}Schémas de requêtes et réponses}{37}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Création d'un auteur}{37}{subsection.5.2.1}%
 \contentsline {subsection}{\numberline {5.2.2}Emprunt d'un livre}{38}{subsection.5.2.2}%
 \contentsline {subsection}{\numberline {5.2.3}Réservation avec file d'attente}{38}{subsection.5.2.3}%
 \contentsline {section}{\numberline {5.3}Sécurisation des endpoints}{39}{section.5.3}%
@@ -72,16 +72,12 @@
 \contentsline {subsection}{\numberline {6.1.1}Tests unitaires avec H2}{40}{subsection.6.1.1}%
 \contentsline {subsection}{\numberline {6.1.2}Script de test API}{40}{subsection.6.1.2}%
 \contentsline {section}{\numberline {6.2}Résultat du build}{41}{section.6.2}%
-\contentsline {chapter}{\numberline {7}Workflow Git}{42}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Stratégie de branches}{42}{section.7.1}%
-\contentsline {subsection}{\numberline {7.1.1}Branches utilisées}{42}{subsection.7.1.1}%
-\contentsline {section}{\numberline {7.2}Historique des Pull Requests}{43}{section.7.2}%
-\contentsline {chapter}{\numberline {8}Conclusion}{44}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Bilan du projet}{44}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Améliorations apportées}{44}{section.8.2}%
-\contentsline {section}{\numberline {8.3}Perspectives}{44}{section.8.3}%
-\contentsline {chapter}{Références bibliographiques}{46}{chapter*.19}%
-\contentsline {chapter}{\numberline {A}Annexes}{47}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Schéma SQL complet}{47}{section.A.1}%
-\contentsline {section}{\numberline {A.2}Structure complète du projet}{49}{section.A.2}%
-\contentsline {section}{\numberline {A.3}Commandes utiles}{50}{section.A.3}%
+\contentsline {chapter}{\numberline {7}Conclusion}{42}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Bilan du projet}{42}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Améliorations apportées}{42}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Perspectives}{42}{section.7.3}%
+\contentsline {chapter}{Références bibliographiques}{44}{chapter*.17}%
+\contentsline {chapter}{\numberline {A}Annexes}{45}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Schéma SQL complet}{45}{section.A.1}%
+\contentsline {section}{\numberline {A.2}Structure complète du projet}{47}{section.A.2}%
+\contentsline {section}{\numberline {A.3}Commandes utiles}{48}{section.A.3}%
