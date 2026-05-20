@@ -23,9 +23,19 @@ public class AuthorController {
         return service.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Author> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
+
     @PostMapping
     public ResponseEntity<Author> create(@Valid @RequestBody AuthorDTO dto) {
         return ResponseEntity.ok(service.create(dto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Author> update(@PathVariable Long id, @Valid @RequestBody AuthorDTO dto) {
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
     @DeleteMapping("/{id}")

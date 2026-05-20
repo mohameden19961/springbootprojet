@@ -1,8 +1,8 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Publisher;
-import supnum.projet.Library.dto.PublisherDTO;
-import supnum.projet.Library.services.PublisherService;
+import supnum.projet.Library.data.entities.Member;
+import supnum.projet.Library.dto.MemberDTO;
+import supnum.projet.Library.services.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,31 +10,32 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/publishers")
-public class PublisherController {
-    private final PublisherService service;
+@RequestMapping("/api/members")
+public class MemberController {
 
-    public PublisherController(PublisherService service) {
+    private final MemberService service;
+
+    public MemberController(MemberService service) {
         this.service = service;
     }
 
     @GetMapping
-    public List<Publisher> getAll() {
+    public List<Member> getAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Publisher> getById(@PathVariable Long id) {
+    public ResponseEntity<Member> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Publisher> create(@Valid @RequestBody PublisherDTO dto) {
+    public ResponseEntity<Member> create(@Valid @RequestBody MemberDTO dto) {
         return ResponseEntity.ok(service.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Publisher> update(@PathVariable Long id, @Valid @RequestBody PublisherDTO dto) {
+    public ResponseEntity<Member> update(@PathVariable Long id, @Valid @RequestBody MemberDTO dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 

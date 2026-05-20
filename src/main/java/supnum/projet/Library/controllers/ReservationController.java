@@ -19,6 +19,16 @@ public class ReservationController {
         this.service = service;
     }
 
+    @GetMapping
+    public List<Reservation> getAll() {
+        return service.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Reservation> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
+
     @PostMapping
     public ResponseEntity<Reservation> reserve(@Valid @RequestBody ReservationDTO dto) {
         return ResponseEntity.ok(service.reserve(dto));

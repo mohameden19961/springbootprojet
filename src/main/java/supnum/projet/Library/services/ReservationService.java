@@ -58,4 +58,13 @@ public class ReservationService {
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé"));
         return reservationRepository.findByBookAndStatusOrderByQueuePositionAsc(book, ReservationStatus.PENDING);
     }
+
+    public List<Reservation> findAll() {
+        return reservationRepository.findAll();
+    }
+
+    public Reservation findById(Long id) {
+        return reservationRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Réservation non trouvée avec l'id : " + id));
+    }
 }

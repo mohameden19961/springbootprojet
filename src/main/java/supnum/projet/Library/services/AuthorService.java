@@ -36,9 +36,22 @@ public class AuthorService {
         return authorRepository.save(author);
     }
 
-    public void delete(Long id) {
-        Author author = authorRepository.findById(id)
+    public Author findById(Long id) {
+        return authorRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé avec l'id : " + id));
+    }
+
+    public Author update(Long id, AuthorDTO dto) {
+        Author author = findById(id);
+        Nationality nationality = nationalityRepository.findById(dto.getNationalityCode())
+            .orElseThrow(() -> new ResourceNotFoundException("Nationalité non trouvée avec le code : " + dto.getNationalityCode()));
+        author.setName(dto.getName());
+        author.setNationality(nationality);
+        return authorRepository.save(author);
+    }
+
+    public void delete(Long id) {
+        Author author = findById(id);
         author.setDeleted(true);
         authorRepository.save(author);
     }

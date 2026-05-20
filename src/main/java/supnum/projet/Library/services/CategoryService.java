@@ -31,9 +31,22 @@ public class CategoryService {
         return repository.save(cat);
     }
 
+    public Category findById(Long id) {
+        return repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Catégorie non trouvée avec l'id : " + id));
+    }
+
+    public Category update(Long id, CategoryDTO dto) {
+        Category cat = findById(id);
+        if (!cat.getName().equals(dto.getName()) && repository.findByName(dto.getName()).isPresent()) {
+            throw new RuntimeException("Une catégorie avec ce nom existe déjà");
+        }
+        cat.setName(dto.getName());
+        return repository.save(cat);
+    }
+
     public void delete(Long id) {
-        Category cat = repository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Catégorie non trouvée"));
+        Category cat = findById(id);
         cat.setDeleted(true);
         repository.save(cat);
     }

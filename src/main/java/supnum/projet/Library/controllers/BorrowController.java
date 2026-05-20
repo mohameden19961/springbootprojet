@@ -5,6 +5,8 @@ import supnum.projet.Library.services.BorrowService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/borrows")
 public class BorrowController {
@@ -13,6 +15,16 @@ public class BorrowController {
 
     public BorrowController(BorrowService service) {
         this.service = service;
+    }
+
+    @GetMapping
+    public List<Borrow> getAll() {
+        return service.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Borrow> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping("/checkout")

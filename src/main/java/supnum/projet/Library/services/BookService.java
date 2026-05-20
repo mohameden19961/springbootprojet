@@ -49,4 +49,36 @@ public class BookService {
 
         return bookRepository.save(book);
     }
+
+    public Book findById(Long id) {
+        return bookRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'id : " + id));
+    }
+
+    public Book update(Long id, BookDTO dto) {
+        Book book = findById(id);
+        if (!book.getIsbn().equals(dto.getIsbn()) && bookRepository.findByIsbn(dto.getIsbn()).isPresent()) {
+            throw new RuntimeException("Un livre avec cet ISBN existe déjà");
+        }
+        Language lang = languageRepository.findById(dto.getLanguageCode())
+            .orElseThrow(() -> new ResourceNotFoundException("Langue introuvable"));
+        Category cat = categoryRepository.findById(dto.getCategoryId())
+            .orElseThrow(() -> new ResourceNotFoundException("Catégorie introuvable"));
+        Publisher pub = publisherRepository.findById(dto.getPublisherId())
+            .orElseThrow(() -> new ResourceNotFoundException("Éditeur introuvable"));
+
+        book.setTitle(dto.getTitle());
+        book.setIsbn(dto.getIsbn());
+        book.setLanguage(lang);
+        book.setCategory(cat);
+        book.setPublisher(pub);
+
+        return bookRepository.save(book);
+    }
+
+    public void delete(Long id) {
+        Book book = findById(id);
+        book.setDeleted(true);
+        bookRepository.save(book);
+    }
 }

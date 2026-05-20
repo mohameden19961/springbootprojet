@@ -7,6 +7,8 @@ import supnum.projet.Library.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class BorrowService {
@@ -80,5 +82,14 @@ public class BorrowService {
 
         borrow.setRenewalCount(borrow.getRenewalCount() + 1);
         return borrowRepository.save(borrow);
+    }
+
+    public List<Borrow> findAll() {
+        return borrowRepository.findAll();
+    }
+
+    public Borrow findById(Long id) {
+        return borrowRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Emprunt non trouvé avec l'id : " + id));
     }
 }
