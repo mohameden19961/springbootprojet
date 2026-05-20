@@ -1,0 +1,1910 @@
+\documentclass[12pt,a4paper,twoside]{report}
+
+% ─── Encoding & Fonts ───
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{ebgaramond}
+
+% ─── Layout ───
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\nouppercase{\leftmark}}
+\fancyhead[RE,LO]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\fancypagestyle{plain}{\pagestyle{fancy}}
+
+% ─── Graphics ───
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, er}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ─── Tables ───
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{xcolor}
+
+% ─── Hyperlinks ───
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+
+% ─── TOC ───
+\usepackage{tocloft}
+\renewcommand{\cfttoctitlefont}{\huge\bfseries}
+\renewcommand{\cftsecfont}{\bfseries}
+\renewcommand{\cftsubsecfont}{\normalfont}
+
+% ─── Code Listings ───
+\usepackage{listings}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    frame=single,
+}
+\lstset{style=mystyle}
+
+% ─── Misc ───
+\usepackage{enumitem}
+\usepackage{verbatim}
+\usepackage{rotating}
+\usepackage{pdflscape}
+\usepackage{afterpage}
+\usepackage{titlesec}
+\titleformat{\chapter}[display]{\bfseries\huge}{Chapitre \thechapter}{20pt}{\Huge}
+\usepackage[nottoc]{tocbibind}
+
+\begin{document}
+
+% ================================================================
+%  PAGE DE GARDE
+% ================================================================
+\begin{titlepage}
+\centering
+\vspace*{1cm}
+
+{\LARGE \textbf{République Algérienne Démocratique et Populaire}}\\[0.3cm]
+{\large Ministère de l'Enseignement Supérieur et de la Recherche Scientifique}\\[1cm]
+
+\rule{\textwidth}{1pt}\\[0.5cm]
+{\Huge \textbf{Système Intelligent de Gestion de Bibliothèque}}\\[0.3cm]
+{\Large \textbf{(Library Management System)}}\\[0.3cm]
+\rule{\textwidth}{1pt}\\[1.5cm]
+
+{\large Conception et développement d'un backend REST API avec}\\[0.2cm]
+{\large \textbf{Java, Spring Boot, JPA/Hibernate et MySQL}}\\[2cm]
+
+\vfill
+
+\begin{minipage}{0.8\textwidth}
+\begin{flushleft}
+\textbf{Équipe de développement :}\\
+\begin{itemize}[leftmargin=*]
+    \item \textbf{24068} - Architecture, Sécurité, Gestion des exceptions (Leader)
+    \item \textbf{24139} - Tables de référence (Language, Nationalité, Catégorie, Éditeur, Auteur)
+    \item \textbf{24238} - Livres et exemplaires (Book, BookItem, BookAuthor)
+    \item \textbf{24014} - Membres et emprunts (Member, Borrow)
+    \item \textbf{24157} - Réservations et file d'attente FIFO (Reservation)
+\end{itemize}
+\end{flushleft}
+\end{minipage}\\[1.5cm]
+
+{\large \textbf{Encadrant :}}\\[0.2cm]
+{\large Mr. [Nom de l'encadrant]}\\[1cm]
+
+{\large \textbf{Année universitaire : 2025-2026}}\\[0.5cm]
+
+\end{titlepage}
+
+% ================================================================
+%  REMERCIEMENTS
+% ================================================================
+\chapter*{Remerciements}
+\addcontentsline{toc}{chapter}{Remerciements}
+
+Nous tenons à exprimer notre profonde gratitude à toutes les personnes qui ont contribué à la réalisation de ce projet.
+
+Nous remercions vivement notre encadrant, \textbf{Mr. [Nom]}, pour sa disponibilité, ses conseils éclairés et son accompagnement tout au long de ce travail.
+
+Nous remercions également l'administration de l'établissement pour nous avoir fourni les ressources nécessaires au bon déroulement de ce projet.
+
+Enfin, nous exprimons notre reconnaissance envers nos familles et nos proches pour leur soutien indéfectible durant cette période.
+
+\newpage
+
+% ================================================================
+%  TABLE DES MATIÈRES
+% ================================================================
+\tableofcontents
+\newpage
+
+% ================================================================
+%  LISTE DES FIGURES
+% ================================================================
+\listoffigures
+\newpage
+
+% ================================================================
+%  LISTE DES TABLEAUX
+% ================================================================
+\listoftables
+\newpage
+
+% ================================================================
+%  GLOSSAIRE / ABRÉVIATIONS
+% ================================================================
+\chapter*{Glossaire et Abréviations}
+\addcontentsline{toc}{chapter}{Glossaire et Abréviations}
+
+\begin{longtable}{p{3.5cm} p{11cm}}
+\hline
+\textbf{Abréviation} & \textbf{Signification} \\
+\hline
+\endfirsthead
+\hline
+\endfoot
+API & Application Programming Interface (Interface de Programmation Applicative) \\
+CRUD & Create, Read, Update, Delete (Créer, Lire, Mettre à jour, Supprimer) \\
+DDL & Data Definition Language (Langage de Définition des Données) \\
+DTO & Data Transfer Object (Objet de Transfert de Données) \\
+FIFO & First In, First Out (Premier Entré, Premier Sorti) \\
+FK & Foreign Key (Clé Étrangère) \\
+JPA & Jakarta Persistence API (API de Persistance Jakarta) \\
+JSON & JavaScript Object Notation \\
+JWT & JSON Web Token \\
+MCD & Modèle Conceptuel de Données \\
+ORM & Object-Relational Mapping (Mapping Objet-Relationnel) \\
+PK & Primary Key (Clé Primaire) \\
+PR & Pull Request (Demande d'Intégration) \\
+REST & Representational State Transfer \\
+SQL & Structured Query Language \\
+UML & Unified Modeling Language (Langage de Modélisation Unifié) \\
+\hline
+\end{longtable}
+
+\newpage
+
+% ================================================================
+%  INTRODUCTION
+% ================================================================
+\chapter{Introduction}
+
+\section{Contexte du projet}
+
+La gestion manuelle des bibliothèques présente de nombreuses difficultés : suivi complexe des documents, risque d'erreurs humaines dans l'enregistrement des prêts, difficulté à gérer les files d'attente pour les ouvrages très demandés, et absence de traçabilité des opérations. Face à ces constats, ce projet vise à développer un \textbf{système intelligent de gestion de bibliothèque} permettant d'automatiser et de fluidifier l'ensemble des processus métier.
+
+Ce système se veut une plateforme moderne, fiable et scalable, capable de gérer de manière autonome le catalogue d'œuvres, les exemplaires physiques, les adhérents et les mouvements de prêts et de réservations.
+
+\section{Objectifs}
+
+Les objectifs principaux de ce projet sont :
+
+\begin{itemize}
+    \item Concevoir et développer une API REST complète pour la gestion d'une bibliothèque
+    \item Implémenter des règles métier précises (quota d'emprunts, file d'attente FIFO, limite de renouvellements)
+    \item Assurer l'intégrité des données via le Soft Delete et l'Optimistic Locking
+    \item Sécuriser l'API avec Spring Security (Basic Auth)
+    \item Travailler en équipe avec un workflow Git structuré (branches, Pull Requests)
+\end{itemize}
+
+\section{Équipe et répartition des tâches}
+
+Le projet a été réalisé par une équipe de 5 membres, chacun responsable d'un module spécifique :
+
+\begin{table}[H]
+\centering
+\caption{Répartition des tâches par membre}
+\label{tab:equipe}
+\begin{tabularx}{\textwidth}{c X c}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Membre} & \textbf{Rôle} & \textbf{Tâche} \\
+\hline
+\textbf{24068} & Leader & Architecture, Spring Security, BaseEntity, GlobalExceptionHandler \\
+\textbf{24139} & Développeur & Tables de référence (Language, Nationality, Category, Publisher, Author) \\
+\textbf{24238} & Développeur & Livres et exemplaires (Book, BookItem, BookAuthor) \\
+\textbf{24014} & Développeur & Membres et emprunts (Member, Borrow, règles métier) \\
+\textbf{24157} & Développeur & Réservations et file d'attente FIFO (Reservation) \\
+\hline
+\end{tabularx}
+\end{table}
+
+% ================================================================
+%  CHAPITRE 2 : ANALYSE ET CONCEPTION
+% ================================================================
+\chapter{Analyse et Conception}
+
+\section{Cahier des charges}
+
+Le cahier des charges fonctionnel définit les besoins suivants :
+
+\subsection{Besoins fonctionnels}
+
+\begin{enumerate}
+    \item \textbf{Gestion du catalogue} : Ajouter, consulter et supprimer des livres, auteurs, catégories, éditeurs et langues
+    \item \textbf{Gestion des membres} : Enregistrer les membres avec leur type (Étudiant, Enseignant, Externe) et leur quota d'emprunts
+    \item \textbf{Gestion des emprunts} : Permettre l'emprunt, le retour et le renouvellement des exemplaires physiques
+    \item \textbf{Gestion des réservations} : Permettre aux membres de réserver un livre indisponible avec une file d'attente FIFO
+    \item \textbf{Sécurité} : Authentification par Basic Auth avec rôles ADMIN et USER
+    \item \textbf{Archivage} : Suppression logique (Soft Delete) pour préserver l'historique
+\end{enumerate}
+
+\subsection{Besoins non fonctionnels}
+
+\begin{itemize}
+    \item Architecture en couches (Controller, Service, Repository, Entity)
+    \item Base de données relationnelle MySQL
+    \item API RESTful avec endpoints cohérents
+    \item Code maintenable et documenté
+    \item Build automatisé avec Maven
+\end{itemize}
+
+\section{Modèle Conceptuel de Données (MCD)}
+
+Le Modèle Conceptuel de Données constitue le socle de notre système. Il définit l'ensemble des entités et leurs relations.
+
+\subsection{Diagramme entité-association}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.9\textwidth}
+\centering
+\begin{tikzpicture}[node distance=1.5cm, auto, every entity/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm, font=\small\bfseries}, every attribute/.style={font=\small}, every relationship/.style={draw, diamond, aspect=2, minimum width=2cm, font=\small\bfseries}]
+
+% --- LANGUE ---
+\node[entity] (LANGUAGE) {LANGUAGE};
+\node[attribute, below left=0.3cm and -0.5cm of LANGUAGE] (lang_code) {code (PK)};
+\node[attribute, below right=0.3cm and -0.5cm of LANGUAGE] (lang_name) {name};
+
+% --- NATIONALITE ---
+\node[entity, right=5cm of LANGUAGE] (NATIONALITY) {NATIONALITY};
+\node[attribute, below left=0.3cm and -0.5cm of NATIONALITY] (nat_code) {code (PK)};
+\node[attribute, below right=0.3cm and -0.5cm of NATIONALITY] (nat_name) {name};
+
+% --- CATEGORIE ---
+\node[entity, right=5cm of NATIONALITY] (CATEGORY) {CATEGORY};
+\node[attribute, below left=0.3cm and -0.5cm of CATEGORY] (cat_id) {id (PK)};
+\node[attribute, below right=0.3cm and -0.5cm of CATEGORY] (cat_name) {name};
+
+% ---- AUTEUR ---
+\node[entity, below=3cm of NATIONALITY] (AUTHOR) {AUTHOR};
+\node[attribute, below left=0.3cm and -0.8cm of AUTHOR] (auth_id) {id (PK)};
+\node[attribute, below=0.3cm of AUTHOR] (auth_name) {name};
+\node[attribute, below right=0.3cm and -0.8cm of AUTHOR] (auth_del) {deleted};
+
+% --- EDITEUR ---
+\node[entity, below=3cm of CATEGORY] (PUBLISHER) {PUBLISHER};
+\node[attribute, below left=0.3cm and -0.8cm of PUBLISHER] (pub_id) {id (PK)};
+\node[attribute, below=0.3cm of PUBLISHER] (pub_name) {name};
+\node[attribute, below right=0.3cm and -0.8cm of PUBLISHER] (pub_del) {deleted};
+
+% --- RELATION: NATIONALITY -> AUTHOR ---
+\node[relationship, below right=0.5cm and 0.2cm of NATIONALITY] (HAS) {a};
+\draw (NATIONALITY) -- (HAS);
+\draw (HAS) -- (AUTHOR);
+
+% --- LIVRE ---
+\node[entity, below=5cm of LANGUAGE] (BOOK) {BOOK};
+\node[attribute, below left=0.3cm and -0.8cm of BOOK] (book_id) {id (PK)};
+\node[attribute, below=0.3cm of BOOK] (book_isbn) {ISBN};
+\node[attribute, below right=0.3cm and -0.8cm of BOOK] (book_del) {deleted};
+
+% --- RELATIONS BOOK -> LANGUAGE, CATEGORY, PUBLISHER ---
+\node[relationship, right=0.5cm of LANGUAGE] (LANG_REL) {langue};
+\draw (LANGUAGE) -- (LANG_REL);
+\draw (LANG_REL) -- (BOOK);
+
+\node[relationship, left=0.5cm of CATEGORY] (CAT_REL) {catégorie};
+\draw (CATEGORY) -- (CAT_REL);
+\draw (CAT_REL) -- (BOOK);
+
+\node[relationship, above=0.5cm of PUBLISHER] (PUB_REL) {éditeur};
+\draw (PUBLISHER) -- (PUB_REL);
+\draw (PUB_REL) -- (BOOK);
+
+% --- BOOK_AUTHOR ---
+\node[relationship, left=0.2cm of AUTHOR] (BA_REL) {rédigé par};
+\draw (BOOK) -- (BA_REL);
+\draw (BA_REL) -- (AUTHOR);
+
+% --- BOOK_ITEM ---
+\node[entity, below=2.5cm of BOOK] (BOOKITEM) {BOOK\_ITEM};
+\node[attribute, below left=0.3cm and -0.8cm of BOOKITEM] (bi_id) {id (PK)};
+\node[attribute, below=0.3cm of BOOKITEM] (bi_barcode) {code-barres};
+\node[attribute, below right=0.3cm and -0.8cm of BOOKITEM] (bi_del) {deleted};
+\draw (BOOK) -- (BOOKITEM) node[midway, right] {contient};
+
+% --- MEMBER ---
+\node[entity, right=5cm of BOOKITEM] (MEMBER) {MEMBER};
+\node[attribute, below left=0.3cm and -0.8cm of MEMBER] (mem_id) {id (PK)};
+\node[attribute, below=0.3cm of MEMBER] (mem_email) {email};
+\node[attribute, below right=0.3cm and -0.8cm of MEMBER] (mem_del) {deleted};
+
+% --- BORROW ---
+\node[entity, below=1.5cm of BOOKITEM] (BORROW) {BORROW};
+\node[attribute, below left=0.3cm and -0.8cm of BORROW] (bor_id) {id (PK)};
+\node[attribute, below=0.3cm of BORROW] (bor_status) {status};
+\node[attribute, below right=0.3cm and -0.8cm of BORROW] (bor_renew) {renewals};
+\draw (BOOKITEM) -- (BORROW);
+\draw (MEMBER) -- (BORROW) node[midway, right] {emprunte};
+
+% --- RESERVATION ---
+\node[entity, below=1.5cm of MEMBER] (RESERVATION) {RESERVATION};
+\node[attribute, below left=0.3cm and -0.8cm of RESERVATION] (res_id) {id (PK)};
+\node[attribute, below=0.3cm of RESERVATION] (res_queue) {position};
+\node[attribute, below right=0.3cm and -0.8cm of RESERVATION] (res_status) {status};
+\draw (BOOK) -- (RESERVATION) node[midway, right] {réservé};
+\draw (MEMBER) -- (RESERVATION) node[midway, right] {réserve};
+
+\end{tikzpicture}
+\end{minipage}
+\caption{Modèle Conceptuel de Données du système}
+\label{fig:mcd}
+\end{figure}
+
+\subsection{Liste des entités}
+
+Le tableau suivant présente les 11 entités qui composent notre modèle de données :
+
+\begin{longtable}{c c p{8cm}}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Entité} & \textbf{Table} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\endfoot
+LANGUAGE & language & Langue d'un livre (code ISO comme clé primaire) \\
+NATIONALITY & nationality & Nationalité d'un auteur (code comme clé primaire) \\
+CATEGORY & category & Catégorie thématique d'un livre (Soft Delete) \\
+PUBLISHER & publisher & Maison d'édition (Soft Delete) \\
+AUTHOR & author & Auteur avec nationalité (Soft Delete) \\
+BOOK & book & Œuvre littéraire avec ISBN unique (Soft Delete) \\
+BOOK\_ITEM & book\_item & Exemplaire physique avec code-barres (Soft Delete, Optimistic Locking) \\
+BOOK\_AUTHOR & book\_author & Association livre-auteur with rôle (clé composée) \\
+MEMBER & member & Membre de la bibliothèque (Soft Delete) \\
+BORROW & borrow & Emprunt d'un exemplaire par un membre \\
+RESERVATION & reservation & Réservation d'un livre avec file d'attente \\
+\hline
+\end{longtable}
+
+\section{Diagramme de cas d'utilisation}
+
+Le diagramme de cas d'utilisation présente les interactions entre les différents acteurs et le système :
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.85\textwidth}
+\centering
+\begin{tikzpicture}[node distance=2cm, every node/.style={font=\small}]
+
+% --- Acteurs ---
+\node[draw, ellipse, minimum width=2cm, minimum height=1cm] (admin) {Administrateur};
+\node[draw, ellipse, minimum width=2cm, minimum height=1cm, right=4cm of admin] (user) {Utilisateur};
+
+% --- Système ---
+\draw (admin) -- ++(0,-1.5) -- ++(2,0);
+\draw (admin) -- ++(0,-2.5) -- ++(2,0);
+\draw (user) -- ++(0,-1.5) -- ++(-2,0);
+\draw (user) -- ++(0,-2.5) -- ++(-2,0);
+
+% --- Cas d'utilisation ADMIN ---
+\node[draw, ellipse, below=1cm of admin, xshift=2cm, minimum width=4cm] (uc1) {Gérer les livres};
+\node[draw, ellipse, below=0.8cm of uc1, minimum width=4cm] (uc2) {Gérer les auteurs};
+\node[draw, ellipse, below=0.8cm of uc2, minimum width=4cm] (uc3) {Gérer les membres};
+\node[draw, ellipse, below=0.8cm of uc3, minimum width=4cm] (uc4) {Gérer les catégories};
+\node[draw, ellipse, below=0.8cm of uc4, minimum width=4cm] (uc5) {Gérer les éditeurs};
+
+% --- Cas d'utilisation USER ---
+\node[draw, ellipse, below=1cm of user, xshift=-2cm, minimum width=4cm] (uc6) {Consulter le catalogue};
+\node[draw, ellipse, below=0.8cm of uc6, minimum width=4cm] (uc7) {Emprunter un livre};
+\node[draw, ellipse, below=0.8cm of uc7, minimum width=4cm] (uc8) {Retourner un livre};
+\node[draw, ellipse, below=0.8cm of uc8, minimum width=4cm] (uc9) {Renouveler un prêt};
+\node[draw, ellipse, below=0.8cm of uc9, minimum width=4cm] (uc10) {Réserver un livre};
+
+% --- Inclusions ---
+\draw[dashed,->] (uc7) -- ++(2,0.5) node[right] {<<include>>} -- ++(0,1) node[right] {Vérifier quota};
+
+\end{tikzpicture}
+\end{minipage}
+\caption{Diagramme de cas d'utilisation}
+\label{fig:usecase}
+\end{figure}
+
+\section{Diagramme de séquence - Emprunt d'un livre}
+
+La séquence ci-dessous illustre le flux complet d'un emprunt :
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.9\textwidth}
+\centering
+\begin{tikzpicture}[node distance=1.2cm, auto, every node/.style={font=\small}]
+
+% Acteurs
+\node (client) {Client HTTP};
+\node[right=3cm of client] (controller) {BorrowController};
+\node[right=3cm of controller] (service) {BorrowService};
+\node[right=3cm of service] (repos) {Repositories};
+
+% Lignes de vie
+\draw[dashed] (client) -- ++(0,-8cm);
+\draw[dashed] (controller) -- ++(0,-8cm);
+\draw[dashed] (service) -- ++(0,-8cm);
+\draw[dashed] (repos) -- ++(0,-8cm);
+
+% Flèches
+\draw[->, thick] (client) -- node[above] {POST /checkout} (controller);
+\draw[->, thick] (controller) -- node[above] {borrowBook()} (service);
+
+% Messages
+\draw[->, thick] (service) -- node[above] {findById(memberId)} (repos);
+\draw[<-, thick] (repos) -- node[above] {Member} (service);
+
+\draw[->, thick] (service) -- node[above] {findByBarcode(code)} (repos);
+\draw[<-, thick] (repos) -- node[above] {BookItem} (service);
+
+\draw[->, thick] (service) -- node[above] {check AVAILABLE} (service);
+\draw[->, thick] (service) -- node[above] {countByMemberAndStatus()} (repos);
+\draw[<-, thick] (repos) -- node[above] {activeBorrows} (service);
+
+\draw[->, thick] (service) -- node[above] {check quota} (service);
+\draw[->, thick] (service) -- node[above] {save(item.setBORROWED)} (repos);
+\draw[->, thick] (service) -- node[above] {save(Borrow)} (repos);
+\draw[<-, thick] (repos) -- node[above] {Borrow} (service);
+
+\draw[<-, thick] (service) -- node[above] {Borrow} (controller);
+\draw[<-, thick] (controller) -- node[above] {201 Created} (client);
+
+\end{tikzpicture}
+\end{minipage}
+\caption{Diagramme de séquence - Emprunt d'un livre}
+\label{fig:sequence}
+\end{figure}
+
+\section{Règles métier}
+
+Le système implémente les règles métier suivantes :
+
+\begin{longtable}{p{4cm} p{5cm} p{5cm}}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Règle} & \textbf{Description} & \textbf{Implémentation} \\
+\hline
+\endfirsthead
+\hline
+\endfoot
+Séparation Livre/Exemplaire & Un catalogue d'œuvres, suivi individuel par code-barres & Entités distinctes Book et BookItem \\
+Limite de prêt (Quota) & Quota par type de membre (maxBorrows) & Vérifié dans BorrowService.borrowBook() \\
+Disponibilité & Un exemplaire doit être AVAILABLE pour être emprunté & Vérification du statut avant prêt \\
+Renouvellement & Maximum 3 renouvellements par emprunt & Compteur renewalCount dans Borrow \\
+File d'attente FIFO & Réservations traitées dans l'ordre d'arrivée & queuePosition calculée dans ReservationService \\
+Soft Delete & Archivage sans perte des données historiques & BaseEntity + @SQLRestriction \\
+Optimistic Locking & Empêche les modifications concurrentes sur BookItem & @Version sur le champ version \\
+\hline
+\end{longtable}
+
+% ================================================================
+%  CHAPITRE 3 : ARCHITECTURE TECHNIQUE
+% ================================================================
+\chapter{Architecture Technique}
+
+\section{Stack technologique}
+
+\begin{table}[H]
+\centering
+\caption{Technologies utilisées}
+\label{tab:stack}
+\begin{tabularx}{\textwidth}{c X}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Technologie} & \textbf{Rôle} \\
+\hline
+Java 21 & Langage de programmation \\
+Spring Boot 3.x & Framework de développement d'applications \\
+Spring Data JPA & ORM et accès aux données \\
+Spring Security & Sécurisation de l'API \\
+Hibernate 6 & Implémentation JPA \\
+MySQL 8 & Base de données relationnelle \\
+Maven & Gestionnaire de build et de dépendances \\
+Lombok & Réduction du code boilerplate \\
+H2 Database & Base de données pour les tests \\
+Jackson & Sérialisation JSON \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Structure du projet}
+
+Le projet suit une architecture en couches (layered architecture) :
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    layer/.style={draw, rounded corners, minimum width=8cm, minimum height=1.2cm, font=\bfseries\small},
+    sublayer/.style={draw, rounded corners, minimum width=6cm, minimum height=0.7cm, font=\small}
+]
+
+\node[layer, fill=blue!20] (controller) at (0,0) {Couche Présentation (Controllers)};
+\node[layer, fill=green!20, below=0.2cm of controller] (service) {Couche Métier (Services)};
+\node[layer, fill=orange!20, below=0.2cm of service] (repository) {Couche Accès aux Données (Repositories)};
+\node[layer, fill=red!20, below=0.2cm of repository] (entity) {Couche Persistance (Entities)};
+
+\node[sublayer, fill=purple!15, below=0.2cm of entity] (dto) {DTOs / Security / Exceptions};
+
+\draw[->, thick] (controller) -- (service);
+\draw[->, thick] (service) -- (repository);
+\draw[->, thick] (repository) -- (entity);
+
+\end{tikzpicture}
+\caption{Architecture en couches du projet}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Structure des packages}
+
+\begin{lstlisting}[caption=Organisation des packages Java]
+src/main/java/supnum/projet/Library/
+├── LibraryApplication.java
+├── controllers/
+│   ├── AuthorController.java
+│   ├── BookController.java
+│   ├── BorrowController.java
+│   ├── CategoryController.java
+│   ├── PublisherController.java
+│   └── ReservationController.java
+├── data/
+│   ├── entities/
+│   │   ├── enums/
+│   │   │   ├── AuthorRole.java
+│   │   │   ├── BookItemStatus.java
+│   │   │   ├── BorrowStatus.java
+│   │   │   ├── MemberType.java
+│   │   │   └── ReservationStatus.java
+│   │   ├── Author.java
+│   │   ├── BaseEntity.java
+│   │   ├── Book.java
+│   │   ├── BookAuthor.java
+│   │   ├── BookItem.java
+│   │   ├── Borrow.java
+│   │   ├── Category.java
+│   │   ├── Language.java
+│   │   ├── Member.java
+│   │   ├── Nationality.java
+│   │   ├── Publisher.java
+│   │   └── Reservation.java
+│   └── repositories/
+│       ├── AuthorRepository.java
+│       ├── BookItemRepository.java
+│       ├── BookRepository.java
+│       ├── BorrowRepository.java
+│       ├── CategoryRepository.java
+│       ├── LanguageRepository.java
+│       ├── MemberRepository.java
+│       ├── NationalityRepository.java
+│       ├── PublisherRepository.java
+│       └── ReservationRepository.java
+├── dto/
+│   ├── AuthorDTO.java
+│   ├── BookDTO.java
+│   ├── CategoryDTO.java
+│   ├── MemberDTO.java
+│   ├── PublisherDTO.java
+│   └── ReservationDTO.java
+├── exceptions/
+│   ├── GlobalExceptionHandler.java
+│   └── ResourceNotFoundException.java
+└── security/
+    └── SecurityConfig.java
+\end{lstlisting}
+
+\section{Spring Security}
+
+La configuration de sécurité est gérée par la classe \texttt{SecurityConfig.java}. Elle implémente :
+
+\begin{itemize}
+    \item \textbf{Authentification HTTP Basic} avec deux utilisateurs prédéfinis
+    \item \textbf{Autorisation par rôle} : les endpoints \texttt{/api/admin/**} nécessitent le rôle ADMIN, les autres endpoints sont accessibles aux utilisateurs authentifiés
+    \item \textbf{Protection CSRF désactivée} pour une API REST
+    \item \textbf{Chiffrement des mots de passe} avec BCrypt
+\end{itemize}
+
+\begin{lstlisting}[caption=Configuration de sécurité (extrait)]
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .httpBasic(basic -> {});
+        return http.build();
+    }
+    // ...
+}
+\end{lstlisting}
+
+\section{Gestion des exceptions}
+
+La gestion centralisée des exceptions est assurée par \texttt{GlobalExceptionHandler.java} :
+
+\begin{itemize}
+    \item \textbf{ResourceNotFoundException} → HTTP 404 avec message d'erreur
+    \item \textbf{MethodArgumentNotValidException} → HTTP 400 avec détails des champs invalides
+    \item \textbf{Exception générique} → HTTP 500 avec message d'erreur
+\end{itemize}
+
+\section{Configuration de la base de données}
+
+\subsection{Profil de production (MySQL)}
+
+La configuration principale se trouve dans \texttt{application.properties} :
+
+\begin{lstlisting}[caption=Configuration MySQL]
+spring.datasource.url=jdbc:mysql://localhost:3306/library_db?createDatabaseIfNotExist=true
+spring.datasource.username=supnum
+spring.datasource.password=Supnum
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.sql.init.mode=never
+\end{lstlisting}
+
+\subsection{Profil de test (H2)}
+
+Pour les tests unitaires, une base de données H2 en mémoire est configurée :
+
+\begin{lstlisting}[caption=Configuration H2 pour les tests]
+# application-test.properties
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driver-class-name=org.h2.Driver
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
+\end{lstlisting}
+
+% ================================================================
+%  CHAPITRE 4 : IMPLÉMENTATION PAR MEMBRE
+% ================================================================
+\chapter{Implémentation par Membre}
+
+\section{Membre 24068 -- Architecture, Sécurité et Soft Delete}
+
+Le membre 24068 a joué le rôle de \textbf{leader technique} et a mis en place l'infrastructure du projet.
+
+\subsection{BaseEntity -- Soft Delete}
+
+La classe \texttt{BaseEntity} constitue la classe mère de toutes les entités devant supporter la suppression logique. Elle contient un champ \texttt{deleted} qui, lorsqu'il est positionné à \texttt{true}, archive l'enregistrement sans le supprimer physiquement.
+
+\begin{lstlisting}[caption=BaseEntity avec Soft Delete]
+@MappedSuperclass
+public abstract class BaseEntity {
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
+    // ...
+}
+\end{lstlisting}
+
+\subsection{Entités avec Soft Delete}
+
+Les entités marquées avec l'annotation \texttt{@SQLRestriction("deleted = false")} sont automatiquement filtrées par Hibernate. Cela garantit que les enregistrements archivés n'apparaissent pas dans les requêtes quotidiennes tout en préservant l'historique :
+
+\begin{itemize}
+    \item \texttt{Category}
+    \item \texttt{Publisher}
+    \item \texttt{Author}
+    \item \texttt{Book}
+    \item \texttt{BookItem}
+    \item \texttt{Member}
+\end{itemize}
+
+Les entités \texttt{Language}, \texttt{Nationality}, \texttt{BookAuthor}, \texttt{Borrow} et \texttt{Reservation} ne nécessitent pas de Soft Delete car leurs données ne doivent pas être supprimées ou archivées.
+
+\subsection{GlobalExceptionHandler}
+
+Le gestionnaire global d'exceptions normalise les réponses HTTP pour toutes les erreurs :
+
+\begin{lstlisting}[caption=GlobalExceptionHandler (extrait)]
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException ex) {
+        // HTTP 404
+        return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
+        // HTTP 400 avec les erreurs de validation
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors()
+            .forEach(e -> errors.put(e.getField(), e.getDefaultMessage()));
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleGeneral(Exception ex) {
+        // HTTP 500
+        return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+\end{lstlisting}
+
+\subsection{Fichiers créés par le membre 24068}
+
+\begin{table}[H]
+\centering
+\caption{Travail du membre 24068}
+\begin{tabularx}{\textwidth}{c X}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Fichier} & \textbf{Description} \\
+\hline
+\texttt{BaseEntity.java} & Classe mère avec gestion du Soft Delete \\
+\texttt{SecurityConfig.java} & Configuration Spring Security (Basic Auth) \\
+\texttt{ResourceNotFoundException.java} & Exception personnalisée pour ressources introuvables \\
+\texttt{GlobalExceptionHandler.java} & Gestionnaire centralisé des exceptions \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Membre 24139 -- Tables de référence}
+
+Le membre 24139 a implémenté l'ensemble des \textbf{tables de référence} qui permettent de structurer le catalogue de la bibliothèque.
+
+\subsection{Entités créées}
+
+\paragraph{Language} Langue d'un livre (clé primaire : code ISO) :
+
+\begin{lstlisting}[caption=Entité Language]
+@Entity
+@Table(name = "language")
+public class Language {
+    @Id
+    @Column(length = 10, nullable = false)
+    private String code;
+
+    @Column(length = 50, nullable = false)
+    private String name;
+    // ...
+}
+\end{lstlisting}
+
+\paragraph{Nationality} Nationalité d'un auteur :
+
+\begin{lstlisting}[caption=Entité Nationality]
+@Entity
+@Table(name = "nationality")
+public class Nationality {
+    @Id
+    @Column(length = 10, nullable = false)
+    private String code;
+
+    @Column(length = 50, nullable = false)
+    private String name;
+    // ...
+}
+\end{lstlisting}
+
+\paragraph{Category} Catégorie thématique d'un livre (avec Soft Delete) :
+
+\begin{lstlisting}[caption=Entité Category]
+@Entity
+@Table(name = "category")
+@SQLRestriction("deleted = false")
+public class Category extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String name;
+    // ...
+}
+\end{lstlisting}
+
+\paragraph{Publisher} Maison d'édition (avec Soft Delete et email) :
+
+\begin{lstlisting}[caption=Entité Publisher]
+@Entity
+@Table(name = "publisher")
+@SQLRestriction("deleted = false")
+public class Publisher extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String name;
+
+    @Column(unique = true, length = 100)
+    private String email;
+    // ...
+}
+\end{lstlisting}
+
+\paragraph{Author} Auteur avec nationalité (Soft Delete) :
+
+\begin{lstlisting}[caption=Entité Author]
+@Entity
+@Table(name = "author")
+@SQLRestriction("deleted = false")
+public class Author extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nationality_code")
+    private Nationality nationality;
+    // ...
+}
+\end{lstlisting}
+
+\subsection{Services et Controllers}
+
+Le service \texttt{AuthorService} illustre la logique métier pour la gestion des auteurs :
+
+\begin{lstlisting}[caption=AuthorService (extrait)]
+@Service
+@Transactional
+public class AuthorService {
+    private final AuthorRepository authorRepository;
+    private final NationalityRepository nationalityRepository;
+
+    public List<Author> findAll() {
+        return authorRepository.findAll();
+    }
+
+    public Author create(AuthorDTO dto) {
+        Nationality nationality = nationalityRepository.findById(dto.getNationalityCode())
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Nationalite non trouvee avec le code : " + dto.getNationalityCode()));
+        Author author = new Author();
+        author.setName(dto.getName());
+        author.setNationality(nationality);
+        return authorRepository.save(author);
+    }
+
+    public void delete(Long id) {
+        Author author = authorRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Auteur non trouve avec l'id : " + id));
+        author.setDeleted(true);
+        authorRepository.save(author);
+    }
+}
+\end{lstlisting}
+
+Le \texttt{AuthorController} expose les endpoints REST :
+
+\begin{lstlisting}[caption=AuthorController]
+@RestController
+@RequestMapping("/api/authors")
+public class AuthorController {
+    private final AuthorService service;
+
+    public AuthorController(AuthorService service) {
+        this.service = service;
+    }
+
+    @GetMapping
+    public List<Author> getAll() {
+        return service.findAll();
+    }
+
+    @PostMapping
+    public ResponseEntity<Author> create(@Valid @RequestBody AuthorDTO dto) {
+        return ResponseEntity.ok(service.create(dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}
+\end{lstlisting}
+
+\subsection{Fichiers créés par le membre 24139}
+
+\begin{table}[H]
+\centering
+\caption{Travail du membre 24139}
+\begin{tabularx}{\textwidth}{c X}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Fichier} & \textbf{Description} \\
+\hline
+\texttt{Language.java} & Entité langue \\
+\texttt{Nationality.java} & Entité nationalité \\
+\texttt{Category.java} & Entité catégorie \\
+\texttt{Publisher.java} & Entité éditeur \\
+\texttt{Author.java} & Entité auteur \\
+\texttt{LanguageRepository.java} & Repository Language \\
+\texttt{NationalityRepository.java} & Repository Nationality \\
+\texttt{CategoryRepository.java} & Repository Category \\
+\texttt{PublisherRepository.java} & Repository Publisher \\
+\texttt{AuthorRepository.java} & Repository Author \\
+\texttt{CategoryDTO.java} & DTO Category \\
+\texttt{AuthorDTO.java} & DTO Author \\
+\texttt{PublisherDTO.java} & DTO Publisher \\
+\texttt{CategoryService.java} & Service Category \\
+\texttt{AuthorService.java} & Service Author \\
+\texttt{PublisherService.java} & Service Publisher \\
+\texttt{CategoryController.java} & Controller Category \\
+\texttt{AuthorController.java} & Controller Author \\
+\texttt{PublisherController.java} & Controller Publisher \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Membre 24238 -- Livres et Exemplaires}
+
+Le membre 24238 a implémenté la gestion des \textbf{livres} (œuvre intellectuelle) et des \textbf{exemplaires} (objets physiques), avec le \textbf{verrouillage optimiste} et la \textbf{table d'association livre-auteur}.
+
+\subsection{Entité Book}
+
+L'entité \texttt{Book} représente l'œuvre littéraire avec son ISBN unique et ses relations vers la langue, la catégorie et l'éditeur :
+
+\begin{lstlisting}[caption=Entité Book]
+@Entity
+@Table(name = "book")
+@SQLRestriction("deleted = false")
+public class Book extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 200)
+    private String title;
+
+    @Column(nullable = false, unique = true, length = 20)
+    private String isbn;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "language_code")
+    private Language language;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publisher_id")
+    private Publisher publisher;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookItem> bookItems;
+    // ...
+}
+\end{lstlisting}
+
+\subsection{Entité BookItem -- Optimistic Locking}
+
+L'entité \texttt{BookItem} représente l'exemplaire physique. Elle intègre le \textbf{verrouillage optimiste (Optimistic Locking)} via l'annotation \texttt{@Version} :
+
+\begin{lstlisting}[caption=BookItem avec Optimistic Locking et JsonIgnore]
+@Entity
+@Table(name = "book_item")
+@SQLRestriction("deleted = false")
+public class BookItem extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String barcode;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BookItemStatus status = BookItemStatus.AVAILABLE;
+
+    @Version
+    private Long version; // Optimistic locking
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id")
+    private Book book;
+    // ...
+}
+\end{lstlisting}
+
+L'annotation \texttt{@JsonIgnore} empêche la sérialisation récursive de la relation inverse lors de la génération du JSON, évitant ainsi les erreurs de \texttt{StackOverflow}.
+
+\subsection{Entité BookAuthor -- Clé composée}
+
+La table d'association \texttt{BookAuthor} utilise une \textbf{clé primaire composée} pour lier un auteur à un livre avec un rôle spécifique :
+
+\begin{lstlisting}[caption=BookAuthor avec clé composée]
+@Entity
+@Table(name = "book_author")
+public class BookAuthor {
+    @EmbeddedId
+    private BookAuthorId id = new BookAuthorId();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("bookId")
+    @JoinColumn(name = "book_id")
+    private Book book;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("authorId")
+    @JoinColumn(name = "author_id")
+    private Author author;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AuthorRole role;
+
+    @Embeddable
+    public static class BookAuthorId implements Serializable {
+        private Long bookId;
+        private Long authorId;
+        // equals() et hashCode() implementes
+    }
+}
+\end{lstlisting}
+
+\subsection{Fichiers créés par le membre 24238}
+
+\begin{table}[H]
+\centering
+\caption{Travail du membre 24238}
+\begin{tabularx}{\textwidth}{c X}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Fichier} & \textbf{Description} \\
+\hline
+\texttt{BookItemStatus.java} & Énumération des statuts (AVAILABLE, BORROWED, RESERVED, LOST, DAMAGED) \\
+\texttt{AuthorRole.java} & Énumération des rôles (MAIN\_AUTHOR, CO\_AUTHOR, EDITOR) \\
+\texttt{Book.java} & Entité livre \\
+\texttt{BookItem.java} & Entité exemplaire avec @Version \\
+\texttt{BookAuthor.java} & Entité d'association avec clé composée \\
+\texttt{BookRepository.java} & Repository Book \\
+\texttt{BookItemRepository.java} & Repository BookItem \\
+\texttt{BookDTO.java} & DTO Book \\
+\texttt{BookService.java} & Service Book \\
+\texttt{BookController.java} & Controller Book \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Membre 24014 -- Membres et Emprunts}
+
+Le membre 24014 a implémenté la gestion des \textbf{membres} et des \textbf{emprunts}, incluant les règles métier de quota et de renouvellement.
+
+\subsection{Entité Member}
+
+\begin{lstlisting}[caption=Entité Member]
+@Entity
+@Table(name = "member")
+@SQLRestriction("deleted = false")
+public class Member extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String email;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_type", nullable = false)
+    private MemberType memberType;
+
+    @Column(name = "max_borrows", nullable = false)
+    private Integer maxBorrows;
+    // ...
+}
+\end{lstlisting}
+
+\subsection{Entité Borrow}
+
+\begin{lstlisting}[caption=Entité Borrow]
+@Entity
+@Table(name = "borrow")
+public class Borrow {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_item_id", nullable = false)
+    private BookItem bookItem;
+
+    @Column(name = "renewal_count", nullable = false)
+    private Integer renewalCount = 0;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BorrowStatus status = BorrowStatus.ACTIVE;
+    // ...
+}
+\end{lstlisting}
+
+\subsection{BorrowService -- Règles métier}
+
+Le service \texttt{BorrowService} implémente trois opérations fondamentales :
+
+\subsubsection{Emprunt d'un livre}
+
+La méthode \texttt{borrowBook()} vérifie deux conditions avant d'autoriser l'emprunt :
+
+\begin{enumerate}
+    \item \textbf{Disponibilité de l'exemplaire} : Le BookItem doit être en statut AVAILABLE
+    \item \textbf{Quota du membre} : Le nombre d'emprunts actifs ne doit pas dépasser maxBorrows
+\end{enumerate}
+
+\begin{lstlisting}[caption=Méthode borrowBook (extrait)]
+public Borrow borrowBook(Long memberId, String barcode) {
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new ResourceNotFoundException("Membre introuvable"));
+    BookItem item = bookItemRepository.findByBarcode(barcode)
+        .orElseThrow(() -> new ResourceNotFoundException("Exemplaire introuvable"));
+
+    if (item.getStatus() != BookItemStatus.AVAILABLE) {
+        throw new RuntimeException("L'exemplaire n'est pas disponible");
+    }
+
+    long activeBorrows = borrowRepository.countByMemberAndStatus(member, BorrowStatus.ACTIVE);
+    if (activeBorrows >= member.getMaxBorrows()) {
+        throw new RuntimeException("Le membre a atteint sa limite maximale d'emprunts");
+    }
+
+    item.setStatus(BookItemStatus.BORROWED);
+    bookItemRepository.save(item);
+
+    Borrow borrow = new Borrow();
+    borrow.setMember(member);
+    borrow.setBookItem(item);
+    borrow.setStatus(BorrowStatus.ACTIVE);
+    return borrowRepository.save(borrow);
+}
+\end{lstlisting}
+
+\subsubsection{Retour d'un livre}
+
+\begin{lstlisting}[caption=Méthode returnBook (extrait)]
+public Borrow returnBook(Long borrowId) {
+    Borrow borrow = borrowRepository.findById(borrowId)
+        .orElseThrow(() -> new ResourceNotFoundException("Emprunt introuvable"));
+
+    if (borrow.getStatus() != BorrowStatus.ACTIVE) {
+        throw new RuntimeException("Cet emprunt n'est plus actif");
+    }
+
+    borrow.setStatus(BorrowStatus.RETURNED);
+    BookItem item = borrow.getBookItem();
+    item.setStatus(BookItemStatus.AVAILABLE);
+    bookItemRepository.save(item);
+    return borrowRepository.save(borrow);
+}
+\end{lstlisting}
+
+\subsubsection{Renouvellement d'un prêt}
+
+La règle stipule qu'un emprunt ne peut être renouvelé que \textbf{3 fois maximum} :
+
+\begin{lstlisting}[caption=Méthode renewBorrow (extrait)]
+public Borrow renewBorrow(Long borrowId) {
+    Borrow borrow = borrowRepository.findById(borrowId)
+        .orElseThrow(() -> new ResourceNotFoundException("Emprunt introuvable"));
+
+    if (borrow.getStatus() != BorrowStatus.ACTIVE) {
+        throw new RuntimeException("Seuls les emprunts actifs peuvent etre renouveles");
+    }
+
+    if (borrow.getRenewalCount() >= 3) {
+        throw new RuntimeException("Limite de renouvellement atteinte (max 3 fois)");
+    }
+
+    borrow.setRenewalCount(borrow.getRenewalCount() + 1);
+    return borrowRepository.save(borrow);
+}
+\end{lstlisting}
+
+\subsection{Fichiers créés par le membre 24014}
+
+\begin{table}[H]
+\centering
+\caption{Travail du membre 24014}
+\begin{tabularx}{\textwidth}{c X}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Fichier} & \textbf{Description} \\
+\hline
+\texttt{MemberType.java} & Énumération des types (STUDENT, TEACHER, EXTERNAL) \\
+\texttt{BorrowStatus.java} & Énumération des statuts (ACTIVE, RETURNED, OVERDUE, LOST) \\
+\texttt{Member.java} & Entité membre \\
+\texttt{Borrow.java} & Entité emprunt \\
+\texttt{MemberRepository.java} & Repository Member \\
+\texttt{BorrowRepository.java} & Repository Borrow \\
+\texttt{MemberDTO.java} & DTO Member \\
+\texttt{BorrowService.java} & Service avec règles métier \\
+\texttt{BorrowController.java} & Controller Borrow \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Membre 24157 -- Réservations et File d'attente FIFO}
+
+Le membre 24157 a implémenté le système de \textbf{réservations} avec une \textbf{file d'attente FIFO} (First In, First Out).
+
+\subsection{Entité Reservation}
+
+\begin{lstlisting}[caption=Entité Reservation]
+@Entity
+@Table(name = "reservation")
+public class Reservation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
+
+    @Column(name = "queue_position", nullable = false)
+    private Integer queuePosition;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReservationStatus status = ReservationStatus.PENDING;
+    // ...
+}
+\end{lstlisting}
+
+\subsection{ReservationService -- Logique FIFO}
+
+\begin{lstlisting}[caption=ReservationService avec file d'attente FIFO]
+@Service
+@Transactional
+public class ReservationService {
+
+    public Reservation reserve(ReservationDTO dto) {
+        Member member = memberRepository.findById(dto.getMemberId())
+            .orElseThrow(() -> new ResourceNotFoundException("Membre non trouve"));
+        Book book = bookRepository.findById(dto.getBookId())
+            .orElseThrow(() -> new ResourceNotFoundException("Livre non trouve"));
+
+        // Calcul automatique de la position FIFO
+        int nextPosition = reservationRepository.findMaxQueuePositionForBook(book) + 1;
+
+        Reservation reservation = new Reservation();
+        reservation.setMember(member);
+        reservation.setBook(book);
+        reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setQueuePosition(nextPosition);
+        return reservationRepository.save(reservation);
+    }
+
+    public Reservation cancel(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(() -> new ResourceNotFoundException("Reservation non trouvee"));
+
+        if (reservation.getStatus() != ReservationStatus.PENDING) {
+            throw new RuntimeException("Seules les reservations en attente peuvent etre annulees");
+        }
+
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        return reservationRepository.save(reservation);
+    }
+
+    public List<Reservation> getQueueForBook(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+            .orElseThrow(() -> new ResourceNotFoundException("Livre non trouve"));
+        return reservationRepository
+            .findByBookAndStatusOrderByQueuePositionAsc(book, ReservationStatus.PENDING);
+    }
+}
+\end{lstlisting}
+
+\subsection{Repository avec requêtes FIFO}
+
+Le repository utilise une requête JPQL pour calculer la position maximale dans la file :
+
+\begin{lstlisting}[caption=ReservationRepository]
+@Repository
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+    List<Reservation> findByBookAndStatusOrderByQueuePositionAsc(Book book,
+        ReservationStatus status);
+
+    @Query("SELECT COALESCE(MAX(r.queuePosition), 0) FROM Reservation r "
+         + "WHERE r.book = :book AND r.status = 'PENDING'")
+    Integer findMaxQueuePositionForBook(@Param("book") Book book);
+}
+\end{lstlisting}
+
+\subsection{Endpoints REST}
+
+\begin{lstlisting}[caption=ReservationController]
+@RestController
+@RequestMapping("/api/reservations")
+public class ReservationController {
+
+    @PostMapping
+    public ResponseEntity<Reservation> reserve(@Valid @RequestBody ReservationDTO dto) {
+        return ResponseEntity.ok(service.reserve(dto));
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Reservation> cancel(@PathVariable Long id) {
+        return ResponseEntity.ok(service.cancel(id));
+    }
+
+    @GetMapping("/queue/{bookId}")
+    public ResponseEntity<List<Reservation>> getQueue(@PathVariable Long bookId) {
+        return ResponseEntity.ok(service.getQueueForBook(bookId));
+    }
+}
+\end{lstlisting}
+
+\subsection{Fichiers créés par le membre 24157}
+
+\begin{table}[H]
+\centering
+\caption{Travail du membre 24157}
+\begin{tabularx}{\textwidth}{c X}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Fichier} & \textbf{Description} \\
+\hline
+\texttt{ReservationStatus.java} & Énumération des statuts (PENDING, READY, CANCELLED, COMPLETED) \\
+\texttt{Reservation.java} & Entité réservation avec file d'attente \\
+\texttt{ReservationRepository.java} & Repository avec requêtes FIFO \\
+\texttt{ReservationDTO.java} & DTO Reservation \\
+\texttt{ReservationService.java} & Service avec logique FIFO \\
+\texttt{ReservationController.java} & Controller Reservation \\
+\hline
+\end{tabularx}
+\end{table}
+
+% ================================================================
+%  CHAPITRE 5 : API REST
+% ================================================================
+\chapter{API REST}
+
+\section{Endpoints disponibles}
+
+L'API expose les endpoints suivants :
+
+\begin{longtable}{c l l p{6cm}}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Méthode} & \textbf{Endpoint} & \textbf{Contrôleur} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\endfoot
+GET & /api/categories & CategoryController & Liste toutes les catégories \\
+POST & /api/categories & CategoryController & Crée une catégorie \\
+DELETE & /api/categories/\{id\} & CategoryController & Supprime (archive) une catégorie \\
+GET & /api/authors & AuthorController & Liste tous les auteurs \\
+POST & /api/authors & AuthorController & Crée un auteur \\
+DELETE & /api/authors/\{id\} & AuthorController & Supprime (archive) un auteur \\
+GET & /api/publishers & PublisherController & Liste tous les éditeurs \\
+POST & /api/publishers & PublisherController & Crée un éditeur \\
+DELETE & /api/publishers/\{id\} & PublisherController & Supprime (archive) un éditeur \\
+GET & /api/books & BookController & Liste tous les livres \\
+POST & /api/books & BookController & Crée un livre \\
+POST & /api/borrows/checkout & BorrowController & Emprunte un livre \\
+POST & /api/borrows/\{id\}/return & BorrowController & Retourne un livre \\
+POST & /api/borrows/\{id\}/renew & BorrowController & Renouvelle un emprunt \\
+POST & /api/reservations & ReservationController & Réserve un livre \\
+POST & /api/reservations/\{id\}/cancel & ReservationController & Annule une réservation \\
+GET & /api/reservations/queue/\{bookId\} & ReservationController & File d'attente d'un livre \\
+\hline
+\end{longtable}
+
+\section{Schémas de requêtes et réponses}
+
+\subsection{Création d'un auteur}
+
+Requête POST /api/authors :
+
+\begin{lstlisting}[caption=Requête POST /api/authors, language=]
+{
+    "name": "Victor Hugo",
+    "nationalityCode": "FR"
+}
+\end{lstlisting}
+
+Réponse (201 Created) :
+
+\begin{lstlisting}[caption=Réponse POST /api/authors, language=]
+{
+    "id": 1,
+    "name": "Victor Hugo",
+    "nationality": {
+        "code": "FR",
+        "name": "France"
+    }
+}
+\end{lstlisting}
+
+\subsection{Emprunt d'un livre}
+
+Requête POST /api/borrows/checkout?memberId=1\&barcode=A001 :
+
+\begin{lstlisting}[caption=Réponse POST /api/borrows/checkout, language=]
+{
+    "id": 1,
+    "member": { "id": 1, "email": "etudiant@example.com" },
+    "bookItem": { "id": 1, "barcode": "A001", "status": "BORROWED" },
+    "renewalCount": 0,
+    "status": "ACTIVE"
+}
+\end{lstlisting}
+
+\subsection{Réservation avec file d'attente}
+
+Requête POST /api/reservations :
+
+\begin{lstlisting}[caption=Requête POST /api/reservations, language=]
+{
+    "memberId": 1,
+    "bookId": 1
+}
+\end{lstlisting}
+
+Réponse (position calculée automatiquement) :
+
+\begin{lstlisting}[caption=Réponse POST /api/reservations, language=]
+{
+    "id": 1,
+    "member": { "id": 1, "email": "etudiant@example.com" },
+    "book": { "id": 1, "title": "Les Miserables" },
+    "queuePosition": 1,
+    "status": "PENDING"
+}
+\end{lstlisting}
+
+\section{Sécurisation des endpoints}
+
+La sécurité est configurée avec Spring Security et Basic Auth :
+
+\begin{table}[H]
+\centering
+\caption{Authentification Basic Auth}
+\label{tab:auth}
+\begin{tabularx}{\textwidth}{c c c}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Utilisateur} & \textbf{Mot de passe} & \textbf{Rôle} \\
+\hline
+admin & admin123 & ADMIN \\
+user & user123 & USER \\
+\hline
+\end{tabularx}
+\end{table}
+
+Les utilisateurs non authentifiés ne peuvent accéder à aucun endpoint. Les utilisateurs avec le rôle ADMIN peuvent accéder aux endpoints \texttt{/api/admin/**}.
+
+% ================================================================
+%  CHAPITRE 6 : TESTS
+% ================================================================
+\chapter{Tests et Validation}
+
+\section{Stratégie de test}
+
+Deux approches de test ont été mises en œuvre :
+
+\subsection{Tests unitaires avec H2}
+
+Les tests unitaires utilisent une base de données H2 en mémoire, configurée via le profil Spring \texttt{test}. Cela permet de :
+
+\begin{itemize}
+    \item Exécuter les tests sans dépendance à MySQL
+    \item Isoler chaque test avec un rollback automatique
+    \item Valider les règles métier (quota, FIFO, renouvellements)
+\end{itemize}
+
+\subsection{Script de test API}
+
+Un script shell \texttt{test\_api.sh} a été développé pour tester manuellement l'API :
+
+\begin{lstlisting}[caption=Extrait du script de test API, language=bash]
+#!/bin/bash
+BASE_URL="http://localhost:8081/api"
+AUTH="admin:admin123"
+
+echo "=== Test Create Author ==="
+curl -s -X POST "$BASE_URL/authors" \
+  -u "$AUTH" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Victor Hugo", "nationalityCode": "FR"}'
+echo ""
+
+echo "=== Test Create Book ==="
+curl -s -X POST "$BASE_URL/books" \
+  -u "$AUTH" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Les Miserables","isbn":"978-2-07-040922-8",
+       "languageCode":"FR","categoryId":1,"publisherId":1}'
+echo ""
+
+echo "=== Test Borrow Book ==="
+curl -s -X POST "$BASE_URL/borrows/checkout?memberId=1&barcode=A001" -u "$AUTH"
+echo ""
+\end{lstlisting}
+
+\section{Résultat du build}
+
+Le projet compile avec succès :
+
+\begin{lstlisting}[caption=Build Maven réussi]
+[INFO] Scanning for projects...
+[INFO] Building Library 0.0.1-SNAPSHOT
+[INFO] Compiling 49 source files with javac [debug parameters release 21]
+[INFO] BUILD SUCCESS
+[INFO] Total time: 4.575 s
+\end{lstlisting}
+
+% ================================================================
+%  CHAPITRE 7 : WORKFLOW GIT
+% ================================================================
+\chapter{Workflow Git}
+
+\section{Stratégie de branches}
+
+Le projet a suivi une stratégie de branches structurée :
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.5cm, auto]
+    \node[draw, rectangle, fill=green!20] (main) {main};
+    \node[draw, rectangle, fill=blue!20, below=0.5cm of main] (dev) {dev};
+    \node[draw, rectangle, fill=orange!20, below left=1cm and -1cm of dev] (feat1) {feature/24157};
+    \node[draw, rectangle, fill=orange!20, below=1cm of dev] (feat2) {feature/taches-24068};
+    \node[draw, rectangle, fill=orange!20, below right=1cm and -1cm of dev] (feat3) {Abdsalam};
+    \node[draw, rectangle, fill=red!20, below=1cm of feat2] (test) {test};
+
+    \draw[->, thick] (feat1) -- node[left] {PR} (main);
+    \draw[->, thick] (feat2) -- node[left] {PR} (main);
+    \draw[->, thick] (feat3) -- node[right] {Merge} (test);
+    \draw[->, thick] (test) -- node[right] {PR \#8} (main);
+    \draw[->, thick] (dev) -- node[right] {PR \#8} (main);
+\end{tikzpicture}
+\caption{Stratégie de branches}
+\label{fig:branches}
+\end{figure}
+
+\subsection{Branches utilisées}
+
+\begin{table}[H]
+\centering
+\caption{Branches du projet}
+\begin{tabularx}{\textwidth}{c X c}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Branche} & \textbf{Description} & \textbf{Membre} \\
+\hline
+main & Branche principale de production & -- \\
+dev & Branche d'intégration & -- \\
+feature/24157 & Développement réservations & 24157 \\
+feature/taches-24068 & Développement architecture & 24068 (Leader) \\
+Abdsalam & Développement tables de référence & 24139 \\
+test & Branche de test & -- \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{Historique des Pull Requests}
+
+\begin{enumerate}
+    \item \textbf{PR \#1} : feature/taches-24068 → main (Structure initiale)
+    \item \textbf{PR \#2} : feature/taches-24068 → main (Fix SecurityConfig)
+    \item \textbf{PR \#3} : feature/taches-24068 → main (Configuration DB)
+    \item \textbf{PR \#4} : feature/24157 → main (Réservations)
+    \item \textbf{PR \#5} : feature/taches-24068 → main (Documentation)
+    \item \textbf{PR \#6} : feature/taches-24068 → main (README final)
+    \item \textbf{PR \#7} : feature/24157 → main (Finalisation réservations)
+    \item \textbf{PR \#8} : dev → main (Intégration finale + améliorations)
+\end{enumerate}
+
+% ================================================================
+%  CHAPITRE 8 : CONCLUSION
+% ================================================================
+\chapter{Conclusion}
+
+\section{Bilan du projet}
+
+Ce projet de système intelligent de gestion de bibliothèque a atteint l'ensemble de ses objectifs :
+
+\begin{itemize}
+    \item \textbf{100\% des fonctionnalités} demandées ont été implémentées
+    \item \textbf{11 entités JPA} modélisant fidèlement le MCD
+    \item \textbf{5 énumérations} pour les statuts et types
+    \item \textbf{10 repositories} avec requêtes personnalisées
+    \item \textbf{5 DTOs} avec validation Jakarta
+    \item \textbf{6 services} avec règles métier
+    \item \textbf{6 contrôleurs REST} exposant l'API
+    \item \textbf{Sécurisation} de l'API avec Spring Security
+    \item \textbf{49 fichiers Java} compilés avec succès
+\end{itemize}
+
+\section{Améliorations apportées}
+
+Au-delà des spécifications initiales, les améliorations suivantes ont été intégrées :
+
+\begin{itemize}
+    \item \textbf{@JsonIgnore} sur BookItem pour éviter les récursions JSON
+    \item \textbf{Messages d'erreur détaillés} avec identification des ressources
+    \item \textbf{Noms de variables explicites} dans les services
+    \item \textbf{Script de test API} automatisé
+\end{itemize}
+
+\section{Perspectives}
+
+Le système peut être étendu avec :
+
+\begin{itemize}
+    \item Authentification JWT pour remplacer Basic Auth
+    \item Interface frontend (React, Angular ou Vue.js)
+    \item Notifications par email pour les réservations
+    \item Statistiques et reporting des emprunts
+    \item Gestion des amendes pour les retards
+    \item Documentation Swagger/OpenAPI interactive
+\end{itemize}
+
+% ================================================================
+%  RÉFÉRENCES
+% ================================================================
+\chapter*{Références bibliographiques}
+\addcontentsline{toc}{chapter}{Références bibliographiques}
+
+\begin{enumerate}
+    \item Spring Boot Reference Documentation. \url{https://docs.spring.io/spring-boot/docs/current/reference/html/}
+    \item Spring Data JPA Reference Guide. \url{https://docs.spring.io/spring-data/jpa/reference/}
+    \item Spring Security Architecture. \url{https://docs.spring.io/spring-security/reference/}
+    \item Jakarta Persistence API 3.1 Specification. \url{https://jakarta.ee/specifications/persistence/3.1/}
+    \item Hibernate ORM Documentation. \url{https://hibernate.org/orm/documentation/6.4/}
+    \item UML 2.5 Specification. Object Management Group. \url{https://www.omg.org/spec/UML/}
+    \item Pro Git Book. Scott Chacon and Ben Straub. \url{https://git-scm.com/book/}
+\end{enumerate}
+
+% ================================================================
+%  ANNEXES
+% ================================================================
+\appendix
+\chapter{Annexes}
+
+\section{Schéma SQL complet}
+
+\begin{lstlisting}[caption=Schéma de la base de données (DDL)]
+CREATE TABLE language (
+    code VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE nationality (
+    code VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE category (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE publisher (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) UNIQUE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE author (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    nationality_code VARCHAR(10),
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (nationality_code) REFERENCES nationality(code)
+);
+
+CREATE TABLE book (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    isbn VARCHAR(20) NOT NULL UNIQUE,
+    language_code VARCHAR(10),
+    category_id BIGINT,
+    publisher_id BIGINT,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (language_code) REFERENCES language(code),
+    FOREIGN KEY (category_id) REFERENCES category(id),
+    FOREIGN KEY (publisher_id) REFERENCES publisher(id)
+);
+
+CREATE TABLE book_item (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    barcode VARCHAR(50) NOT NULL UNIQUE,
+    status VARCHAR(20) NOT NULL DEFAULT 'AVAILABLE',
+    version BIGINT,
+    book_id BIGINT,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (book_id) REFERENCES book(id)
+);
+
+CREATE TABLE book_author (
+    book_id BIGINT NOT NULL,
+    author_id BIGINT NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    PRIMARY KEY (book_id, author_id),
+    FOREIGN KEY (book_id) REFERENCES book(id),
+    FOREIGN KEY (author_id) REFERENCES author(id)
+);
+
+CREATE TABLE member (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    member_type VARCHAR(20) NOT NULL,
+    max_borrows INT NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE borrow (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id BIGINT NOT NULL,
+    book_item_id BIGINT NOT NULL,
+    renewal_count INT NOT NULL DEFAULT 0,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    FOREIGN KEY (member_id) REFERENCES member(id),
+    FOREIGN KEY (book_item_id) REFERENCES book_item(id)
+);
+
+CREATE TABLE reservation (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id BIGINT NOT NULL,
+    book_id BIGINT NOT NULL,
+    queue_position INT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    FOREIGN KEY (member_id) REFERENCES member(id),
+    FOREIGN KEY (book_id) REFERENCES book(id)
+);
+\end{lstlisting}
+
+\section{Structure complète du projet}
+
+\begin{lstlisting}[caption=Arborescence complète du projet]
+Library/
+├── pom.xml
+├── README.md
+├── description.md
+├── 24014.md
+├── 24068.md
+├── 24139.md
+├── 24157.md
+├── 24238.md
+├── src/
+│   ├── main/
+│   │   ├── java/supnum/projet/Library/
+│   │   │   ├── LibraryApplication.java
+│   │   │   ├── controllers/
+│   │   │   │   ├── AuthorController.java
+│   │   │   │   ├── BookController.java
+│   │   │   │   ├── BorrowController.java
+│   │   │   │   ├── CategoryController.java
+│   │   │   │   ├── PublisherController.java
+│   │   │   │   └── ReservationController.java
+│   │   │   ├── data/
+│   │   │   │   ├── entities/
+│   │   │   │   │   ├── enums/
+│   │   │   │   │   │   ├── AuthorRole.java
+│   │   │   │   │   │   ├── BookItemStatus.java
+│   │   │   │   │   │   ├── BorrowStatus.java
+│   │   │   │   │   │   ├── MemberType.java
+│   │   │   │   │   │   └── ReservationStatus.java
+│   │   │   │   │   ├── Author.java
+│   │   │   │   │   ├── BaseEntity.java
+│   │   │   │   │   ├── Book.java
+│   │   │   │   │   ├── BookAuthor.java
+│   │   │   │   │   ├── BookItem.java
+│   │   │   │   │   ├── Borrow.java
+│   │   │   │   │   ├── Category.java
+│   │   │   │   │   ├── Language.java
+│   │   │   │   │   ├── Member.java
+│   │   │   │   │   ├── Nationality.java
+│   │   │   │   │   ├── Publisher.java
+│   │   │   │   │   └── Reservation.java
+│   │   │   │   └── repositories/
+│   │   │   │       ├── AuthorRepository.java
+│   │   │   │       ├── BookItemRepository.java
+│   │   │   │       ├── BookRepository.java
+│   │   │   │       ├── BorrowRepository.java
+│   │   │   │       ├── CategoryRepository.java
+│   │   │   │       ├── LanguageRepository.java
+│   │   │   │       ├── MemberRepository.java
+│   │   │   │       ├── NationalityRepository.java
+│   │   │   │       ├── PublisherRepository.java
+│   │   │   │       └── ReservationRepository.java
+│   │   │   ├── dto/
+│   │   │   │   ├── AuthorDTO.java
+│   │   │   │   ├── BookDTO.java
+│   │   │   │   ├── CategoryDTO.java
+│   │   │   │   ├── MemberDTO.java
+│   │   │   │   ├── PublisherDTO.java
+│   │   │   │   └── ReservationDTO.java
+│   │   │   ├── exceptions/
+│   │   │   │   ├── GlobalExceptionHandler.java
+│   │   │   │   └── ResourceNotFoundException.java
+│   │   │   └── security/
+│   │   │       └── SecurityConfig.java
+│   │   └── resources/
+│   │       └── application.properties
+│   └── test/java/.../
+│       └── LibraryApplicationTests.java
+└── test_api.sh
+\end{lstlisting}
+
+\section{Commandes utiles}
+
+\begin{lstlisting}[caption=Commandes pour lancer et tester l'application]
+# Lancer l'application
+./mvnw spring-boot:run
+
+# Compiler sans tests
+./mvnw clean compile -DskipTests
+
+# Exécuter les tests
+./mvnw test
+
+# Tester l'API avec curl
+curl -s -X GET http://localhost:8081/api/authors -u admin:admin123
+curl -s -X GET http://localhost:8081/api/books -u admin:admin123
+curl -s -X POST "http://localhost:8081/api/borrows/checkout?memberId=1&barcode=A001" \
+    -u admin:admin123
+
+# Utiliser le script de test automatise
+./test_api.sh
+\end{lstlisting}
+
+\end{document}
