@@ -1,8 +1,8 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Category;
-import supnum.projet.Library.dto.CategoryDTO;
-import supnum.projet.Library.services.CategoryService;
+import supnum.projet.Library.data.entities.Author;
+import supnum.projet.Library.dto.AuthorDTO;
+import supnum.projet.Library.services.AuthorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,21 +10,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
-public class CategoryController {
-    private final CategoryService service;
+@RequestMapping("/api/authors")
+public class AuthorController {
+    private final AuthorService service;
 
-    public CategoryController(CategoryService service) {
+    public AuthorController(AuthorService service) {
         this.service = service;
     }
 
     @GetMapping
-    public List<Category> getAll() {
+    public List<Author> getAll() {
         return service.findAll();
     }
 
     @PostMapping
-    public ResponseEntity<Category> create(@Valid @RequestBody CategoryDTO dto) {
+    public ResponseEntity<Author> create(@Valid @RequestBody AuthorDTO dto) {
         return ResponseEntity.ok(service.create(dto));
     }
 

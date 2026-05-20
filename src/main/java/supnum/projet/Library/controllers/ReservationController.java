@@ -1,4 +1,5 @@
 package supnum.projet.Library.controllers;
+
 import supnum.projet.Library.data.entities.Reservation;
 import supnum.projet.Library.dto.ReservationDTO;
 import supnum.projet.Library.services.ReservationService;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/reservations")
 public class ReservationController {
+
     private final ReservationService service;
 
     public ReservationController(ReservationService service) {
@@ -30,5 +32,5 @@ public class ReservationController {
     @GetMapping("/queue/{bookId}")
     public ResponseEntity<List<Reservation>> getQueue(@PathVariable Long bookId) {
         return ResponseEntity.ok(service.getQueueForBook(bookId));
-    } 
+    }
 }

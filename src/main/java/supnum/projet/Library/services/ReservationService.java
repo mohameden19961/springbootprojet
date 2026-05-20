@@ -1,4 +1,5 @@
 package supnum.projet.Library.services;
+
 import supnum.projet.Library.data.entities.*;
 import supnum.projet.Library.data.entities.enums.ReservationStatus;
 import supnum.projet.Library.dto.ReservationDTO;
@@ -6,11 +7,14 @@ import supnum.projet.Library.data.repositories.*;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+
 @Service
 @Transactional
 public class ReservationService {
-     private final ReservationRepository reservationRepository;
+
+    private final ReservationRepository reservationRepository;
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
 
@@ -26,7 +30,6 @@ public class ReservationService {
         Book book = bookRepository.findById(dto.getBookId())
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé"));
 
-        // Calculer automatiquement la position dans la file d'attente (FIFO)
         int nextPosition = reservationRepository.findMaxQueuePositionForBook(book) + 1;
 
         Reservation reservation = new Reservation();

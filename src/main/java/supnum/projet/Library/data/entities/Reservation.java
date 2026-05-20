@@ -1,10 +1,12 @@
 package supnum.projet.Library.data.entities;
+
 import supnum.projet.Library.data.entities.enums.ReservationStatus;
 import jakarta.persistence.*;
+
 @Entity
 @Table(name = "reservation")
 public class Reservation {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
