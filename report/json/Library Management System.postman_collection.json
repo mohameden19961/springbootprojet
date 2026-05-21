@@ -680,7 +680,19 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "?role=MAIN_AUTHOR",
+							"raw": "http://localhost:8081/api/books/2/authors/4?role=MAIN_AUTHOR",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"books",
+								"2",
+								"authors",
+								"4"
+							],
 							"query": [
 								{
 									"key": "role",
@@ -867,16 +879,35 @@
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "?memberId=1&barcode=978-2070612758-001",
+							"raw": "http://localhost:8081/api/borrows/checkout?memberId=2&barcode=MR-2024-ADV-003",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"borrows",
+								"checkout"
+							],
 							"query": [
 								{
 									"key": "memberId",
-									"value": "1"
+									"value": "2"
 								},
 								{
 									"key": "barcode",
-									"value": "978-2070612758-001"
+									"value": "MR-2024-ADV-003"
 								}
 							]
 						}
