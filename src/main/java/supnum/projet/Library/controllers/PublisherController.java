@@ -1,16 +1,21 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Publisher;
 import supnum.projet.Library.dto.PublisherDTO;
+import supnum.projet.Library.dto.PublisherResponseDTO;
 import supnum.projet.Library.services.PublisherService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/publishers")
+@Validated
 public class PublisherController {
     private final PublisherService service;
 
@@ -19,8 +24,8 @@ public class PublisherController {
     }
 
     @GetMapping
-    public List<Publisher> getAll() {
-        return service.findAll();
+    public List<PublisherResponseDTO> getAll() {
+        return service.findAll().stream().map(PublisherResponseDTO::from).toList();
     }
 
     @GetMapping("/{id}")
@@ -29,8 +34,9 @@ public class PublisherController {
     }
 
     @PostMapping
-    public ResponseEntity<Publisher> create(@Valid @RequestBody PublisherDTO dto) {
-        return ResponseEntity.ok(service.create(dto));
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PublisherResponseDTO> create(@Valid @RequestBody PublisherDTO dto) {
+        return ResponseEntity.ok(PublisherResponseDTO.from(service.create(dto)));
     }
 
     @PutMapping("/{id}")
@@ -39,7 +45,8 @@ public class PublisherController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable @NotNull @Positive Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
