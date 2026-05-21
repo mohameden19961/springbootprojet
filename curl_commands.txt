@@ -1,0 +1,253 @@
+=============================================================================
+  CURL COMMANDS - Library Management System REST API
+  Base URL: http://localhost:8081/api
+  Auth: HTTP Basic (user:user123 or admin:admin123)
+=============================================================================
+
+-----------------------------------------------------------------------------
+  1. LANGUAGES (Table de référence)
+-----------------------------------------------------------------------------
+
+# GET  - Liste toutes les langues
+curl -u user:user123 http://localhost:8081/api/languages
+
+# GET  - Langue par code
+curl -u user:user123 http://localhost:8081/api/languages/FR
+
+
+-----------------------------------------------------------------------------
+  2. NATIONALITIES (Table de référence)
+-----------------------------------------------------------------------------
+
+# GET  - Liste toutes les nationalités
+curl -u user:user123 http://localhost:8081/api/nationalities
+
+# GET  - Nationalité par code
+curl -u user:user123 http://localhost:8081/api/nationalities/DZ
+
+
+-----------------------------------------------------------------------------
+  3. CATEGORIES
+-----------------------------------------------------------------------------
+
+# GET    - Liste toutes les catégories
+curl -u user:user123 http://localhost:8081/api/categories
+
+# GET    - Catégorie par ID
+curl -u user:user123 http://localhost:8081/api/categories/1
+
+# POST   - Créer une catégorie
+curl -u user:user123 -X POST http://localhost:8081/api/categories \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Science-Fiction"}'
+
+# PUT    - Modifier une catégorie
+curl -u user:user123 -X PUT http://localhost:8081/api/categories/1 \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Fantasy"}'
+
+# DELETE - Supprimer une catégorie (soft delete)
+curl -u user:user123 -X DELETE http://localhost:8081/api/categories/1
+
+
+-----------------------------------------------------------------------------
+  4. PUBLISHERS (Éditeurs)
+-----------------------------------------------------------------------------
+
+# GET    - Liste tous les éditeurs
+curl -u user:user123 http://localhost:8081/api/publishers
+
+# GET    - Éditeur par ID
+curl -u user:user123 http://localhost:8081/api/publishers/1
+
+# POST   - Créer un éditeur
+curl -u user:user123 -X POST http://localhost:8081/api/publishers \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Gallimard", "email": "contact@gallimard.fr"}'
+
+# PUT    - Modifier un éditeur
+curl -u user:user123 -X PUT http://localhost:8081/api/publishers/1 \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Folio", "email": "contact@folio.fr"}'
+
+# DELETE - Supprimer un éditeur (soft delete)
+curl -u user:user123 -X DELETE http://localhost:8081/api/publishers/1
+
+
+-----------------------------------------------------------------------------
+  5. AUTHORS (Auteurs)
+-----------------------------------------------------------------------------
+
+# GET    - Liste tous les auteurs
+curl -u user:user123 http://localhost:8081/api/authors
+
+# GET    - Auteur par ID
+curl -u user:user123 http://localhost:8081/api/authors/1
+
+# POST   - Créer un auteur
+curl -u user:user123 -X POST http://localhost:8081/api/authors \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Antoine de Saint-Exupéry", "nationalityCode": "FR"}'
+
+# PUT    - Modifier un auteur
+curl -u user:user123 -X PUT http://localhost:8081/api/authors/1 \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Victor Hugo", "nationalityCode": "FR"}'
+
+# DELETE - Supprimer un auteur (soft delete)
+curl -u user:user123 -X DELETE http://localhost:8081/api/authors/1
+
+
+-----------------------------------------------------------------------------
+  6. BOOKS (Livres)
+-----------------------------------------------------------------------------
+
+# GET    - Liste tous les livres
+curl -u user:user123 http://localhost:8081/api/books
+
+# GET    - Livre par ID
+curl -u user:user123 http://localhost:8081/api/books/1
+
+# POST   - Créer un livre
+curl -u user:user123 -X POST http://localhost:8081/api/books \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Le Petit Prince",
+    "isbn": "978-2070612758",
+    "languageCode": "FR",
+    "categoryId": 1,
+    "publisherId": 1
+  }'
+
+# PUT    - Modifier un livre
+curl -u user:user123 -X PUT http://localhost:8081/api/books/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Le Petit Prince (Édition spéciale)",
+    "isbn": "978-2070612758",
+    "languageCode": "FR",
+    "categoryId": 1,
+    "publisherId": 1
+  }'
+
+# DELETE - Supprimer un livre (soft delete)
+curl -u user:user123 -X DELETE http://localhost:8081/api/books/1
+
+
+-----------------------------------------------------------------------------
+  7. BOOK ITEMS (Exemplaires physiques)
+-----------------------------------------------------------------------------
+
+# GET    - Liste tous les exemplaires d'un livre
+curl -u user:user123 http://localhost:8081/api/books/1/items
+
+# GET    - Exemplaire par ID
+curl -u user:user123 http://localhost:8081/api/books/1/items/1
+
+# POST   - Créer un exemplaire
+curl -u user:user123 -X POST http://localhost:8081/api/books/1/items \
+  -H "Content-Type: application/json" \
+  -d '{"barcode": "978-2070612758-001", "status": "AVAILABLE"}'
+
+# PUT    - Modifier un exemplaire
+curl -u user:user123 -X PUT http://localhost:8081/api/books/1/items/1 \
+  -H "Content-Type: application/json" \
+  -d '{"barcode": "978-2070612758-002", "status": "DAMAGED"}'
+
+# DELETE - Supprimer un exemplaire (soft delete)
+curl -u user:user123 -X DELETE http://localhost:8081/api/books/1/items/1
+
+
+-----------------------------------------------------------------------------
+  8. BOOK-AUTHOR (Relation Livre-Auteur)
+-----------------------------------------------------------------------------
+
+# GET    - Liste les auteurs d'un livre
+curl -u user:user123 http://localhost:8081/api/books/1/authors
+
+# POST   - Associer un auteur à un livre (role: MAIN_AUTHOR, CO_AUTHOR, EDITOR)
+curl -u user:user123 -X POST "http://localhost:8081/api/books/1/authors/1?role=MAIN_AUTHOR"
+
+# DELETE - Dissocier un auteur d'un livre
+curl -u user:user123 -X DELETE http://localhost:8081/api/books/1/authors/1
+
+
+-----------------------------------------------------------------------------
+  9. MEMBERS (Membres / Adhérents)
+-----------------------------------------------------------------------------
+
+# GET    - Liste tous les membres
+curl -u user:user123 http://localhost:8081/api/members
+
+# GET    - Membre par ID
+curl -u user:user123 http://localhost:8081/api/members/1
+
+# POST   - Créer un membre (types: STUDENT, TEACHER, EXTERNAL)
+curl -u user:user123 -X POST http://localhost:8081/api/members \
+  -H "Content-Type: application/json" \
+  -d '{"email": "etudiant@example.com", "memberType": "STUDENT", "maxBorrows": 5}'
+
+# PUT    - Modifier un membre
+curl -u user:user123 -X PUT http://localhost:8081/api/members/1 \
+  -H "Content-Type: application/json" \
+  -d '{"email": "nouveau@example.com", "memberType": "TEACHER", "maxBorrows": 10}'
+
+# DELETE - Supprimer un membre (soft delete)
+curl -u user:user123 -X DELETE http://localhost:8081/api/members/1
+
+
+-----------------------------------------------------------------------------
+  10. BORROWS (Emprunts)
+-----------------------------------------------------------------------------
+
+# GET    - Liste tous les emprunts
+curl -u user:user123 http://localhost:8081/api/borrows
+
+# GET    - Emprunt par ID
+curl -u user:user123 http://localhost:8081/api/borrows/1
+
+# POST   - Emprunter un livre (checkout)
+curl -u user:user123 -X POST "http://localhost:8081/api/borrows/checkout?memberId=1&barcode=978-2070612758-001"
+
+# POST   - Retourner un livre
+curl -u user:user123 -X POST http://localhost:8081/api/borrows/1/return
+
+# POST   - Renouveler un emprunt (max 3 fois)
+curl -u user:user123 -X POST http://localhost:8081/api/borrows/1/renew
+
+
+-----------------------------------------------------------------------------
+  11. RESERVATIONS (Réservations)
+-----------------------------------------------------------------------------
+
+# GET    - Liste toutes les réservations
+curl -u user:user123 http://localhost:8081/api/reservations
+
+# GET    - Réservation par ID
+curl -u user:user123 http://localhost:8081/api/reservations/1
+
+# POST   - Créer une réservation
+curl -u user:user123 -X POST http://localhost:8081/api/reservations \
+  -H "Content-Type: application/json" \
+  -d '{"memberId": 1, "bookId": 1}'
+
+# POST   - Annuler une réservation
+curl -u user:user123 -X POST http://localhost:8081/api/reservations/1/cancel
+
+# GET    - File d'attente pour un livre
+curl -u user:user123 http://localhost:8081/api/reservations/queue/1
+
+
+=============================================================================
+  NOTES
+=============================================================================
+- Port: 8081 (défini dans application.properties)
+- Authentification: HTTP Basic (tous les endpoints sauf /api/public/**)
+- Utilisateurs: admin/admin123 (ROLE_ADMIN), user/user123 (ROLE_USER)
+- Les endpoints /api/admin/** nécessitent le rôle ADMIN
+- Soft delete: les entités ne sont pas supprimées en base,
+  juste marquées comme supprimées (champ deleted = true)
+- Tous les statuts pour BookItem : AVAILABLE, BORROWED, RESERVED, LOST, DAMAGED
+- Tous les rôles pour BookAuthor : MAIN_AUTHOR, CO_AUTHOR, EDITOR
+- Types de membre : STUDENT, TEACHER, EXTERNAL
+=============================================================================
