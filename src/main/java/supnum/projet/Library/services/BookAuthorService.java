@@ -24,12 +24,13 @@ public class BookAuthorService {
         this.authorRepository = authorRepo;
     }
 
-    public List<BookAuthor> findAllByBook(Long bookId) {
-        return bookAuthorRepository.findAll().stream()
-            .filter(ba -> ba.getBook().getId().equals(bookId))
-            .toList();
-    }
+    
 
+    public List<BookAuthor> findAllByBook(Long bookId) {
+    return bookAuthorRepository.findAll().stream()
+        .filter(ba -> ba.getBook() != null && ba.getBook().getId().equals(bookId))
+        .toList();
+}
     public BookAuthor addAuthorToBook(Long bookId, Long authorId, AuthorRole role) {
         Book book = bookRepository.findById(bookId)
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé"));

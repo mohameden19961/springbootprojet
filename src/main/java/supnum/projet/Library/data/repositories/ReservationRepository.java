@@ -3,6 +3,7 @@ package supnum.projet.Library.data.repositories;
 import supnum.projet.Library.data.entities.Reservation;
 import supnum.projet.Library.data.entities.Book;
 import supnum.projet.Library.data.entities.enums.ReservationStatus;
+import supnum.projet.Library.data.entities.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +18,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT COALESCE(MAX(r.queuePosition), 0) FROM Reservation r WHERE r.book = :book AND r.status = 'PENDING'")
     Integer findMaxQueuePositionForBook(@Param("book") Book book);
+
+    List<Reservation> findByMemberAndBookAndStatus(Member member, Book book, ReservationStatus status);
 }

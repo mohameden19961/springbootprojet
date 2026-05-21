@@ -6,7 +6,6 @@ import supnum.projet.Library.data.repositories.*;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
@@ -16,11 +15,14 @@ public class BorrowService {
     private final BorrowRepository borrowRepository;
     private final MemberRepository memberRepository;
     private final BookItemRepository bookItemRepository;
+    private final ReservationRepository reservationRepository;
 
-    public BorrowService(BorrowRepository borrowRepo, MemberRepository memberRepo, BookItemRepository bookItemRepo) {
+    public BorrowService(BorrowRepository borrowRepo, MemberRepository memberRepo,
+                         BookItemRepository bookItemRepo, ReservationRepository reservationRepo) {
         this.borrowRepository = borrowRepo;
         this.memberRepository = memberRepo;
         this.bookItemRepository = bookItemRepo;
+        this.reservationRepository = reservationRepo;
     }
 
     public Borrow borrowBook(Long memberId, String barcode) {
@@ -48,6 +50,15 @@ public class BorrowService {
         borrow.setStatus(BorrowStatus.ACTIVE);
         borrow.setRenewalCount(0);
 
+        // Annuler automatiquement la réservation PENDING du membre pour ce livre
+        Book book = item.getBook();
+        if (book != null) {
+            List<Reservation> pending = reservationRepository
+                .findByMemberAndBookAndStatus(member, book, ReservationStatus.PENDING);
+            pending.forEach(r -> r.setStatus(ReservationStatus.CANCELLED));
+            reservationRepository.saveAll(pending);
+        }
+
         return borrowRepository.save(borrow);
     }
 
@@ -60,7 +71,6 @@ public class BorrowService {
         }
 
         borrow.setStatus(BorrowStatus.RETURNED);
-
         BookItem item = borrow.getBookItem();
         item.setStatus(BookItemStatus.AVAILABLE);
         bookItemRepository.save(item);
