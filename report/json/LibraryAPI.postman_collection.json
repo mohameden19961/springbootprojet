@@ -1,0 +1,120 @@
+{
+  "info": {
+    "name": "Library Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      { "key": "username", "value": "user", "type": "string" },
+      { "key": "password", "value": "user123", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8081/api" }
+  ],
+  "item": [
+    {
+      "name": "1. Languages",
+      "item": [
+        { "name": "GET All Languages", "request": { "method": "GET", "url": "{{base_url}}/languages" } },
+        { "name": "GET Language by Code", "request": { "method": "GET", "url": "{{base_url}}/languages/FR" } }
+      ]
+    },
+    {
+      "name": "2. Nationalities",
+      "item": [
+        { "name": "GET All Nationalities", "request": { "method": "GET", "url": "{{base_url}}/nationalities" } },
+        { "name": "GET Nationality by Code", "request": { "method": "GET", "url": "{{base_url}}/nationalities/DZ" } }
+      ]
+    },
+    {
+      "name": "3. Categories",
+      "item": [
+        { "name": "GET All Categories", "request": { "method": "GET", "url": "{{base_url}}/categories" } },
+        { "name": "GET Category by ID", "request": { "method": "GET", "url": "{{base_url}}/categories/1" } },
+        { "name": "POST Create Category", "request": { "method": "POST", "url": "{{base_url}}/categories", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"name\": \"Science-Fiction\"}" } } },
+        { "name": "PUT Update Category", "request": { "method": "PUT", "url": "{{base_url}}/categories/1", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"name\": \"Fantasy\"}" } } },
+        { "name": "DELETE Category", "request": { "method": "DELETE", "url": "{{base_url}}/categories/1" } }
+      ]
+    },
+    {
+      "name": "4. Publishers",
+      "item": [
+        { "name": "GET All Publishers", "request": { "method": "GET", "url": "{{base_url}}/publishers" } },
+        { "name": "GET Publisher by ID", "request": { "method": "GET", "url": "{{base_url}}/publishers/1" } },
+        { "name": "POST Create Publisher", "request": { "method": "POST", "url": "{{base_url}}/publishers", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"name\": \"Gallimard\", \"email\": \"contact@gallimard.fr\"}" } } },
+        { "name": "PUT Update Publisher", "request": { "method": "PUT", "url": "{{base_url}}/publishers/1", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"name\": \"Folio\", \"email\": \"contact@folio.fr\"}" } } },
+        { "name": "DELETE Publisher", "request": { "method": "DELETE", "url": "{{base_url}}/publishers/1" } }
+      ]
+    },
+    {
+      "name": "5. Authors",
+      "item": [
+        { "name": "GET All Authors", "request": { "method": "GET", "url": "{{base_url}}/authors" } },
+        { "name": "GET Author by ID", "request": { "method": "GET", "url": "{{base_url}}/authors/1" } },
+        { "name": "POST Create Author", "request": { "method": "POST", "url": "{{base_url}}/authors", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"name\": \"Antoine de Saint-Exupéry\", \"nationalityCode\": \"FR\"}" } } },
+        { "name": "PUT Update Author", "request": { "method": "PUT", "url": "{{base_url}}/authors/1", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"name\": \"Victor Hugo\", \"nationalityCode\": \"FR\"}" } } },
+        { "name": "DELETE Author", "request": { "method": "DELETE", "url": "{{base_url}}/authors/1" } }
+      ]
+    },
+    {
+      "name": "6. Books",
+      "item": [
+        { "name": "GET All Books", "request": { "method": "GET", "url": "{{base_url}}/books" } },
+        { "name": "GET Book by ID", "request": { "method": "GET", "url": "{{base_url}}/books/1" } },
+        { "name": "POST Create Book", "request": { "method": "POST", "url": "{{base_url}}/books", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"title\": \"Le Petit Prince\",\n  \"isbn\": \"978-2070612758\",\n  \"languageCode\": \"FR\",\n  \"categoryId\": 1,\n  \"publisherId\": 1\n}" } } },
+        { "name": "PUT Update Book", "request": { "method": "PUT", "url": "{{base_url}}/books/1", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"title\": \"Le Petit Prince (Édition spéciale)\",\n  \"isbn\": \"978-2070612758\",\n  \"languageCode\": \"FR\",\n  \"categoryId\": 1,\n  \"publisherId\": 1\n}" } } },
+        { "name": "DELETE Book", "request": { "method": "DELETE", "url": "{{base_url}}/books/1" } }
+      ]
+    },
+    {
+      "name": "7. Book Items",
+      "item": [
+        { "name": "GET All Items of Book", "request": { "method": "GET", "url": "{{base_url}}/books/1/items" } },
+        { "name": "GET Item by ID", "request": { "method": "GET", "url": "{{base_url}}/books/1/items/1" } },
+        { "name": "POST Create Item", "request": { "method": "POST", "url": "{{base_url}}/books/1/items", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"barcode\": \"978-2070612758-001\", \"status\": \"AVAILABLE\"}" } } },
+        { "name": "PUT Update Item", "request": { "method": "PUT", "url": "{{base_url}}/books/1/items/1", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"barcode\": \"978-2070612758-002\", \"status\": \"DAMAGED\"}" } } },
+        { "name": "DELETE Item", "request": { "method": "DELETE", "url": "{{base_url}}/books/1/items/1" } }
+      ]
+    },
+    {
+      "name": "8. Book-Author",
+      "item": [
+        { "name": "GET Authors of Book", "request": { "method": "GET", "url": "{{base_url}}/books/1/authors" } },
+        { "name": "POST Link Author to Book", "request": { "method": "POST", "url": { "raw": "{{base_url}}/books/1/authors/1?role=MAIN_AUTHOR", "query": [{ "key": "role", "value": "MAIN_AUTHOR" }] } } },
+        { "name": "DELETE Unlink Author from Book", "request": { "method": "DELETE", "url": "{{base_url}}/books/1/authors/1" } }
+      ]
+    },
+    {
+      "name": "9. Members",
+      "item": [
+        { "name": "GET All Members", "request": { "method": "GET", "url": "{{base_url}}/members" } },
+        { "name": "GET Member by ID", "request": { "method": "GET", "url": "{{base_url}}/members/1" } },
+        { "name": "POST Create Member", "request": { "method": "POST", "url": "{{base_url}}/members", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\": \"etudiant@example.com\", \"memberType\": \"STUDENT\", \"maxBorrows\": 5}" } } },
+        { "name": "PUT Update Member", "request": { "method": "PUT", "url": "{{base_url}}/members/1", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\": \"nouveau@example.com\", \"memberType\": \"TEACHER\", \"maxBorrows\": 10}" } } },
+        { "name": "DELETE Member", "request": { "method": "DELETE", "url": "{{base_url}}/members/1" } }
+      ]
+    },
+    {
+      "name": "10. Borrows",
+      "item": [
+        { "name": "GET All Borrows", "request": { "method": "GET", "url": "{{base_url}}/borrows" } },
+        { "name": "GET Borrow by ID", "request": { "method": "GET", "url": "{{base_url}}/borrows/1" } },
+        { "name": "POST Checkout", "request": { "method": "POST", "url": { "raw": "{{base_url}}/borrows/checkout?memberId=1&barcode=978-2070612758-001", "query": [{ "key": "memberId", "value": "1" }, { "key": "barcode", "value": "978-2070612758-001" }] } } },
+        { "name": "POST Return Book", "request": { "method": "POST", "url": "{{base_url}}/borrows/1/return" } },
+        { "name": "POST Renew Borrow", "request": { "method": "POST", "url": "{{base_url}}/borrows/1/renew" } }
+      ]
+    },
+    {
+      "name": "11. Reservations",
+      "item": [
+        { "name": "GET All Reservations", "request": { "method": "GET", "url": "{{base_url}}/reservations" } },
+        { "name": "GET Reservation by ID", "request": { "method": "GET", "url": "{{base_url}}/reservations/1" } },
+        { "name": "POST Create Reservation", "request": { "method": "POST", "url": "{{base_url}}/reservations", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"memberId\": 1, \"bookId\": 1}" } } },
+        { "name": "POST Cancel Reservation", "request": { "method": "POST", "url": "{{base_url}}/reservations/1/cancel" } },
+        { "name": "GET Queue for Book", "request": { "method": "GET", "url": "{{base_url}}/reservations/queue/1" } }
+      ]
+    }
+  ]
+}
