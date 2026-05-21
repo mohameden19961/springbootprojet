@@ -2,6 +2,7 @@ package supnum.projet.Library.controllers;
 
 import supnum.projet.Library.data.entities.Language;
 import supnum.projet.Library.data.repositories.LanguageRepository;
+import supnum.projet.Library.exceptions.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,6 @@ public class LanguageController {
     @GetMapping("/{code}")
     public ResponseEntity<Language> getByCode(@PathVariable String code) {
         return ResponseEntity.ok(repository.findById(code)
-            .orElseThrow(() -> new RuntimeException("Langue non trouvée avec le code : " + code)));
+            .orElseThrow(() -> new ResourceNotFoundException("Langue non trouvée avec le code : " + code)));
     }
 }

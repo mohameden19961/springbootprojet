@@ -2,6 +2,7 @@ package supnum.projet.Library.controllers;
 
 import supnum.projet.Library.data.entities.Nationality;
 import supnum.projet.Library.data.repositories.NationalityRepository;
+import supnum.projet.Library.exceptions.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,6 @@ public class NationalityController {
     @GetMapping("/{code}")
     public ResponseEntity<Nationality> getByCode(@PathVariable String code) {
         return ResponseEntity.ok(repository.findById(code)
-            .orElseThrow(() -> new RuntimeException("Nationalité non trouvée avec le code : " + code)));
+            .orElseThrow(() -> new ResourceNotFoundException("Nationalité non trouvée avec le code : " + code)));
     }
 }

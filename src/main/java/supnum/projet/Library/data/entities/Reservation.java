@@ -2,6 +2,8 @@ package supnum.projet.Library.data.entities;
 
 import supnum.projet.Library.data.entities.enums.ReservationStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "reservation")
@@ -13,10 +15,12 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private Book book;
 
     @Column(name = "queue_position", nullable = false)

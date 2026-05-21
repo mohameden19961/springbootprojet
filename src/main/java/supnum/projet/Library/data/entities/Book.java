@@ -1,6 +1,8 @@
 package supnum.projet.Library.data.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.SQLRestriction;
 import java.util.List;
 
@@ -25,10 +27,12 @@ public class Book extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
+    @NotFound(action = NotFoundAction.IGNORE)
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id")
+    @NotFound(action = NotFoundAction.IGNORE)
     private Publisher publisher;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)

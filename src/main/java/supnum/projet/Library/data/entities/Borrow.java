@@ -2,6 +2,8 @@ package supnum.projet.Library.data.entities;
 
 import supnum.projet.Library.data.entities.enums.BorrowStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "borrow")
@@ -13,10 +15,12 @@ public class Borrow {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_item_id", nullable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private BookItem bookItem;
 
     @Column(name = "renewal_count", nullable = false)

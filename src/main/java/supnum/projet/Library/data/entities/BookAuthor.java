@@ -2,6 +2,8 @@ package supnum.projet.Library.data.entities;
 
 import supnum.projet.Library.data.entities.enums.AuthorRole;
 import jakarta.persistence.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import java.io.Serializable;
 
 @Entity
@@ -14,11 +16,13 @@ public class BookAuthor {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("bookId")
     @JoinColumn(name = "book_id")
+    @NotFound(action = NotFoundAction.IGNORE)
     private Book book;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("authorId")
     @JoinColumn(name = "author_id")
+    @NotFound(action = NotFoundAction.IGNORE)
     private Author author;
 
     @Enumerated(EnumType.STRING)
