@@ -1,10 +1,9 @@
 services:
   - type: web
     name: library-api
-    env: java
+    runtime: docker
     plan: free
-    buildCommand: ./mvnw package -DskipTests
-    startCommand: java -jar target/*.jar --spring.profiles.active=prod
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
