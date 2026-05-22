@@ -5,14 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class LibraryApplication {
-
     public static void main(String[] args) {
         String url = System.getenv("SPRING_DATASOURCE_URL");
-        String profile = System.getenv("SPRING_PROFILES_ACTIVE");
-        System.out.println("=== DEBUG ===");
-        System.out.println("SPRING_DATASOURCE_URL = " + url);
-        System.out.println("SPRING_PROFILES_ACTIVE = " + profile);
-        System.out.println("=== END DEBUG ===");
+        if (url != null && !url.startsWith("jdbc:")) {
+            System.setProperty("spring.datasource.url", "jdbc:" + url);
+        }
+        System.out.println("=== DEBUG === URL: " + System.getProperty("spring.datasource.url"));
         SpringApplication.run(LibraryApplication.class, args);
     }
 }
