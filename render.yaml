@@ -5,20 +5,10 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     envVars:
-      - key: SPRING_PROFILES_ACTIVE
-        value: prod
-      - key: DB_HOST
+      - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: library-db
-          property: hostname
-      - key: DB_PORT
-        fromDatabase:
-          name: library-db
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: library-db
-          property: database
+          property: jdbcConnectionString
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: library-db
@@ -27,6 +17,10 @@ services:
         fromDatabase:
           name: library-db
           property: password
+      - key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+        value: org.postgresql.Driver
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+        value: org.hibernate.dialect.PostgreSQLDialect
 
 databases:
   - name: library-db
