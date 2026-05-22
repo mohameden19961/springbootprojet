@@ -108,3 +108,15 @@ INSERT INTO nationality (code, name) VALUES
 ('VN', 'Vietnamese'),
 ('ZA', 'South African')
 ON CONFLICT (code) DO NOTHING;
+
+-- Users (hashed with bcrypt)
+INSERT INTO library_user (username, password, role) VALUES ('abdy', '$2a$12$GHIYUVuqugZnk8P2jMELk.ZdCDrYXPiP2pHcrIu6nYJ.ra57ukYPm', 'ADMIN')
+ON CONFLICT (username) DO NOTHING;
+INSERT INTO library_user (username, password, role) VALUES ('hassen', '$2a$12$mTc1iVwITXzMF7kmu5UiNuaFITdU.lUGuvobwoGqTuZXWXkkQUEZO', 'USER')
+ON CONFLICT (username) DO NOTHING;
+INSERT INTO library_user (username, password, role) VALUES ('baba', '$2a$12$tU1RA4MweztSOYWxSLk2KONM20vEwSEDbjBpsIr9xUIJPwbDiNNxi', 'USER')
+ON CONFLICT (username) DO NOTHING;
+INSERT INTO library_user (username, password, role) VALUES ('haja', '$2a$12$H6BFhM1/ZfnT7o58FXEoNuKAlXYqo2GCVRxXrY3DJahnzeTHZNlo6', 'USER')
+ON CONFLICT (username) DO NOTHING;
+INSERT INTO library_user (username, password, role) VALUES ('abdselam', '$2a$12$KuUECPBzHdNDK//DbhPbQ.Nojzj8d4MR9JmVGl59kF7zmTuxSzoam', 'USER')
+ON CONFLICT (username) DO NOTHING;
