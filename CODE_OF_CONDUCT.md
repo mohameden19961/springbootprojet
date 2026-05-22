@@ -1,54 +1,32 @@
-# Contributor Covenant Code of Conduct
+# Code de Conduite du Contributeur
 
-## Our Pledge
+## Notre engagement
 
-We as members, contributors, and leaders pledge to make participation in our
-community a harassment-free experience for everyone, regardless of age, body
-size, visible or invisible disability, ethnicity, sex characteristics, gender
-identity and expression, level of experience, education, socio-economic status,
-nationality, personal appearance, race, religion, or sexual identity
-and orientation.
+En tant que membres, contributeurs et responsables, nous nous engageons à faire de la participation à notre communauté une expérience sans harcèlement pour tous, quel que soit l'âge, la taille, le handicap visible ou invisible, l'origine ethnique, les caractéristiques sexuelles, l'identité et l'expression de genre, le niveau d'expérience, l'éducation, le statut socio-économique, la nationalité, l'apparence personnelle, la race, la religion ou l'identité et l'orientation sexuelles.
 
-We pledge to act and interact in ways that contribute to an open, welcoming,
-diverse, inclusive, and healthy community.
+## Nos standards
 
-## Our Standards
+**Comportements positifs :**
+- Faire preuve d'empathie et de bienveillance
+- Respecter les opinions et expériences différentes
+- Accepter les critiques constructives
+- Assumer ses erreurs et en apprendre
+- Agir dans l'intérêt de la communauté
 
-Examples of behavior that contributes to a positive environment:
+**Comportements inacceptables :**
+- Langage ou images à caractère sexuel
+- Trollage, insultes, attaques personnelles
+- Harcèlement public ou privé
+- Publication d'informations privées sans autorisation
 
-* Demonstrating empathy and kindness toward other people
-* Being respectful of differing opinions, viewpoints, and experiences
-* Giving and gracefully accepting constructive feedback
-* Accepting responsibility and apologizing to those affected by our mistakes
-* Focusing on what is best for the overall community
+## Responsabilités
 
-Examples of unacceptable behavior:
+Les mainteneurs du projet sont chargés de clarifier et faire respecter ces standards.
 
-* The use of sexualized language or imagery, and sexual attention or advances
-* Trolling, insulting or derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information without explicit permission
-* Other conduct which could reasonably be considered inappropriate
+## Signalement
 
-## Enforcement Responsibilities
-
-Project maintainers are responsible for clarifying and enforcing our standards
-and will take appropriate and fair corrective action in response to any behavior
-that they deem inappropriate, threatening, offensive, or harmful.
-
-## Scope
-
-This Code of Conduct applies within all community spaces, and also applies when
-an individual is officially representing the community in public spaces.
-
-## Enforcement
-
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the project team. All complaints will be reviewed and investigated
-promptly and fairly.
+Tout comportement inacceptable peut être signalé à l'équipe du projet. Toutes les plaintes seront examinées rapidement et équitablement.
 
 ## Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org),
-version 2.1, available at
-https://www.contributor-covenant.org/version/2/1/code_of_conduct.html.
+Ce Code de Conduite est adapté du [Contributor Covenant](https://www.contributor-covenant.org), version 2.1.
