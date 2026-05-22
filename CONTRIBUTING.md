@@ -1,46 +1,40 @@
-# Contributing to Library Management System
+# Contribuer au Système de Gestion de Bibliothèque
 
-We love your input! We want to make contributing to this project as easy and transparent as possible.
+Nous apprécions votre contribution ! Ce document vous guide pour contribuer au projet.
 
-## Development Process
+## Processus de développement
 
-1. Fork the repo and create your branch from `main`.
-2. If you've added code that should be tested, add tests.
-3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes.
-5. Issue that pull request!
+1. Forkez le dépôt et créez votre branche à partir de `main`.
+2. Si vous ajoutez du code, ajoutez les tests correspondants.
+3. Si vous modifiez des APIs, mettez à jour la documentation.
+4. Assurez-vous que tous les tests passent.
+5. Soumettez votre Pull Request.
 
-## Pull Request Process
+## Processus de Pull Request
 
-1. Update the README.md with details of changes if needed.
-2. Update the PROJECT_MAP.md if you change project structure.
-3. The PR will be merged once you have the sign-off of the team leader.
+1. Mettez à jour le README.md si nécessaire.
+2. Mettez à jour le PROJECT_MAP.md si la structure change.
+3. La PR sera fusionnée après validation du chef d'équipe.
 
-## Any contributions you make will be under the MIT Software License
+## Licence MIT
 
-When you submit code changes, your submissions are understood to be under the same [MIT License](LICENSE) that covers the project.
+En soumettant du code, vous acceptez qu'il soit placé sous la même [Licence MIT](LICENSE) que le projet.
 
-## Report bugs using GitHub's issues
+## Signaler un bug
 
-We use GitHub issues to track public bugs. Report a bug by opening a new issue.
+Utilisez les issues GitHub pour signaler des bugs. Incluez :
 
-## Write bug reports with detail, background, and sample code
+- Un résumé clair du problème
+- Les étapes pour reproduire le bug
+- Le comportement attendu et observé
 
-**Great Bug Reports** tend to have:
+## Code de Conduite
 
-- A quick summary and/or background
-- Steps to reproduce
-- What you expected would happen
-- What actually happens
-- Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
+Veuillez lire [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) pour nos règles de conduite.
 
-## Code of Conduct
+## Workflow Git
 
-Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of conduct.
-
-## Git Workflow
-
-- Always work on your own feature branch: `feature/your-name`
-- Never push directly to `main`
-- Open a Pull Request for your changes
-- Keep your branch synchronized with `main` regularly
+- Travaillez toujours sur votre branche : `feature/votre-nom`
+- Ne pushez jamais directement sur `main`
+- Ouvrez une Pull Request pour vos changements
+- Synchronisez régulièrement votre branche avec `main`
