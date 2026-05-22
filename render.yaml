@@ -7,10 +7,18 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
-      - key: SPRING_DATASOURCE_URL
+      - key: DB_HOST
         fromDatabase:
           name: library-db
-          property: connectionString
+          property: hostname
+      - key: DB_PORT
+        fromDatabase:
+          name: library-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: library-db
+          property: database
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: library-db
