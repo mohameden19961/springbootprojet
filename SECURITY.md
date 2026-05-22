@@ -1,21 +1,31 @@
-# Security Policy
+# Politique de Sécurité
 
-## Supported Versions
+## Versions supportées
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Nous publions des correctifs pour les vulnérabilités de sécurité. Versions actuellement supportées :
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| Version | Supportée |
+| ------- | --------- |
+| 1.0.x   | ✅ |
 
-## Reporting a Vulnerability
+## Signaler une vulnérabilité
 
-Use this section to tell people how to report a vulnerability.
+Nous prenons la sécurité de notre projet au sérieux. Si vous pensez avoir trouvé une vulnérabilité de sécurité, veuillez nous la signaler.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+**Ne signalez pas les vulnérabilités via les issues GitHub publiques.**
+
+Envoyez un email au responsable du projet. Vous devriez recevoir une réponse sous 48 heures.
+
+## Informations à inclure
+
+- Type de problème (buffer overflow, injection SQL, XSS, etc.)
+- Chemin complet du ou des fichiers sources concernés
+- Localisation du code affecté (tag/branche/commit ou URL directe)
+- Configuration spéciale nécessaire pour reproduire le problème
+- Étapes détaillées pour reproduire le problème
+- Preuve de concept ou code d'exploitation (si possible)
+- Impact du problème
+
+## Langues préférées
+
+Nous préférons les communications en français ou en anglais.
