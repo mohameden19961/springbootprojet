@@ -1,7 +1,6 @@
 services:
   - type: web
     name: library-api
-    runtime: web
     env: java
     plan: free
     buildCommand: ./mvnw package -DskipTests
@@ -10,7 +9,7 @@ services:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: library-db
-          property: jdbcConnectionString
+          property: connectionString
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: library-db
@@ -19,6 +18,8 @@ services:
         fromDatabase:
           name: library-db
           property: password
+    databases:
+      - name: library-db
 
 databases:
   - name: library-db
