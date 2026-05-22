@@ -1,14 +1,16 @@
 services:
   - type: web
     name: library-api
-    runtime: docker
+    runtime: web
+    env: java
     plan: free
-    dockerfilePath: ./Dockerfile
+    buildCommand: ./mvnw package -DskipTests
+    startCommand: java -jar target/*.jar --spring.profiles.active=prod
     envVars:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: library-db
-          property: connectionString
+          property: jdbcConnectionString
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: library-db
@@ -17,10 +19,6 @@ services:
         fromDatabase:
           name: library-db
           property: password
-      - key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
-        value: org.postgresql.Driver
-      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
-        value: org.hibernate.dialect.PostgreSQLDialect
 
 databases:
   - name: library-db
