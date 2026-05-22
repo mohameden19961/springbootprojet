@@ -1,0 +1,60 @@
+-- Languages
+INSERT IGNORE INTO language (code, name) VALUES
+('AR', 'Arabic'),
+('BN', 'Bengali'),
+('DE', 'German'),
+('EN', 'English'),
+('ES', 'Spanish'),
+('FR', 'French'),
+('HI', 'Hindi'),
+('IT', 'Italian'),
+('JA', 'Japanese'),
+('KO', 'Korean'),
+('NL', 'Dutch'),
+('PL', 'Polish'),
+('PT', 'Portuguese'),
+('RU', 'Russian'),
+('SV', 'Swedish'),
+('TR', 'Turkish'),
+('UK', 'Ukrainian'),
+('ZH', 'Chinese');
+
+-- Nationalities
+INSERT IGNORE INTO nationality (code, name) VALUES
+('AD', 'Andorran'), ('AE', 'Emirati'), ('AL', 'Albanian'),
+('AR', 'Argentinian'), ('AT', 'Austrian'), ('AU', 'Australian'),
+('BD', 'Bangladeshi'), ('BE', 'Belgian'), ('BG', 'Bulgarian'),
+('BR', 'Brazilian'), ('CA', 'Canadian'), ('CH', 'Swiss'),
+('CI', 'Ivorian'), ('CL', 'Chilean'), ('CN', 'Chinese'),
+('CO', 'Colombian'), ('CU', 'Cuban'), ('CY', 'Cypriot'),
+('CZ', 'Czech'), ('DE', 'German'), ('DK', 'Danish'),
+('DZ', 'Algerian'), ('EG', 'Egyptian'), ('ES', 'Spanish'),
+('ET', 'Ethiopian'), ('FI', 'Finnish'), ('FR', 'French'),
+('GB', 'British'), ('GH', 'Ghanaian'), ('GR', 'Greek'),
+('HK', 'Hongkonger'), ('HR', 'Croatian'), ('HU', 'Hungarian'),
+('ID', 'Indonesian'), ('IE', 'Irish'), ('IL', 'Israeli'),
+('IN', 'Indian'), ('IQ', 'Iraqi'), ('IR', 'Iranian'),
+('IS', 'Icelander'), ('IT', 'Italian'), ('JM', 'Jamaican'),
+('JO', 'Jordanian'), ('JP', 'Japanese'), ('KE', 'Kenyan'),
+('KH', 'Cambodian'), ('KR', 'South Korean'), ('KW', 'Kuwaiti'),
+('KZ', 'Kazakh'), ('LB', 'Lebanese'), ('LU', 'Luxembourger'),
+('MA', 'Moroccan'), ('ML', 'Malian'), ('MT', 'Maltese'),
+('MX', 'Mexican'), ('MY', 'Malaysian'), ('NG', 'Nigerian'),
+('NL', 'Dutch'), ('NO', 'Norwegian'), ('NZ', 'New Zealander'),
+('PE', 'Peruvian'), ('PH', 'Filipino'), ('PK', 'Pakistani'),
+('PL', 'Polish'), ('PT', 'Portuguese'), ('QA', 'Qatari'),
+('RO', 'Romanian'), ('RS', 'Serbian'), ('RU', 'Russian'),
+('SA', 'Saudi'), ('SE', 'Swedish'), ('SG', 'Singaporean'),
+('SI', 'Slovenian'), ('SK', 'Slovak'), ('SN', 'Senegalese'),
+('SY', 'Syrian'), ('TH', 'Thai'), ('TN', 'Tunisian'),
+('TR', 'Turkish'), ('TW', 'Taiwanese'), ('UA', 'Ukrainian'),
+('UG', 'Ugandan'), ('US', 'American'), ('VN', 'Vietnamese'),
+('ZA', 'South African');
+
+-- Users (hashed with bcrypt)
+INSERT IGNORE INTO library_user (username, password, role) VALUES
+('abdy', '$2a$12$GHIYUVuqugZnk8P2jMELk.ZdCDrYXPiP2pHcrIu6nYJ.ra57ukYPm', 'ADMIN'),
+('hassen', '$2a$12$mTc1iVwITXzMF7kmu5UiNuaFITdU.lUGuvobwoGqTuZXWXkkQUEZO', 'USER'),
+('baba', '$2a$12$tU1RA4MweztSOYWxSLk2KONM20vEwSEDbjBpsIr9xUIJPwbDiNNxi', 'USER'),
+('haja', '$2a$12$H6BFhM1/ZfnT7o58FXEoNuKAlXYqo2GCVRxXrY3DJahnzeTHZNlo6', 'USER'),
+('abdselam', '$2a$12$KuUECPBzHdNDK//DbhPbQ.Nojzj8d4MR9JmVGl59kF7zmTuxSzoam', 'USER');
