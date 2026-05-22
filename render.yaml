@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: library-api
+    runtime: image
+    repo: https://github.com/mohameden19961/springbootprojet
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: library-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: library-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: library-db
+          property: password
+
+databases:
+  - name: library-db
+    plan: free
+    databaseName: library_db
