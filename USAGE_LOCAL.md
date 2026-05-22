@@ -52,13 +52,15 @@ curl -s -X POST http://localhost:8081/api/auth/login \
 
 ## 5. Utilisateurs disponibles
 
-| Username | Password | Role |
-|---|---|---|
-| `abdy` | `24068Supnum` | ADMIN |
-| `hassen` | `24238Supnum` | USER |
-| `baba` | `24157Supnum` | USER |
-| `haja` | `24014Supnum` | USER |
-| `abdselam` | `24139Supnum` | USER |
+| Username | Role |
+|---|---|
+| `abdy` | ADMIN |
+| `hassen` | USER |
+| `baba` | USER |
+| `haja` | USER |
+| `abdselam` | USER |
+
+Chaque utilisateur connaît son mot de passe personnel.
 
 ## 6. Exemple complet
 
