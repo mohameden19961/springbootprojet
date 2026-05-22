@@ -27,8 +27,8 @@ POST http://localhost:8081/api/auth/login
 
 Body (JSON):
 {
-  "username": "abdy",
-  "password": "24068Supnum"
+  "username": "<votre-username>",
+  "password": "<votre-mot-de-passe>"
 }
 ```
 
@@ -37,7 +37,7 @@ Body (JSON):
 ```bash
 curl -s -X POST http://localhost:8081/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"abdy","password":"24068Supnum"}'
+  -d '{"username":"<votre-username>","password":"<votre-mot-de-passe>"}'
 ```
 
 ### Réponse
@@ -68,7 +68,7 @@ Chaque utilisateur connaît son mot de passe personnel.
 # 1. Login
 TOKEN=$(curl -s -X POST http://localhost:8081/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"abdy","password":"24068Supnum"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+  -d '{"username":"<votre-username>","password":"<votre-mot-de-passe>"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
 
 # 2. Utiliser le token pour une requête
 curl -s http://localhost:8081/api/categories \
