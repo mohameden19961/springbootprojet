@@ -1,0 +1,1068 @@
+{
+	"info": {
+		"_postman_id": "46c69247-6202-4eda-9ed6-15982861e469",
+		"name": "Library Management System - Render",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "53931594",
+		"_collection_link": "https://mohameden19961-2216831.postman.co/workspace/abdy-mohameden's-Workspace~34995f4c-050c-4fc4-81cc-ffd57c7e175c/collection/53931594-46c69247-6202-4eda-9ed6-15982861e469?action=share&source=collection_link&creator=53931594"
+	},
+	"item": [
+		{
+			"name": "1. Languages",
+			"item": [
+				{
+					"name": "GET All Languages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/languages",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"languages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Language by Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/languages/FR",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"languages",
+								"FR"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Nationalities",
+			"item": [
+				{
+					"name": "GET All Nationalities",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/nationalities",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"nationalities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Nationality by Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/nationalities/DZ",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"nationalities",
+								"DZ"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Categories",
+			"item": [
+				{
+					"name": "GET All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Category by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"Science-Fiction\"}"
+						},
+						"url": {
+							"raw": "{{base_url}}/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"Fantasy\"}"
+						},
+						"url": {
+							"raw": "{{base_url}}/categories/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Publishers",
+			"item": [
+				{
+					"name": "GET All Publishers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/publishers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"publishers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Publisher by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/publishers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"publishers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Publisher",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"Gallimard\", \"email\": \"contact@gallimard.fr\"}"
+						},
+						"url": {
+							"raw": "{{base_url}}/publishers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"publishers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Update Publisher",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"Folio\", \"email\": \"contact@folio.fr\"}"
+						},
+						"url": {
+							"raw": "{{base_url}}/publishers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"publishers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Publisher",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/publishers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"publishers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Authors",
+			"item": [
+				{
+					"name": "GET All Authors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/authors",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"authors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Author by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/authors/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"authors",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Author",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"Antoine de Saint-Exupéry\", \"nationalityCode\": \"FR\"}"
+						},
+						"url": {
+							"raw": "{{base_url}}/authors",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"authors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Update Author",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"Victor Hugo\", \"nationalityCode\": \"FR\"}"
+						},
+						"url": {
+							"raw": "{{base_url}}/authors/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"authors",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Author",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/authors/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"authors",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Books",
+			"item": [
+				{
+					"name": "GET All Books",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/books",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Book by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/books/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Book",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Le Petit Prince\",\n  \"isbn\": \"978-2070612758\",\n  \"languageCode\": \"FR\",\n  \"categoryId\": 1,\n  \"publisherId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/books",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Update Book",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Le Petit Prince (Édition spéciale)\",\n  \"isbn\": \"978-2070612758\",\n  \"languageCode\": \"FR\",\n  \"categoryId\": 1,\n  \"publisherId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/books/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Book",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/books/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. Book Items",
+			"item": [
+				{
+					"name": "GET All Items of Book",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/books/1/items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Item by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/books/1/items/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1",
+								"items",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"barcode\": \"978-2070612758-001\", \"status\": \"AVAILABLE\"}"
+						},
+						"url": {
+							"raw": "{{base_url}}/books/1/items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Update Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"barcode\": \"978-2070612758-002\", \"status\": \"DAMAGED\"}"
+						},
+						"url": {
+							"raw": "{{base_url}}/books/1/items/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1",
+								"items",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Item",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/books/1/items/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1",
+								"items",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8. Book-Author",
+			"item": [
+				{
+					"name": "GET Authors of Book",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/books/1/authors",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1",
+								"authors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Link Author to Book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/books/2/authors/4?role=MAIN_AUTHOR",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"2",
+								"authors",
+								"4"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "MAIN_AUTHOR"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Unlink Author from Book",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/books/1/authors/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1",
+								"authors",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9. Members",
+			"item": [
+				{
+					"name": "GET All Members",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/members",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"members"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Member by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/members/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"members",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Member",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"email\": \"etudiant@example.com\", \"memberType\": \"STUDENT\", \"maxBorrows\": 5}"
+						},
+						"url": {
+							"raw": "{{base_url}}/members",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"members"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Update Member",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"email\": \"nouveau@example.com\", \"memberType\": \"TEACHER\", \"maxBorrows\": 10}"
+						},
+						"url": {
+							"raw": "{{base_url}}/members/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"members",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Member",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/members/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"members",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "10. Borrows",
+			"item": [
+				{
+					"name": "GET All Borrows",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/borrows",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"borrows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Borrow by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/borrows/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"borrows",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Checkout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/borrows/checkout?memberId=2&barcode=MR-2024-ADV-003",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"borrows",
+								"checkout"
+							],
+							"query": [
+								{
+									"key": "memberId",
+									"value": "2"
+								},
+								{
+									"key": "barcode",
+									"value": "MR-2024-ADV-003"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Return Book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/borrows/1/return",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"borrows",
+								"1",
+								"return"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Renew Borrow",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/borrows/1/renew",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"borrows",
+								"1",
+								"renew"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "11. Reservations",
+			"item": [
+				{
+					"name": "GET All Reservations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reservations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Reservation by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reservations",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"memberId\": 1, \"bookId\": 1}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reservations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reservations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Cancel Reservation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/1/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reservations",
+								"1",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Queue for Book",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservations/queue/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reservations",
+								"queue",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "user",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "user123",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://library-api-eu2i.onrender.com/api"
+		}
+	]
+}
