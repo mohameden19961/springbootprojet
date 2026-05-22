@@ -5,10 +5,18 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     envVars:
-      - key: SPRING_DATASOURCE_URL
+      - key: SPRING_DATASOURCE_HOST
         fromDatabase:
           name: library-db
-          property: jdbcConnectionString
+          property: host
+      - key: SPRING_DATASOURCE_PORT
+        fromDatabase:
+          name: library-db
+          property: port
+      - key: SPRING_DATASOURCE_DATABASE
+        fromDatabase:
+          name: library-db
+          property: database
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: library-db
