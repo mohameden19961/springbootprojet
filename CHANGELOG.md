@@ -1,17 +1,17 @@
-# Changelog
+# Journal des Modifications
 
-All notable changes to this project will be documented in this file.
+Tous les changements notables de ce projet seront documentés dans ce fichier.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
+et ce projet suit [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.0] - 2026-05-22
 
-### Added
-- Initial release of the Library Management System
-- REST API for managing books, members, borrows, and reservations
-- Spring Security integration
-- Soft-delete functionality
-- FIFO queue for reservations
-- Borrow quotas and limits
-- Optimistic locking for BookItem
+### Ajouté
+- Première version du Système de Gestion de Bibliothèque
+- API REST pour gérer les livres, membres, emprunts et réservations
+- Intégration Spring Security
+- Suppression logicielle (soft-delete)
+- File d'attente FIFO pour les réservations
+- Quotas et limites d'emprunt
+- Verrouillage optimiste pour BookItem
