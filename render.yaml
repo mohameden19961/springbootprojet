@@ -1,8 +1,7 @@
 services:
   - type: web
     name: library-api
-    runtime: image
-    repo: https://github.com/mohameden19961/springbootprojet
+    runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile
     envVars:
