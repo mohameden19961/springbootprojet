@@ -103,32 +103,97 @@ erDiagram
     BOOK ||--o{ RESERVATION : "est concerné par"
 ```
 
-## ⚙️ Configuration de la Base de Données
+## ⚙️ Profils de Configuration
 
-Le projet est configuré pour fonctionner avec **MySQL**.
-Dans le fichier `src/main/resources/application.properties`, vous trouverez la configuration suivante :
+Le projet utilise **3 profils Spring** pour s'adapter aux différents environnements :
+
+| Profil | Base de données | Port | Usage |
+|--------|---------------|------|-------|
+| `dev` (défaut) | MySQL local (`library_db`) | `8081` | Développement local |
+| `prod` | PostgreSQL (via variables d'env) | `$PORT` ou `8080` | Déploiement (Render) |
+| `test` | H2 (base mémoire) | - | Tests unitaires |
+
+### 🔧 Profil `dev` (MySQL)
+
+Fichier : `src/main/resources/application-dev.properties`
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/library_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+spring.datasource.url=jdbc:mysql://localhost:3306/library_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 spring.datasource.username=supnum
 spring.datasource.password=Supnum
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-# Initialisation du schéma via schema.sql
-spring.sql.init.mode=always
-spring.sql.init.schema-locations=classpath:schema.sql
+spring.jpa.hibernate.ddl-auto=update
+server.port=8081
 ```
 
 **Détails :**
-- **URL** : Se connecte sur `localhost` au port `3306`. La base `library_db` est créée automatiquement si elle n'existe pas.
-- **User** : `supnum`
-- **Password** : `Supnum`
-- **schema.sql** : Le fichier à la racine de vos `resources` contient la plus petite définition de la DB respectant l'intégralité de votre Modèle Conceptuel de Données (MCD).
+- **URL** : Se connecte sur `localhost` au port `3306`. La base `library_db` est créée automatiquement.
+- **User** : `supnum` / **Password** : `Supnum`
+- **DDL** : `update` (Hibernate synchronise automatiquement le schéma)
+- Des données de démo sont chargées via `data-dev.sql`
+
+### ☁️ Profil `prod` (PostgreSQL)
+
+Fichier : `src/main/resources/application-prod.properties`
+
+```properties
+spring.datasource.url=jdbc:${SPRING_DATASOURCE_URL}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.hibernate.ddl-auto=update
+server.port=${PORT:8080}
+```
+
+### 🧪 Profil `test` (H2)
+
+Fichier : `src/test/resources/application-test.properties`
+
+```properties
+spring.datasource.url=jdbc:h2:mem:library_test;MODE=MySQL
+spring.jpa.hibernate.ddl-auto=create-drop
+```
+
+## 🔐 Authentification JWT
+
+Le projet utilise **JWT (JSON Web Tokens)** pour sécuriser l'API :
+
+- **Login** : `POST /api/auth/login` (public) — retourne un token Bearer
+- **Requêtes authentifiées** : toutes les autres requêtes nécessitent un en-tête `Authorization: Bearer <token>`
+- **Rôles** : `ADMIN` (accès `/api/admin/**`) et `USER`
+- Les mots de passe sont hachés avec **BCrypt**
+
+### Utilisateurs pré-configurés
+
+| Username | Rôle |
+|----------|------|
+| `abdy` | ADMIN |
+| `hassen` | USER |
+| `baba` | USER |
+| `haja` | USER |
+| `abdselam` | USER |
 
 ## 🚀 Lancement du projet
-1. Assurez-vous d'avoir MySQL installé et qu'un utilisateur `supnum` (mdp: `Supnum`) dispose des droits sur le serveur.
-2. Démarrez l'application avec Maven : `./mvnw spring-boot:run`.
-3. Vérifiez les logs pour confirmer l'exécution de `schema.sql`.
+
+### Local (profil dev)
+```bash
+# 1. Démarrer MySQL
+docker compose up -d mysql
+
+# 2. Lancer l'application
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+L'API est accessible sur : `http://localhost:8081`
+
+### Déploiement (profil prod)
+```bash
+# Build
+./mvnw clean package -DskipTests
+
+# Lancer avec les vars d'env PostgreSQL
+java -jar target/Library-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+```
 
 Bon développement à toute l'équipe ! Lisez vos fichiers Markdown personnels pour démarrer.
 
