@@ -4,6 +4,7 @@ import supnum.projet.Library.data.entities.User;
 import supnum.projet.Library.data.repositories.UserRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,6 +14,10 @@ public class UserDao {
 
     public UserDao(UserRepository repository) {
         this.repository = repository;
+    }
+
+    public List<User> findAll() {
+        return repository.findAll();
     }
 
     public Optional<User> findByUsername(String username) {

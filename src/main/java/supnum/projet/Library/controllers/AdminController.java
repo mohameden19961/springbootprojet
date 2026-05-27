@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,6 +18,11 @@ public class AdminController {
 
     public AdminController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
+        return userService.findAll();
     }
 
     @PostMapping("/users")
