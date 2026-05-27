@@ -2,7 +2,7 @@
 	"info": {
 		"name": "Library API",
 		"description": "Collection Postman complète pour l'API de Gestion de Bibliothèque.\n\n## Authentification\n- Login avec abdy / 24068Supnum → récupérer le token\n- Définir la variable `token` manuellement ou via le script du login\n\n## Variables\n- `baseUrl`: `http://localhost:8081`\n- `token`: token JWT (défini automatiquement après login)",
-		"schema": "https://raw.githubusercontent.com/postmanlabs/postman-collection/master/json-collection-schema/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "library"
 	},
 	"variable": [
