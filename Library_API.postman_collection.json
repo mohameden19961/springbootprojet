@@ -102,6 +102,18 @@
 					}
 				},
 				{
+					"name": "List All Users",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "users"]
+						},
+						"description": "Liste tous les utilisateurs enregistrés."
+					}
+				},
+				{
 					"name": "Register User",
 					"request": {
 						"method": "POST",
