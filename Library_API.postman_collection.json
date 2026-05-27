@@ -1,0 +1,862 @@
+{
+	"info": {
+		"name": "Library API",
+		"description": "Collection Postman complète pour l'API de Gestion de Bibliothèque.\n\n## Authentification\n- Login avec abdy / 24068Supnum → récupérer le token\n- Définir la variable `token` manuellement ou via le script du login\n\n## Variables\n- `baseUrl`: `http://localhost:8081`\n- `token`: token JWT (défini automatiquement après login)",
+		"schema": "https://raw.githubusercontent.com/postmanlabs/postman-collection/master/json-collection-schema/collection.json",
+		"_exporter_id": "library"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8081",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"description": "Authentification publique",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var json = pm.response.json();",
+									"    pm.collectionVariables.set('token', json.token);",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"abdy\",\n    \"password\": \"24068Supnum\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Authentification publique. Retourne un token JWT + username + role."
+					},
+					"response": [
+						{
+							"name": "Login Success",
+							"body": "{\n    \"token\": \"eyJhbGci...\",\n    \"username\": \"abdy\",\n    \"role\": \"ADMIN\"\n}",
+							"code": 200,
+							"header": []
+						},
+						{
+							"name": "Login Invalid",
+							"body": "{\n    \"error\": \"Invalid credentials\"\n}",
+							"code": 401,
+							"header": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"description": "Endpoints réservés aux administrateurs (token ADMIN requis)",
+			"item": [
+				{
+					"name": "Seed Languages & Nationalities",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/seed",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "seed"]
+						},
+						"description": "Initialise les langues et nationalités de référence en base."
+					}
+				},
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"newuser\",\n    \"password\": \"password123\",\n    \"role\": \"USER\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "users"]
+						},
+						"description": "Enregistre un nouvel utilisateur (USER ou ADMIN). Rôle requis en majuscule."
+					}
+				}
+			]
+		},
+		{
+			"name": "Authors",
+			"description": "CRUD Auteurs",
+			"item": [
+				{
+					"name": "List All Authors",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/authors",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors"]
+						}
+					}
+				},
+				{
+					"name": "Get Author by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/authors/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Author",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"J.K. Rowling\",\n    \"nationalityCode\": \"GB\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/authors",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors"]
+						}
+					}
+				},
+				{
+					"name": "Update Author",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"J.K. Rowling Updated\",\n    \"nationalityCode\": \"GB\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/authors/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Author (soft)",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/api/authors/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Books",
+			"description": "CRUD Livres",
+			"item": [
+				{
+					"name": "List All Books",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						}
+					}
+				},
+				{
+					"name": "Get Book by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Book",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Harry Potter à l'école des sorciers\",\n    \"isbn\": \"9782070643028\",\n    \"languageCode\": \"FR\",\n    \"categoryId\": 1,\n    \"publisherId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						}
+					}
+				},
+				{
+					"name": "Update Book",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Harry Potter à l'école des sorciers - Édition révisée\",\n    \"isbn\": \"9782070643028\",\n    \"languageCode\": \"FR\",\n    \"categoryId\": 1,\n    \"publisherId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Book (soft)",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Book Items",
+			"description": "CRUD Exemplaires physiques d'un livre (sous /api/books/{bookId}/items)",
+			"item": [
+				{
+					"name": "List Items by Book",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1/items",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1", "items"]
+						}
+					}
+				},
+				{
+					"name": "Get Item by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1/items/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1", "items", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Book Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"barcode\": \"9782070643028-001\",\n    \"status\": \"AVAILABLE\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1/items",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1", "items"]
+						}
+					}
+				},
+				{
+					"name": "Update Book Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"barcode\": \"9782070643028-001\",\n    \"status\": \"DAMAGED\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1/items/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1", "items", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Book Item (soft)",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1/items/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1", "items", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Book Authors",
+			"description": "Gestion des associations Livre ↔ Auteur (sous /api/books/{bookId}/authors)",
+			"item": [
+				{
+					"name": "List Authors of a Book",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1/authors",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1", "authors"]
+						}
+					}
+				},
+				{
+					"name": "Add Author to Book",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1/authors/1?role=MAIN_AUTHOR",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1", "authors", "1"],
+							"query": [
+								{
+									"key": "role",
+									"value": "MAIN_AUTHOR"
+								}
+							]
+						},
+						"description": "Ajoute un auteur à un livre. Rôle: MAIN_AUTHOR, CO_AUTHOR, ILLUSTRATOR"
+					}
+				},
+				{
+					"name": "Remove Author from Book",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1/authors/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1", "authors", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Borrows",
+			"description": "Gestion des emprunts",
+			"item": [
+				{
+					"name": "List All Borrows",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/borrows",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "borrows"]
+						}
+					}
+				},
+				{
+					"name": "Get Borrow by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/borrows/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "borrows", "1"]
+						}
+					}
+				},
+				{
+					"name": "Checkout (Borrow a Book)",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/api/borrows/checkout?memberId=1&barcode=9782070643028-001",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "borrows", "checkout"],
+							"query": [
+								{
+									"key": "memberId",
+									"value": "1"
+								},
+								{
+									"key": "barcode",
+									"value": "9782070643028-001"
+								}
+							]
+						},
+						"description": "Emprunte un livre (bookItem) pour un membre via le code-barres."
+					}
+				},
+				{
+					"name": "Return a Book",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/api/borrows/1/return",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "borrows", "1", "return"]
+						},
+						"description": "Retourne un livre emprunté."
+					}
+				},
+				{
+					"name": "Renew a Borrow",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/api/borrows/1/renew",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "borrows", "1", "renew"]
+						},
+						"description": "Renouvelle un emprunt (max 3 fois)."
+					}
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"description": "CRUD Catégories",
+			"item": [
+				{
+					"name": "List All Categories",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/categories",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categories"]
+						}
+					}
+				},
+				{
+					"name": "Get Category by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categories", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Science-Fiction\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categories",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categories"]
+						}
+					}
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Science-Fiction & Fantastique\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categories", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Category (soft)",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/api/categories/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "categories", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Languages",
+			"description": "Consultation des langues (données de référence, lecture seule)",
+			"item": [
+				{
+					"name": "List All Languages",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/languages",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "languages"]
+						}
+					}
+				},
+				{
+					"name": "Get Language by Code",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/languages/FR",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "languages", "FR"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Nationalities",
+			"description": "Consultation des nationalités (données de référence, lecture seule)",
+			"item": [
+				{
+					"name": "List All Nationalities",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/nationalities",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "nationalities"]
+						}
+					}
+				},
+				{
+					"name": "Get Nationality by Code",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/nationalities/GB",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "nationalities", "GB"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Members",
+			"description": "CRUD Membres",
+			"item": [
+				{
+					"name": "List All Members",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/members",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "members"]
+						}
+					}
+				},
+				{
+					"name": "Get Member by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/members/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "members", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Member",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"memberType\": \"STUDENT\",\n    \"maxBorrows\": 5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/members",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "members"]
+						}
+					}
+				},
+				{
+					"name": "Update Member",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john.doe.updated@example.com\",\n    \"memberType\": \"TEACHER\",\n    \"maxBorrows\": 10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/members/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "members", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Member (soft)",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/api/members/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "members", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Publishers",
+			"description": "CRUD Éditeurs",
+			"item": [
+				{
+					"name": "List All Publishers",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/publishers",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "publishers"]
+						}
+					}
+				},
+				{
+					"name": "Get Publisher by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/publishers/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "publishers", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Publisher",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Gallimard\",\n    \"email\": \"contact@gallimard.fr\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/publishers",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "publishers"]
+						}
+					}
+				},
+				{
+					"name": "Update Publisher",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Gallimard Jeunesse\",\n    \"email\": \"jeunesse@gallimard.fr\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/publishers/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "publishers", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Publisher (soft)",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/api/publishers/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "publishers", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Reservations",
+			"description": "Gestion des réservations et file d'attente",
+			"item": [
+				{
+					"name": "List All Reservations",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/reservations",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "reservations"]
+						}
+					}
+				},
+				{
+					"name": "Get Reservation by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/reservations/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "reservations", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"memberId\": 1,\n    \"bookId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/reservations",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "reservations"]
+						}
+					}
+				},
+				{
+					"name": "Cancel Reservation",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/api/reservations/1/cancel",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "reservations", "1", "cancel"]
+						}
+					}
+				},
+				{
+					"name": "Get Queue for Book",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/reservations/queue/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "reservations", "queue", "1"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
