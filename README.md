@@ -103,6 +103,31 @@ erDiagram
     BOOK ||--o{ RESERVATION : "est concerné par"
 ```
 
+## 🏗️ Architecture
+
+L'application suit une architecture en couches :
+
+```
+Controller (@RestController) → endpoints REST
+    ↓
+Service (@Service) → logique métier, @Transactional
+    ↓
+DAO (@Repository) → encapsulation des appels JPA, gestion ResourceNotFoundException
+    ↓
+Repository (Spring Data JPA) → interfaces JpaRepository
+    ↓
+Base de données (MySQL/PostgreSQL/H2)
+```
+
+- **controllers/** — 14 contrôleurs REST
+- **services/** — 10 services métier
+- **dao/** — 12 DAOs (couche intermédiaire)
+- **data/entities/** — 11 entités JPA
+- **data/repositories/** — 12 interfaces Spring Data JPA
+- **dto/** — 8 DTOs
+- **security/** — Configuration JWT (Spring Security)
+- **exceptions/** — Gestion globale des erreurs
+
 ## ⚙️ Profils de Configuration
 
 Le projet utilise **3 profils Spring** pour s'adapter aux différents environnements :
@@ -161,6 +186,7 @@ Le projet utilise **JWT (JSON Web Tokens)** pour sécuriser l'API :
 - **Login** : `POST /api/auth/login` (public) — retourne un token Bearer
 - **Requêtes authentifiées** : toutes les autres requêtes nécessitent un en-tête `Authorization: Bearer <token>`
 - **Rôles** : `ADMIN` (accès `/api/admin/**`) et `USER`
+- **Admin - Enregistrement d'utilisateurs** : `POST /api/admin/users` (réservé ADMIN) — permet à l'admin de créer des utilisateurs (USER ou ADMIN)
 - Les mots de passe sont hachés avec **BCrypt**
 
 ### Utilisateurs pré-configurés
