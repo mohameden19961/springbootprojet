@@ -1,18 +1,20 @@
-package supnum.projet.Library.dao;
+package supnum.projet.Library.services;
 
 import supnum.projet.Library.data.entities.Nationality;
 import supnum.projet.Library.data.repositories.NationalityRepository;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
-public class NationalityDao {
+@Service
+@Transactional
+public class NationalityService {
 
     private final NationalityRepository repository;
 
-    public NationalityDao(NationalityRepository repository) {
+    public NationalityService(NationalityRepository repository) {
         this.repository = repository;
     }
 
@@ -27,5 +29,9 @@ public class NationalityDao {
 
     public Nationality save(Nationality nationality) {
         return repository.save(nationality);
+    }
+
+    public List<Nationality> saveAll(List<Nationality> nationalities) {
+        return repository.saveAll(nationalities);
     }
 }

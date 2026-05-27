@@ -1,18 +1,20 @@
-package supnum.projet.Library.dao;
+package supnum.projet.Library.services;
 
 import supnum.projet.Library.data.entities.Language;
 import supnum.projet.Library.data.repositories.LanguageRepository;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
-public class LanguageDao {
+@Service
+@Transactional
+public class LanguageService {
 
     private final LanguageRepository repository;
 
-    public LanguageDao(LanguageRepository repository) {
+    public LanguageService(LanguageRepository repository) {
         this.repository = repository;
     }
 
@@ -27,5 +29,9 @@ public class LanguageDao {
 
     public Language save(Language language) {
         return repository.save(language);
+    }
+
+    public List<Language> saveAll(List<Language> languages) {
+        return repository.saveAll(languages);
     }
 }

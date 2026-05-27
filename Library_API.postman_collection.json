@@ -82,6 +82,28 @@
 							"header": []
 						}
 					]
+				},
+				{
+					"name": "Update My Credentials",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currentPassword\": \"24068Supnum\",\n    \"newUsername\": \"abdy_new\",\n    \"newPassword\": \"newPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "profile"]
+						},
+						"description": "Permet à l'utilisateur connecté de changer son username et/ou son mot de passe. Le token est regénéré automatiquement."
+					}
 				}
 			]
 		},
