@@ -37,6 +37,9 @@ Requête HTTP
 [Couche Service]       — Logique métier, @Transactional
     │
     ▼
+[Couche DAO]           — @Repository, encapsule les appels JPA, gère ResourceNotFoundException
+    │
+    ▼
 [Couche Repository]    — Interfaces Spring Data JPA (extends JpaRepository)
     │
     ▼
@@ -69,6 +72,19 @@ L'architecture **n'est pas** hexagonale — il n'y a pas de ports/adaptateurs. L
     ├── main/
     │   ├── java/supnum/projet/Library/
     │   │   ├── LibraryApplication.java          # Point d'entrée @SpringBootApplication
+    │   │   ├── dao/
+    │   │   │   ├── AuthorDao.java                 # DAO Author (encapsule AuthorRepository)
+    │   │   │   ├── BookDao.java                   # DAO Book (encapsule BookRepository)
+    │   │   │   ├── BookAuthorDao.java             # DAO BookAuthor (encapsule BookAuthorRepository)
+    │   │   │   ├── BookItemDao.java               # DAO BookItem (encapsule BookItemRepository)
+    │   │   │   ├── BorrowDao.java                 # DAO Borrow (encapsule BorrowRepository)
+    │   │   │   ├── CategoryDao.java               # DAO Category (encapsule CategoryRepository)
+    │   │   │   ├── LanguageDao.java               # DAO Language (encapsule LanguageRepository)
+    │   │   │   ├── MemberDao.java                 # DAO Member (encapsule MemberRepository)
+    │   │   │   ├── NationalityDao.java            # DAO Nationality (encapsule NationalityRepository)
+    │   │   │   ├── PublisherDao.java              # DAO Publisher (encapsule PublisherRepository)
+    │   │   │   ├── ReservationDao.java            # DAO Reservation (encapsule ReservationRepository)
+    │   │   │   └── UserDao.java                   # DAO User (encapsule UserRepository)
     │   │   ├── data/
     │   │   │   └── entities/
     │   │   │       ├── BaseEntity.java           # @MappedSuperclass abstraite (soft delete)
@@ -78,7 +94,7 @@ L'architecture **n'est pas** hexagonale — il n'y a pas de ports/adaptateurs. L
     │   │   │   ├── GlobalExceptionHandler.java    # @RestControllerAdvice (3 handlers)
     │   │   │   └── ResourceNotFoundException.java  # RuntimeException personnalisée
     │   │   └── security/
-    │   │       └── SecurityConfig.java            # Spring Security (utilisateurs in-memory, Basic Auth)
+    │   │       └── SecurityConfig.java            # Spring Security (JWT, BCrypt, filtre Bearer)
     │   └── resources/
     │       ├── application.properties             # Configuration DB, JPA, serveur
     │       └── schema.sql                         # DDL pour les 10 tables
@@ -87,13 +103,14 @@ L'architecture **n'est pas** hexagonale — il n'y a pas de ports/adaptateurs. L
             └── LibraryApplicationTests.java       # Test de chargement du contexte
 ```
 
-**Packages planifiés (spécifiés dans les fichiers .md de tâches, PAS encore créés sur disque) :**
-- `data/entities/` — Language, Nationality, Category, Publisher, Author, Book, BookItem, BookAuthor, Member, Borrow, Reservation
-- `data/entities/enums/` — BookItemStatus, AuthorRole, MemberType, BorrowStatus
-- `data/repositories/` — 10 interfaces repository
-- `dto/` — CategoryDTO, AuthorDTO, BookDTO, MemberDTO, ReservationDTO
-- `services/` — CategoryService, BookService, BorrowService, ReservationService
-- `controllers/` — CategoryController, BookController, BorrowController, ReservationController
+**Packages actifs dans le projet :**
+- `dao/` — 12 DAOs (AuthorDao, BookDao, BookAuthorDao, BookItemDao, BorrowDao, CategoryDao, LanguageDao, MemberDao, NationalityDao, PublisherDao, ReservationDao, UserDao)
+- `data/entities/` — 11 entités (BaseEntity + Language, Nationality, Category, Publisher, Author, Book, BookItem, BookAuthor, Member, Borrow, Reservation, User)
+- `data/entities/enums/` — BookItemStatus, AuthorRole, MemberType, BorrowStatus, ReservationStatus
+- `data/repositories/` — 12 interfaces repository (Spring Data JPA)
+- `dto/` — CategoryDTO, AuthorDTO, BookDTO, BookItemDTO, MemberDTO, PublisherDTO, ReservationDTO, UserRegistrationDTO
+- `services/` — 10 services (AuthorService, BookAuthorService, BookItemService, BookService, BorrowService, CategoryService, MemberService, PublisherService, ReservationService, UserService)
+- `controllers/` — 12 contrôleurs (AuthController, AuthorController, BookAuthorController, BookController, BookItemController, BorrowController, CategoryController, LanguageController, MemberController, NationalityController, PublisherController, ReservationController, SeedController, AdminController)
 
 ---
 
@@ -270,10 +287,11 @@ Règles de dépendances clés :
 **Totaux du projet sur disque :**
 - 11 entités JPA (`BaseEntity` + 10 concrètes)
 - 7 enums
-- 10 repositories
-- 5 DTOs
-- 5 services
-- 6 contrôleurs
+- 12 repositories
+- 12 DAOs
+- 8 DTOs
+- 10 services
+- 14 contrôleurs
 
 **Actions recommandées (hors scope des tâches spécifiées) :**
 1. `Pageable` sur tous les endpoints de liste `GET /api/<resource>`.
