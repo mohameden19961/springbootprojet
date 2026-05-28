@@ -2,6 +2,7 @@ package supnum.projet.Library.controllers;
 
 import supnum.projet.Library.data.entities.User;
 import supnum.projet.Library.dto.UpdateCredentialsDTO;
+import supnum.projet.Library.dto.response.UserResponse;
 import supnum.projet.Library.security.JwtUtil;
 import supnum.projet.Library.services.UserService;
 import jakarta.validation.Valid;
@@ -31,12 +32,12 @@ public class AuthController {
         String password = body.get("password");
 
         if (username == null || password == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "username and password required"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Nom d'utilisateur et mot de passe requis"));
         }
 
         User user = userService.findByUsername(username).orElse(null);
         if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
+            return ResponseEntity.status(401).body(Map.of("error", "Identifiants invalides"));
         }
 
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
@@ -51,7 +52,7 @@ public class AuthController {
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateCredentialsDTO dto) {
         try {
-            User user = userService.updateCredentials(dto);
+            UserResponse user = userService.updateCredentials(dto);
             String newToken = jwtUtil.generateToken(user.getUsername(), user.getRole());
             return ResponseEntity.ok(Map.of(
                 "token", newToken,

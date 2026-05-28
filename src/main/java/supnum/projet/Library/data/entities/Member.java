@@ -2,11 +2,17 @@ package supnum.projet.Library.data.entities;
 
 import supnum.projet.Library.data.entities.enums.MemberType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "member")
 @SQLRestriction("deleted = false")

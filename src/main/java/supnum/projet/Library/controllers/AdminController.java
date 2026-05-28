@@ -1,9 +1,10 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.User;
 import supnum.projet.Library.dto.UserRegistrationDTO;
+import supnum.projet.Library.dto.response.UserResponse;
 import supnum.projet.Library.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,15 +22,15 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         return userService.findAll();
     }
 
     @PostMapping("/users")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDTO dto) {
         try {
-            User user = userService.register(dto);
-            return ResponseEntity.ok(Map.of(
+            UserResponse user = userService.register(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "id", user.getId(),
                 "username", user.getUsername(),
                 "role", user.getRole()

@@ -3,13 +3,14 @@ package supnum.projet.Library.services;
 import supnum.projet.Library.data.entities.Author;
 import supnum.projet.Library.data.entities.Nationality;
 import supnum.projet.Library.dto.AuthorDTO;
+import supnum.projet.Library.dto.response.AuthorResponse;
 import supnum.projet.Library.data.repositories.AuthorRepository;
 import supnum.projet.Library.data.repositories.NationalityRepository;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -22,37 +23,52 @@ public class AuthorService {
         this.nationalityRepository = nationalityRepository;
     }
 
-    public List<Author> findAll() {
-        return authorRepository.findAll();
+    public Page<AuthorResponse> findAll(Pageable pageable) {
+        return authorRepository.findAll(pageable).map(this::toResponse);
     }
 
-    public Author create(AuthorDTO dto) {
+    public AuthorResponse create(AuthorDTO dto) {
         Nationality nationality = nationalityRepository.findById(dto.getNationalityCode())
             .orElseThrow(() -> new ResourceNotFoundException("Nationalité non trouvée avec le code : " + dto.getNationalityCode()));
-        Author author = new Author();
-        author.setName(dto.getName());
-        author.setNationality(nationality);
+        Author author = Author.builder()
+            .name(dto.getName())
+            .nationality(nationality)
+            .build();
 
-        return authorRepository.save(author);
+        return toResponse(authorRepository.save(author));
     }
 
-    public Author findById(Long id) {
+    public AuthorResponse findById(Long id) {
         return authorRepository.findById(id)
+            .map(this::toResponse)
             .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé avec l'id : " + id));
     }
 
-    public Author update(Long id, AuthorDTO dto) {
-        Author author = findById(id);
+    public AuthorResponse update(Long id, AuthorDTO dto) {
+        Author author = authorRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé avec l'id : " + id));
         Nationality nationality = nationalityRepository.findById(dto.getNationalityCode())
             .orElseThrow(() -> new ResourceNotFoundException("Nationalité non trouvée avec le code : " + dto.getNationalityCode()));
         author.setName(dto.getName());
         author.setNationality(nationality);
-        return authorRepository.save(author);
+        return toResponse(authorRepository.save(author));
     }
 
     public void delete(Long id) {
-        Author author = findById(id);
+        Author author = authorRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé avec l'id : " + id));
         author.setDeleted(true);
         authorRepository.save(author);
+    }
+
+    private AuthorResponse toResponse(Author author) {
+        AuthorResponse r = new AuthorResponse();
+        r.setId(author.getId());
+        r.setName(author.getName());
+        if (author.getNationality() != null) {
+            r.setNationalityCode(author.getNationality().getCode());
+            r.setNationalityName(author.getNationality().getName());
+        }
+        return r;
     }
 }

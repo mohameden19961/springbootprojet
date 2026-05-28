@@ -4,8 +4,10 @@ import supnum.projet.Library.data.entities.Book;
 import supnum.projet.Library.data.entities.BookItem;
 import supnum.projet.Library.data.entities.enums.BookItemStatus;
 import supnum.projet.Library.dto.BookItemDTO;
+import supnum.projet.Library.dto.response.BookItemResponse;
 import supnum.projet.Library.data.repositories.BookItemRepository;
 import supnum.projet.Library.data.repositories.BookRepository;
+import supnum.projet.Library.exceptions.DuplicateResourceException;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,38 +26,41 @@ public class BookItemService {
         this.bookRepository = bookRepo;
     }
 
-    public List<BookItem> findAllByBook(Long bookId) {
+    public List<BookItemResponse> findAllByBook(Long bookId) {
         Book book = bookRepository.findById(bookId)
-            .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé"));
-        return book.getBookItems();
+            .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'id : " + bookId));
+        return book.getBookItems().stream().map(this::toResponse).toList();
     }
 
-    public BookItem findById(Long id) {
+    public BookItemResponse findById(Long id) {
         return bookItemRepository.findById(id)
+            .map(this::toResponse)
             .orElseThrow(() -> new ResourceNotFoundException("Exemplaire non trouvé avec l'id : " + id));
     }
 
-    public BookItem create(Long bookId, BookItemDTO dto) {
+    public BookItemResponse create(Long bookId, BookItemDTO dto) {
         Book book = bookRepository.findById(bookId)
-            .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé"));
+            .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'id : " + bookId));
 
         if (bookItemRepository.findByBarcode(dto.getBarcode()).isPresent()) {
-            throw new RuntimeException("Un exemplaire avec ce code-barres existe déjà");
+            throw new DuplicateResourceException("Un exemplaire avec ce code-barres existe déjà");
         }
 
-        BookItem item = new BookItem();
-        item.setBarcode(dto.getBarcode());
-        item.setStatus(dto.getStatus() != null ? dto.getStatus() : BookItemStatus.AVAILABLE);
-        item.setBook(book);
+        BookItem item = BookItem.builder()
+            .barcode(dto.getBarcode())
+            .status(dto.getStatus() != null ? dto.getStatus() : BookItemStatus.AVAILABLE)
+            .book(book)
+            .build();
 
-        return bookItemRepository.save(item);
+        return toResponse(bookItemRepository.save(item));
     }
 
-    public BookItem update(Long id, BookItemDTO dto) {
-        BookItem item = findById(id);
+    public BookItemResponse update(Long id, BookItemDTO dto) {
+        BookItem item = bookItemRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Exemplaire non trouvé avec l'id : " + id));
 
         if (!item.getBarcode().equals(dto.getBarcode()) && bookItemRepository.findByBarcode(dto.getBarcode()).isPresent()) {
-            throw new RuntimeException("Un exemplaire avec ce code-barres existe déjà");
+            throw new DuplicateResourceException("Un exemplaire avec ce code-barres existe déjà");
         }
 
         item.setBarcode(dto.getBarcode());
@@ -63,12 +68,25 @@ public class BookItemService {
             item.setStatus(dto.getStatus());
         }
 
-        return bookItemRepository.save(item);
+        return toResponse(bookItemRepository.save(item));
     }
 
     public void delete(Long id) {
-        BookItem item = findById(id);
+        BookItem item = bookItemRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Exemplaire non trouvé avec l'id : " + id));
         item.setDeleted(true);
         bookItemRepository.save(item);
+    }
+
+    private BookItemResponse toResponse(BookItem item) {
+        BookItemResponse r = new BookItemResponse();
+        r.setId(item.getId());
+        r.setBarcode(item.getBarcode());
+        r.setStatus(item.getStatus());
+        r.setVersion(item.getVersion());
+        if (item.getBook() != null) {
+            r.setBookId(item.getBook().getId());
+        }
+        return r;
     }
 }

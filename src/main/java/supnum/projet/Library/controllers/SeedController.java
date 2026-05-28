@@ -98,16 +98,10 @@ public class SeedController {
     }
 
     private Language lang(String code, String name) {
-        Language l = new Language();
-        l.setCode(code);
-        l.setName(name);
-        return l;
+        return Language.builder().code(code).name(name).build();
     }
 
     private Nationality nat(String code, String name) {
-        Nationality n = new Nationality();
-        n.setCode(code);
-        n.setName(name);
-        return n;
+        return Nationality.builder().code(code).name(name).build();
     }
 }

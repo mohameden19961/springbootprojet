@@ -3,7 +3,11 @@ package supnum.projet.Library.services;
 import supnum.projet.Library.data.entities.*;
 import supnum.projet.Library.data.entities.enums.*;
 import supnum.projet.Library.data.repositories.*;
+import supnum.projet.Library.dto.response.BorrowResponse;
+import supnum.projet.Library.exceptions.BusinessException;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -25,32 +29,32 @@ public class BorrowService {
         this.reservationRepository = reservationRepo;
     }
 
-    public Borrow borrowBook(Long memberId, String barcode) {
+    public BorrowResponse borrowBook(Long memberId, String barcode) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new ResourceNotFoundException("Membre introuvable"));
+            .orElseThrow(() -> new ResourceNotFoundException("Membre introuvable avec l'id : " + memberId));
 
         BookItem item = bookItemRepository.findByBarcode(barcode)
-            .orElseThrow(() -> new ResourceNotFoundException("Exemplaire physique introuvable"));
+            .orElseThrow(() -> new ResourceNotFoundException("Exemplaire introuvable avec le code-barres : " + barcode));
 
         if (item.getStatus() != BookItemStatus.AVAILABLE) {
-            throw new RuntimeException("L'exemplaire n'est pas disponible");
+            throw new BusinessException("L'exemplaire n'est pas disponible");
         }
 
         long activeBorrows = borrowRepository.countByMemberAndStatus(member, BorrowStatus.ACTIVE);
         if (activeBorrows >= member.getMaxBorrows()) {
-            throw new RuntimeException("Le membre a atteint sa limite maximale d'emprunts");
+            throw new BusinessException("Le membre a atteint sa limite maximale d'emprunts");
         }
 
         item.setStatus(BookItemStatus.BORROWED);
         bookItemRepository.save(item);
 
-        Borrow borrow = new Borrow();
-        borrow.setMember(member);
-        borrow.setBookItem(item);
-        borrow.setStatus(BorrowStatus.ACTIVE);
-        borrow.setRenewalCount(0);
+        Borrow borrow = Borrow.builder()
+            .member(member)
+            .bookItem(item)
+            .status(BorrowStatus.ACTIVE)
+            .renewalCount(0)
+            .build();
 
-        // Annuler automatiquement la réservation PENDING du membre pour ce livre
         Book book = item.getBook();
         if (book != null) {
             List<Reservation> pending = reservationRepository
@@ -59,15 +63,15 @@ public class BorrowService {
             reservationRepository.saveAll(pending);
         }
 
-        return borrowRepository.save(borrow);
+        return toResponse(borrowRepository.save(borrow));
     }
 
-    public Borrow returnBook(Long borrowId) {
+    public BorrowResponse returnBook(Long borrowId) {
         Borrow borrow = borrowRepository.findById(borrowId)
-            .orElseThrow(() -> new ResourceNotFoundException("Emprunt introuvable"));
+            .orElseThrow(() -> new ResourceNotFoundException("Emprunt non trouvé avec l'id : " + borrowId));
 
         if (borrow.getStatus() != BorrowStatus.ACTIVE) {
-            throw new RuntimeException("Cet emprunt n'est plus actif");
+            throw new BusinessException("Cet emprunt n'est plus actif");
         }
 
         borrow.setStatus(BorrowStatus.RETURNED);
@@ -75,31 +79,48 @@ public class BorrowService {
         item.setStatus(BookItemStatus.AVAILABLE);
         bookItemRepository.save(item);
 
-        return borrowRepository.save(borrow);
+        return toResponse(borrowRepository.save(borrow));
     }
 
-    public Borrow renewBorrow(Long borrowId) {
+    public BorrowResponse renewBorrow(Long borrowId) {
         Borrow borrow = borrowRepository.findById(borrowId)
-            .orElseThrow(() -> new ResourceNotFoundException("Emprunt introuvable"));
+            .orElseThrow(() -> new ResourceNotFoundException("Emprunt non trouvé avec l'id : " + borrowId));
 
         if (borrow.getStatus() != BorrowStatus.ACTIVE) {
-            throw new RuntimeException("Seuls les emprunts actifs peuvent être renouvelés");
+            throw new BusinessException("Seuls les emprunts actifs peuvent être renouvelés");
         }
 
         if (borrow.getRenewalCount() >= 3) {
-            throw new RuntimeException("Limite de renouvellement atteinte (max 3 fois)");
+            throw new BusinessException("Limite de renouvellement atteinte (max 3 fois)");
         }
 
         borrow.setRenewalCount(borrow.getRenewalCount() + 1);
-        return borrowRepository.save(borrow);
+        return toResponse(borrowRepository.save(borrow));
     }
 
-    public List<Borrow> findAll() {
-        return borrowRepository.findAll();
+    public Page<BorrowResponse> findAll(Pageable pageable) {
+        return borrowRepository.findAll(pageable).map(this::toResponse);
     }
 
-    public Borrow findById(Long id) {
+    public BorrowResponse findById(Long id) {
         return borrowRepository.findById(id)
+            .map(this::toResponse)
             .orElseThrow(() -> new ResourceNotFoundException("Emprunt non trouvé avec l'id : " + id));
+    }
+
+    private BorrowResponse toResponse(Borrow borrow) {
+        BorrowResponse r = new BorrowResponse();
+        r.setId(borrow.getId());
+        r.setRenewalCount(borrow.getRenewalCount());
+        r.setStatus(borrow.getStatus());
+        if (borrow.getMember() != null) {
+            r.setMemberId(borrow.getMember().getId());
+            r.setMemberEmail(borrow.getMember().getEmail());
+        }
+        if (borrow.getBookItem() != null) {
+            r.setBookItemId(borrow.getBookItem().getId());
+            r.setBookItemBarcode(borrow.getBookItem().getBarcode());
+        }
+        return r;
     }
 }

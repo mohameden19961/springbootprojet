@@ -4,10 +4,11 @@ import supnum.projet.Library.data.entities.Category;
 import supnum.projet.Library.dto.CategoryDTO;
 import supnum.projet.Library.services.CategoryService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -19,8 +20,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> getAll() {
-        return service.findAll();
+    public Page<Category> getAll(Pageable pageable) {
+        return service.findAll(pageable);
     }
 
     @GetMapping("/{id}")
@@ -30,7 +31,7 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<Category> create(@Valid @RequestBody CategoryDTO dto) {
-        return ResponseEntity.ok(service.create(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
     }
 
     @PutMapping("/{id}")

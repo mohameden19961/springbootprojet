@@ -1,9 +1,10 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.BookItem;
 import supnum.projet.Library.dto.BookItemDTO;
+import supnum.projet.Library.dto.response.BookItemResponse;
 import supnum.projet.Library.services.BookItemService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,22 +21,22 @@ public class BookItemController {
     }
 
     @GetMapping
-    public List<BookItem> getAll(@PathVariable Long bookId) {
+    public List<BookItemResponse> getAll(@PathVariable Long bookId) {
         return service.findAllByBook(bookId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookItem> getById(@PathVariable Long id) {
+    public ResponseEntity<BookItemResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<BookItem> create(@PathVariable Long bookId, @Valid @RequestBody BookItemDTO dto) {
-        return ResponseEntity.ok(service.create(bookId, dto));
+    public ResponseEntity<BookItemResponse> create(@PathVariable Long bookId, @Valid @RequestBody BookItemDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(bookId, dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookItem> update(@PathVariable Long id, @Valid @RequestBody BookItemDTO dto) {
+    public ResponseEntity<BookItemResponse> update(@PathVariable Long id, @Valid @RequestBody BookItemDTO dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 

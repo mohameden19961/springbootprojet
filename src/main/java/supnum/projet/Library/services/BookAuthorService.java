@@ -37,15 +37,14 @@ public class BookAuthorService {
         Author author = authorRepository.findById(authorId)
             .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé"));
 
-        BookAuthorId id = new BookAuthorId();
-        id.setBookId(bookId);
-        id.setAuthorId(authorId);
+        BookAuthorId id = new BookAuthorId(bookId, authorId);
 
-        BookAuthor bookAuthor = new BookAuthor();
-        bookAuthor.setId(id);
-        bookAuthor.setBook(book);
-        bookAuthor.setAuthor(author);
-        bookAuthor.setRole(role);
+        BookAuthor bookAuthor = BookAuthor.builder()
+            .id(id)
+            .book(book)
+            .author(author)
+            .role(role)
+            .build();
 
         return bookAuthorRepository.save(bookAuthor);
     }
