@@ -1,7 +1,10 @@
 package supnum.projet.Library.data.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 @Entity
 @Table(name = "nationality")
 public class Nationality {
@@ -11,9 +14,4 @@ public class Nationality {
 
     @Column(length = 50, nullable = false)
     private String name;
-
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 }

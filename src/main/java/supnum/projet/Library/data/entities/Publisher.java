@@ -1,8 +1,11 @@
 package supnum.projet.Library.data.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
+@Getter @Setter
 @Entity
 @Table(name = "publisher")
 @SQLRestriction("deleted = false")
@@ -16,11 +19,4 @@ public class Publisher extends BaseEntity {
 
     @Column(unique = true, length = 100)
     private String email;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
 }

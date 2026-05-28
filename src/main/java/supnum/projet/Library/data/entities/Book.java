@@ -1,11 +1,14 @@
 package supnum.projet.Library.data.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.SQLRestriction;
 import java.util.List;
 
+@Getter @Setter
 @Entity
 @Table(name = "book")
 @SQLRestriction("deleted = false")
@@ -37,19 +40,4 @@ public class Book extends BaseEntity {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookItem> bookItems;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public String getIsbn() { return isbn; }
-    public void setIsbn(String isbn) { this.isbn = isbn; }
-    public Language getLanguage() { return language; }
-    public void setLanguage(Language language) { this.language = language; }
-    public Category getCategory() { return category; }
-    public void setCategory(Category category) { this.category = category; }
-    public Publisher getPublisher() { return publisher; }
-    public void setPublisher(Publisher publisher) { this.publisher = publisher; }
-    public List<BookItem> getBookItems() { return bookItems; }
-    public void setBookItems(List<BookItem> bookItems) { this.bookItems = bookItems; }
 }
