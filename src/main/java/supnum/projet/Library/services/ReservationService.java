@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -41,6 +42,7 @@ public class ReservationService {
             .book(book)
             .status(ReservationStatus.PENDING)
             .queuePosition(nextPosition)
+            .reservationDate(LocalDateTime.now())
             .build();
 
         return toResponse(reservationRepository.save(reservation));
@@ -79,6 +81,8 @@ public class ReservationService {
         ReservationResponse r = new ReservationResponse();
         r.setId(reservation.getId());
         r.setQueuePosition(reservation.getQueuePosition());
+        r.setReservationDate(reservation.getReservationDate());
+        r.setExpirationDate(reservation.getExpirationDate());
         r.setStatus(reservation.getStatus());
         if (reservation.getMember() != null) {
             r.setMemberId(reservation.getMember().getId());

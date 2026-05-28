@@ -80,6 +80,8 @@ erDiagram
         bigint member_id FK
         bigint book_id FK
         int queue_position
+        datetime reservation_date
+        datetime expiration_date
         string status
     }
     BORROW {
@@ -87,6 +89,9 @@ erDiagram
         bigint member_id FK
         bigint book_item_id FK
         int renewal_count
+        datetime borrow_date
+        date due_date
+        datetime return_date
         string status
     }
 
@@ -117,12 +122,12 @@ Repository (Spring Data JPA) → interfaces JpaRepository
 Base de données (MySQL/PostgreSQL/H2)
 ```
 
-- **controllers/** — 14 contrôleurs REST
+- **controllers/** — 16 contrôleurs REST
 - **services/** — 12 services métier
-- **dto/** — 9 DTOs + 7 DTOs de réponse
+- **dto/** — 12 DTOs + 9 DTOs de réponse
 - **data/entities/** — 13 entités JPA (dont BaseEntity, 5 enums)
 - **data/repositories/** — 13 interfaces Spring Data JPA
-- **dto/response/** — 7 DTOs de réponse (pas d'exposition directe des entités)
+- **dto/response/** — 9 DTOs de réponse (pas d'exposition directe des entités)
 - **security/** — Configuration JWT (Spring Security)
 - **exceptions/** — Gestion globale des erreurs (4 exceptions métier)
 
@@ -184,7 +189,9 @@ Le projet utilise **JWT (JSON Web Tokens)** pour sécuriser l'API :
 - **Login** : `POST /api/auth/login` (public) — retourne un token Bearer
 - **Requêtes authentifiées** : toutes les autres requêtes nécessitent un en-tête `Authorization: Bearer <token>`
 - **Rôles** : `ADMIN` (accès `/api/admin/**`) et `USER`
-- **Admin - Enregistrement d'utilisateurs** : `POST /api/admin/users` (réservé ADMIN) — permet à l'admin de créer des utilisateurs (USER ou ADMIN)
+- **Admin - Enregistrement d'utilisateurs** : `POST /api/admin/users` (réservé ADMIN)
+- **Seed des données de référence** : `POST /api/admin/seed` (réservé ADMIN) — insère les 18 langues et 89 nationalités en base
+- **Mise à jour du profil** : `PUT /api/auth/profile` (authentifié) — changer username/password
 - Les mots de passe sont hachés avec **BCrypt**
 
 ### Utilisateurs pré-configurés
@@ -218,6 +225,36 @@ L'API est accessible sur : `http://localhost:8081`
 # Lancer avec les vars d'env PostgreSQL
 java -jar target/Library-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
 ```
+
+## 📋 API Endpoints
+
+### Tables de référence
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/languages` | Liste des langues (lecture seule) |
+| GET | `/api/nationalities` | Liste des nationalités (lecture seule) |
+| GET/POST/PUT/DELETE | `/api/categories[/{id}]` | CRUD catégories |
+| GET/POST/PUT/DELETE | `/api/publishers[/{id}]` | CRUD éditeurs |
+| GET/POST/PUT/DELETE | `/api/authors[/{id}]` | CRUD auteurs |
+
+### Livres & Exemplaires
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET/POST/PUT/DELETE | `/api/books[/{id}]` | CRUD livres |
+| GET/POST/PUT/DELETE | `/api/books/{bookId}/items[/{id}]` | CRUD exemplaires |
+| GET/POST/DELETE | `/api/books/{bookId}/authors[/{authorId}]` | Gestion auteurs d'un livre |
+
+### Membres, Emprunts & Réservations
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET/POST/PUT/DELETE | `/api/members[/{id}]` | CRUD membres |
+| GET | `/api/borrows` | Liste paginée des emprunts |
+| POST | `/api/borrows/checkout?memberId=&barcode=` | Emprunter un livre |
+| POST | `/api/borrows/{id}/return` | Retourner un livre |
+| POST | `/api/borrows/{id}/renew` | Renouveler (max 3x) |
+| GET/POST | `/api/reservations[/{id}]` | Liste / Créer réservation |
+| POST | `/api/reservations/{id}/cancel` | Annuler réservation |
+| GET | `/api/reservations/queue/{bookId}` | File d'attente d'un livre |
 
 Bon développement à toute l'équipe ! Lisez vos fichiers Markdown personnels pour démarrer.
 

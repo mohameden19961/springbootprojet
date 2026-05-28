@@ -10,6 +10,9 @@ import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter @Setter
 @Builder
 @NoArgsConstructor
@@ -35,6 +38,16 @@ public class Borrow {
     @Column(name = "renewal_count", nullable = false)
     @Builder.Default
     private Integer renewalCount = 0;
+
+    @Column(name = "borrow_date", nullable = false)
+    @Builder.Default
+    private LocalDateTime borrowDate = LocalDateTime.now();
+
+    @Column(name = "due_date", nullable = false)
+    private LocalDate dueDate;
+
+    @Column(name = "return_date")
+    private LocalDateTime returnDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

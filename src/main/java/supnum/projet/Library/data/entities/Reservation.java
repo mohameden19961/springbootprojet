@@ -10,6 +10,8 @@ import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import java.time.LocalDateTime;
+
 @Getter @Setter
 @Builder
 @NoArgsConstructor
@@ -34,6 +36,13 @@ public class Reservation {
 
     @Column(name = "queue_position", nullable = false)
     private Integer queuePosition;
+
+    @Column(name = "reservation_date", nullable = false)
+    @Builder.Default
+    private LocalDateTime reservationDate = LocalDateTime.now();
+
+    @Column(name = "expiration_date")
+    private LocalDateTime expirationDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

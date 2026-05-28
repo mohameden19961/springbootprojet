@@ -4,6 +4,8 @@ import supnum.projet.Library.data.entities.enums.ReservationStatus;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter @Setter
 public class ReservationResponse {
     private Long id;
@@ -12,5 +14,7 @@ public class ReservationResponse {
     private Long bookId;
     private String bookTitle;
     private Integer queuePosition;
+    private LocalDateTime reservationDate;
+    private LocalDateTime expirationDate;
     private ReservationStatus status;
 }

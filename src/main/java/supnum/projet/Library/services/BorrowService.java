@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -53,6 +55,8 @@ public class BorrowService {
             .bookItem(item)
             .status(BorrowStatus.ACTIVE)
             .renewalCount(0)
+            .borrowDate(LocalDateTime.now())
+            .dueDate(LocalDate.now().plusDays(14))
             .build();
 
         Book book = item.getBook();
@@ -75,6 +79,7 @@ public class BorrowService {
         }
 
         borrow.setStatus(BorrowStatus.RETURNED);
+        borrow.setReturnDate(LocalDateTime.now());
         BookItem item = borrow.getBookItem();
         item.setStatus(BookItemStatus.AVAILABLE);
         bookItemRepository.save(item);
@@ -112,6 +117,9 @@ public class BorrowService {
         BorrowResponse r = new BorrowResponse();
         r.setId(borrow.getId());
         r.setRenewalCount(borrow.getRenewalCount());
+        r.setBorrowDate(borrow.getBorrowDate());
+        r.setDueDate(borrow.getDueDate());
+        r.setReturnDate(borrow.getReturnDate());
         r.setStatus(borrow.getStatus());
         if (borrow.getMember() != null) {
             r.setMemberId(borrow.getMember().getId());
