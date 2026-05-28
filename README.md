@@ -112,21 +112,19 @@ Controller (@RestController) → endpoints REST
     ↓
 Service (@Service) → logique métier, @Transactional
     ↓
-DAO (@Repository) → encapsulation des appels JPA, gestion ResourceNotFoundException
-    ↓
 Repository (Spring Data JPA) → interfaces JpaRepository
     ↓
 Base de données (MySQL/PostgreSQL/H2)
 ```
 
 - **controllers/** — 14 contrôleurs REST
-- **services/** — 10 services métier
-- **dao/** — 12 DAOs (couche intermédiaire)
-- **data/entities/** — 11 entités JPA
-- **data/repositories/** — 12 interfaces Spring Data JPA
-- **dto/** — 8 DTOs
+- **services/** — 12 services métier
+- **dto/** — 9 DTOs + 7 DTOs de réponse
+- **data/entities/** — 13 entités JPA (dont BaseEntity, 5 enums)
+- **data/repositories/** — 13 interfaces Spring Data JPA
+- **dto/response/** — 7 DTOs de réponse (pas d'exposition directe des entités)
 - **security/** — Configuration JWT (Spring Security)
-- **exceptions/** — Gestion globale des erreurs
+- **exceptions/** — Gestion globale des erreurs (4 exceptions métier)
 
 ## ⚙️ Profils de Configuration
 

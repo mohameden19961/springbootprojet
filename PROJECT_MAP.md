@@ -37,21 +37,17 @@ Requête HTTP
 [Couche Service]       — Logique métier, @Transactional
     │
     ▼
-[Couche DAO]           — @Repository, encapsule les appels JPA, gère ResourceNotFoundException
-    │
-    ▼
 [Couche Repository]    — Interfaces Spring Data JPA (extends JpaRepository)
     │
     ▼
-[Base de données (MySQL)] — schema.sql + Hibernate DDL auto-update
+[Base de données (MySQL)] — Hibernate DDL auto-update
 ```
 
 Préoccupations transversales :
-- **Sécurité :** La chaîne de filtres Spring Security intercepte toutes les requêtes avant les contrôleurs.
-- **Gestion des exceptions :** `@RestControllerAdvice` capture les exceptions de toutes les couches.
+- **Sécurité :** La chaîne de filtres Spring Security (JWT Bearer) intercepte toutes les requêtes avant les contrôleurs.
+- **Gestion des exceptions :** `@RestControllerAdvice` capture les exceptions de toutes les couches (4 exceptions métier : ResourceNotFoundException → 404, DuplicateResourceException → 409, BusinessException → 400, générique → 500).
 - **Soft Delete :** `BaseEntity` `@MappedSuperclass` fournit le champ `deleted` ; `@SQLRestriction("deleted = false")` sur les entités.
-
-L'architecture **n'est pas** hexagonale — il n'y a pas de ports/adaptateurs. Les DTOs sont utilisés minimalement (uniquement pour la création). Les entités sont retournées directement dans les réponses.
+- **DTOs de réponse :** Les contrôleurs retournent des DTOs de réponse (`dto/response/`), pas les entités JPA directes.
 
 ---
 
@@ -72,45 +68,45 @@ L'architecture **n'est pas** hexagonale — il n'y a pas de ports/adaptateurs. L
     ├── main/
     │   ├── java/supnum/projet/Library/
     │   │   ├── LibraryApplication.java          # Point d'entrée @SpringBootApplication
-    │   │   ├── dao/
-    │   │   │   ├── AuthorDao.java                 # DAO Author (encapsule AuthorRepository)
-    │   │   │   ├── BookDao.java                   # DAO Book (encapsule BookRepository)
-    │   │   │   ├── BookAuthorDao.java             # DAO BookAuthor (encapsule BookAuthorRepository)
-    │   │   │   ├── BookItemDao.java               # DAO BookItem (encapsule BookItemRepository)
-    │   │   │   ├── BorrowDao.java                 # DAO Borrow (encapsule BorrowRepository)
-    │   │   │   ├── CategoryDao.java               # DAO Category (encapsule CategoryRepository)
-    │   │   │   ├── LanguageDao.java               # DAO Language (encapsule LanguageRepository)
-    │   │   │   ├── MemberDao.java                 # DAO Member (encapsule MemberRepository)
-    │   │   │   ├── NationalityDao.java            # DAO Nationality (encapsule NationalityRepository)
-    │   │   │   ├── PublisherDao.java              # DAO Publisher (encapsule PublisherRepository)
-    │   │   │   ├── ReservationDao.java            # DAO Reservation (encapsule ReservationRepository)
-    │   │   │   └── UserDao.java                   # DAO User (encapsule UserRepository)
+    │   │   ├── controllers/                      # 14 contrôleurs REST
+    │   │   ├── services/                         # 12 services métier
+    │   │   ├── dto/
+    │   │   │   ├── *.java                        # 9 DTOs requête (BookDTO, AuthorDTO, ...)
+    │   │   │   └── response/
+    │   │   │       └── *.java                    # 7 DTOs réponse (BookResponse, UserResponse, ...)
     │   │   ├── data/
-    │   │   │   └── entities/
-    │   │   │       ├── BaseEntity.java           # @MappedSuperclass abstraite (soft delete)
-    │   │   │       └── enums/
-    │   │   │           └── ReservationStatus.java # PENDING, READY, CANCELLED, COMPLETED
+    │   │   │   ├── entities/
+    │   │   │   │   ├── BaseEntity.java           # @MappedSuperclass abstraite (soft delete)
+    │   │   │   │   ├── *.java                    # 12 entités JPA concrètes
+    │   │   │   │   └── enums/                    # 5 enums
+    │   │   │   └── repositories/                 # 13 interfaces Spring Data JPA
     │   │   ├── exceptions/
-    │   │   │   ├── GlobalExceptionHandler.java    # @RestControllerAdvice (3 handlers)
-    │   │   │   └── ResourceNotFoundException.java  # RuntimeException personnalisée
+    │   │   │   ├── GlobalExceptionHandler.java   # @RestControllerAdvice (4 handlers)
+    │   │   │   ├── ResourceNotFoundException.java
+    │   │   │   ├── DuplicateResourceException.java
+    │   │   │   └── BusinessException.java
     │   │   └── security/
-    │   │       └── SecurityConfig.java            # Spring Security (JWT, BCrypt, filtre Bearer)
+    │   │       ├── SecurityConfig.java           # Spring Security (JWT, BCrypt, filtre)
+    │   │       ├── JwtUtil.java                  # Génération/validation JWT
+    │   │       ├── JwtAuthenticationFilter.java  # Filtre Bearer token
+    │   │       └── UserDetailsServiceImpl.java   # UserDetailsService persistant
     │   └── resources/
-    │       ├── application.properties             # Configuration DB, JPA, serveur
-    │       └── schema.sql                         # DDL pour les 10 tables
+    │       ├── application.properties
+    │       ├── application-dev.properties
+    │       └── application-prod.properties
     └── test/
         └── java/supnum/projet/Library/
             └── LibraryApplicationTests.java       # Test de chargement du contexte
-```
 
 **Packages actifs dans le projet :**
-- `dao/` — 12 DAOs (AuthorDao, BookDao, BookAuthorDao, BookItemDao, BorrowDao, CategoryDao, LanguageDao, MemberDao, NationalityDao, PublisherDao, ReservationDao, UserDao)
-- `data/entities/` — 11 entités (BaseEntity + Language, Nationality, Category, Publisher, Author, Book, BookItem, BookAuthor, Member, Borrow, Reservation, User)
+- `data/entities/` — 13 entités (BaseEntity + 12 concrètes : Language, Nationality, Category, Publisher, Author, Book, BookItem, BookAuthor, Member, Borrow, Reservation, User)
 - `data/entities/enums/` — BookItemStatus, AuthorRole, MemberType, BorrowStatus, ReservationStatus
-- `data/repositories/` — 12 interfaces repository (Spring Data JPA)
-- `dto/` — CategoryDTO, AuthorDTO, BookDTO, BookItemDTO, MemberDTO, PublisherDTO, ReservationDTO, UserRegistrationDTO
-- `services/` — 10 services (AuthorService, BookAuthorService, BookItemService, BookService, BorrowService, CategoryService, MemberService, PublisherService, ReservationService, UserService)
-- `controllers/` — 12 contrôleurs (AuthController, AuthorController, BookAuthorController, BookController, BookItemController, BorrowController, CategoryController, LanguageController, MemberController, NationalityController, PublisherController, ReservationController, SeedController, AdminController)
+- `data/repositories/` — 13 interfaces repository (Spring Data JPA)
+- `dto/` — 9 DTOs requête + 7 DTOs réponse
+- `services/` — 12 services (AuthorService, BookAuthorService, BookItemService, BookService, BorrowService, CategoryService, LanguageService, MemberService, NationalityService, PublisherService, ReservationService, UserService)
+- `controllers/` — 14 contrôleurs (AdminController, AuthController, AuthorController, BookAuthorController, BookController, BookItemController, BorrowController, CategoryController, LanguageController, MemberController, NationalityController, PublisherController, ReservationController, SeedController)
+- `exceptions/` — 4 classes (GlobalExceptionHandler + 3 exceptions métier)
+- `security/` — 4 classes (Config, JwtUtil, JwtAuthFilter, UserDetailsServiceImpl)
 
 ---
 
@@ -122,96 +118,105 @@ L'architecture **n'est pas** hexagonale — il n'y a pas de ports/adaptateurs. L
 Client (HTTP)
   │
   │ POST/GET/PUT/DELET sur /api/*
-  │ Avec en-tête Basic Auth (username:password)
+  │ Avec en-tête Authorization: Bearer <token>
+  ▼
+JwtAuthenticationFilter (avant chaque requête)
+  │
+  ├── Extrait le token Bearer de l'en-tête
+  ├── Valide le token (JwtUtil)
+  ├── Charge l'utilisateur (UserDetailsServiceImpl)
+  └── Positionne le SecurityContext
+  │
   ▼
 SecurityFilterChain
   │
-  ├── /api/public/** → permitAll (sans authentification)
-  ├── /api/admin/**  → hasRole("ADMIN")
-  └── anyRequest()   → authenticated
+  ├── /api/auth/login → permitAll
+  ├── /api/admin/**   → hasRole("ADMIN")
+  └── anyRequest()    → authenticated
   │
   ▼
 DispatcherServlet → Controller
   │
-  ├── @Valid valide le corps de la requête → en cas d'échec, MethodArgumentNotValidException → GlobalExceptionHandler retourne 400
+  ├── @Valid valide le corps de la requête → MethodArgumentNotValidException → 400
   │
   ▼
-Service (avec @Transactional)
+Service (@Transactional)
   │
   ├── Règles métier appliquées
-  ├── Appels aux méthodes Repository
+  ├── Exceptions métier : ResourceNotFoundException (404), DuplicateResourceException (409), BusinessException (400)
   │
   ▼
-Repository (JPA)
+Repository (Spring Data JPA)
   │
   ├── Hibernate génère le SQL
+  ├── Pagination via Pageable sur tous les findAll
   ├── @SQLRestriction("deleted = false") filtre les lignes supprimées logiquement
   │
   ▼
-Base de données MySQL (library_db)
+Base de données MySQL/PostgreSQL/H2
   │
-  └── La réponse remonte à travers les couches
+  └── La réponse (DTO, pas entité JPA) remonte à travers les couches
 ```
 
-### Parcours utilisateur existants (d'après le schéma + code planifié)
+### Parcours utilisateur existants
 
-**État actuel (seule l'infrastructure existe) :**
-1. Aucun parcours utilisateur réel — les contrôleurs, services, entités (sauf BaseEntity) ne sont pas encore créés.
-
-**Parcours planifiés (d'après les spécifications .md) :**
-
-1. **CRUD Catégorie :** `GET /api/categories` → lister → `POST /api/categories` → créer → `DELETE /api/categories/{id}` → soft-delete
-2. **CRUD Livre :** `GET /api/books` → lister → `POST /api/books` → créer (résout les références Language, Category, Publisher)
-3. **Flux Emprunt :** `POST /api/borrows/checkout?memberId=&barcode=` → emprunter (vérifie disponibilité, quota membre) → `POST /api/borrows/{id}/return` → retourner → `POST /api/borrows/{id}/renew` → renouveler (max 3)
-4. **Flux Réservation :** `POST /api/reservations` → réserver (file FIFO) → `POST /api/reservations/{id}/cancel` → annuler → `GET /api/reservations/queue/{bookId}` → voir la file
+1. **Authentification :** `POST /api/auth/login` → retourne un token JWT
+2. **CRUD Catégorie :** `GET /api/categories?page=0&size=20` → lister paginé → `POST /api/categories` → créer (201) → `DELETE /api/categories/{id}` → soft-delete
+3. **CRUD Livre :** `GET /api/books?page=0&size=20` → lister paginé → `POST /api/books` → créer (résout Language, Category, Publisher)
+4. **CRUD Auteur :** `GET /api/authors?page=0&size=20` → `POST /api/authors` → créer (résout Nationality)
+5. **CRUD Membre :** `GET /api/members?page=0&size=20` → `POST /api/members`
+6. **CRUD Éditeur :** `GET /api/publishers?page=0&size=20` → `POST /api/publishers`
+7. **Flux Emprunt :** `POST /api/borrows/checkout?memberId=&barcode=` → emprunter (vérifie disponibilité, quota membre) → `POST /api/borrows/{id}/return` → retourner → `POST /api/borrows/{id}/renew` → renouveler (max 3)
+8. **Flux Réservation :** `POST /api/reservations` → réserver (file FIFO) → `POST /api/reservations/{id}/cancel` → annuler → `GET /api/reservations/queue/{bookId}` → voir la file
+9. **Admin :** `POST /api/admin/users` → créer un utilisateur → `GET /api/admin/users` → lister les utilisateurs
+10. **Seed :** `POST /api/admin/seed` → initialiser les langues et nationalités
 
 ---
 
 ## 📊 GESTION_D'ÉTAT
 
 - **Backend :** Entièrement **REST sans état**. Aucune session côté serveur.
-- **Authentification :** HTTP Basic Auth → chaque requête transporte les identifiants ; `InMemoryUserDetailsManager` stocke les utilisateurs en mémoire (pas de persistance, perdu au redémarrage).
-- **Contrôle de concurrence :** Optimistic locking via `@Version` sur `BookItem.version` (planifié, pas encore implémenté).
+- **Authentification :** JWT Bearer Token → `POST /api/auth/login` retourne un token ; utilisateurs persistés en base via `User` entity et `UserDetailsServiceImpl`.
+- **Contrôle de concurrence :** Optimistic locking via `@Version` sur `BookItem.version` — le champ est déclaré mais pas encore géré en cas de `OptimisticLockException`.
 - **État Soft Delete :** Champ booléen `deleted` sur toutes les entités supprimables logiquement ; `@SQLRestriction` filtre au moment des requêtes.
+- **Pagination :** Tous les endpoints `GET /api/*` acceptent `?page=0&size=20` via `Pageable` (taille par défaut : 20, max : 100).
 - **Pas de couche de cache** (pas de Redis, pas de @Cacheable configuré).
 
 ---
 
 ## ✅ FONCTIONNALITÉS_IMPLÉMENTÉES
 
-Ces fonctionnalités sont **100% complètes et fonctionnelles** (les fichiers existent sur disque) :
-
-1. **Bootstrap de l'application Spring Boot** — `LibraryApplication.java` démarre sur le port 8081.
-2. **Classe de base Soft Delete** — `BaseEntity` `@MappedSuperclass` avec champ booléen `deleted`.
-3. **Enum ReservationStatus** — `PENDING, READY, CANCELLED, COMPLETED`.
-4. **Configuration Spring Security** — Utilisateurs in-memory (`admin`/`admin123` avec rôle ADMIN, `user`/`user123` avec rôle USER), encodage BCrypt, CSRF désactivé, Basic Auth.
-5. **Autorisation basée sur les routes** — `/api/public/**` ouvert, `/api/admin/**` réservé ADMIN, tout le reste authentifié.
-6. **ResourceNotFoundException personnalisée** — Étend `RuntimeException`.
-7. **Gestionnaire global d'exceptions** — `@RestControllerAdvice` gérant `ResourceNotFoundException` (404), `MethodArgumentNotValidException` (400), `Exception` générique (500).
-8. **Schéma DDL de la base de données** — `schema.sql` crée les 10 tables (`language`, `nationality`, `category`, `publisher`, `author`, `book`, `book_item`, `member`, `book_author`, `reservation`, `borrow`) avec clés étrangères.
-9. **Propriétés de l'application** — Configuration MySQL (`library_db`, utilisateur `supnum`/`Supnum`, port 3306), Hibernate `ddl-auto=update`, mode SQL init `always`, valeurs par défaut de pagination (taille 20, max 100), port serveur 8081.
-10. **Test de chargement du contexte** — Test smoke `@SpringBootTest` basique.
-11. **Domaine Livre (tâche #24238)** — Entités `Book`, `BookItem` (avec `@Version` optimiste), `BookAuthor` (avec `@EmbeddedId`) ; enums `BookItemStatus` et `AuthorRole` ; `BookRepository`, `BookItemRepository` ; `BookDTO` (`@Valid`) ; `BookService` (`findAll`, `create` avec vérification ISBN dupliqué et résolution FK) ; `BookController` exposant `GET /api/books` et `POST /api/books`. Code de production + tests compilent avec `./mvnw clean test-compile`.
-12. **Domaine Entités de Référence (tâche #24139)** — `Language`, `Nationality` (PK string, pas de soft delete) ; `Category`, `Publisher`, `Author` (PK Long, soft-deletable via `BaseEntity` + `@SQLRestriction`) ; `Author.nationality` `@ManyToOne(LAZY)`. Repositories `LanguageRepository`, `NationalityRepository`, `CategoryRepository` (avec `findByName`), `PublisherRepository` (avec `findByName`), `AuthorRepository`. DTOs `CategoryDTO`, `AuthorDTO`, `PublisherDTO` (avec `@Email` et `@Size`). Services `CategoryService`, `PublisherService`, `AuthorService` exposant `findAll`/`create`/`delete` avec vérifications d'unicité et résolution FK. Controllers `CategoryController` (`/api/categories`), `PublisherController` (`/api/publishers`), `AuthorController` (`/api/authors`). `./mvnw test` passe sur H2.
-13. **Domaine Membre & Emprunt (tâche #24014)** — Enums `MemberType` (`STUDENT`, `TEACHER`, `EXTERNAL`) et `BorrowStatus` (`ACTIVE`, `RETURNED`, `OVERDUE`, `LOST`). Entités `Member` (PK Long, soft-deletable) et `Borrow` (pas de soft delete). `BorrowService` applique 3 règles métier. `BorrowController` expose les endpoints de checkout, retour et renouvellement. `./mvnw test` passe sur H2.
-14. **Domaine Réservation & File d'attente (tâche #24157)** — Entité `Reservation` (PK Long, pas de soft delete). `ReservationService` calcule la position FIFO. `ReservationController` expose les endpoints de réservation, annulation et file d'attente. `./mvnw test` passe sur H2.
+1. **Bootstrap Spring Boot 4.0.6 / Java 21** — `LibraryApplication.java`.
+2. **Soft Delete** — `BaseEntity` avec champ `deleted` + `@SQLRestriction` sur 6 entités.
+3. **5 enums** — `BookItemStatus`, `AuthorRole`, `MemberType`, `BorrowStatus`, `ReservationStatus`.
+4. **Authentification JWT** — `POST /api/auth/login` → token JWT ; utilisateurs persistés en DB (`User` entity) ; BCrypt pour les mots de passe ; filtre Bearer.
+5. **Sécurité par routes** — `/api/auth/login` public, `/api/admin/**` ADMIN, tout le reste authentifié.
+6. **4 exceptions métier** — `ResourceNotFoundException` (404), `DuplicateResourceException` (409), `BusinessException` (400), fallback générique (500).
+7. **DTOs de réponse** — 7 DTOs de réponse (`dto/response/`) : plus d'exposition directe des entités JPA. Fini les LazyInitializationException et les fuites de données (`User.password` masqué).
+8. **Lombok** — `@Getter @Setter` + `@Builder` + `@NoArgsConstructor` + `@AllArgsConstructor` sur toutes les entités.
+9. **Pagination** — `Pageable` sur tous les endpoints findAll (taille par défaut 20, max 100).
+10. **201 Created** — Tous les `POST` retournent `201 CREATED` au lieu de `200 OK`.
+11. **Messages en français** — Tous les messages d'erreur et de validation sont en français.
+12. **Domaine Livre (#24238)** — `Book`, `BookItem` (`@Version`), `BookAuthor` (`@EmbeddedId`) ; CRUD complet avec DTOs réponse.
+13. **Domaine Références (#24139)** — `Language`, `Nationality`, `Category`, `Publisher`, `Author` ; CRUD complet avec résolution FK.
+14. **Domaine Membre & Emprunt (#24014)** — `Member`, `Borrow` ; 3 règles métier (disponibilité, quota, renouvellement max 3).
+15. **Domaine Réservation (#24157)** — `Reservation` ; file FIFO avec calcul de position, annulation.
+16. **Admin** — `GET/POST /api/admin/users` pour gérer les utilisateurs.
+17. **Seed** — `POST /api/admin/seed` pour initialiser 18 langues et 40+ nationalités.
+18. **3 profils** — `dev` (MySQL, port 8081), `prod` (PostgreSQL, port $PORT), `test` (H2 mémoire).
+19. **Test de chargement du contexte** — `LibraryApplicationTests` passe.
 
 ---
 
 ## ⏳ ÉLÉMENTS_ORPHELINS & EN_ATTENTE
 
-Tous les modules domaine spécifiés dans les quatre fichiers de tâches (#24238, #24139, #24014, #24157) sont maintenant implémentés sur disque. **Le cœur du domaine est fonctionnellement complet.** Aucun fichier source Java du domaine n'est en attente.
+Tous les modules domaine spécifiés dans les quatre fichiers de tâches (#24238, #24139, #24014, #24157) sont implémentés. **Le cœur du domaine est fonctionnellement complet.**
 
-### Écarts honorés par la spécification (intentionnels, pas en attente) :
-- **Pas de `MemberService` / `MemberController`.** La tâche #24014 définit `MemberDTO` mais pas de service ni contrôleur. Les membres ne peuvent être persistés que via un accès direct au repository.
-- **Pas d'endpoint CRUD `BookItem`.** La tâche #24238 définit l'entité et le repository mais ni service ni contrôleur.
-- **Pas d'endpoints CRUD `Language` / `Nationality`.** La tâche #24139 définit uniquement les entités et repositories — les données de référence sont traitées comme pré-remplies.
-
-### Travail transversal hors scope :
-- `SecurityConfig.java` définit les règles de route `/api/public/**` et `/api/admin/**`, mais aucun des contrôleurs implémentés ne se trouve sous ces chemins.
-- Pas de logique de transition réservation→emprunt.
+### Travail transversal restant :
+- Pas de logique de transition réservation→emprunt (promotion automatique de PENDING à READY).
 - Pas de détection de retard — pas de colonnes `dueDate` / `returnDate` dans `borrow`.
-- `BookService` expose uniquement `findAll` + `create` ; pas d'endpoints `update` / `delete`.
+- `OptimisticLockException` non gérée dans `BorrowService.borrowBook()` (devrait retourner 409 Conflict).
+- Pas de `@PreAuthorize` pour la sécurité fine par méthode.
 
 ---
 
@@ -251,54 +256,63 @@ Règles de dépendances clés :
 
 | Problème | Sévérité | Détails |
 |-------|----------|---------|
-| **Utilisateurs in-memory** | HAUTE | `InMemoryUserDetailsManager` — utilisateurs codés en dur et perdus au redémarrage. |
-| **Identifiants codés en dur** | MOYENNE | `admin`/`admin123` et `user`/`user123` en clair dans le code source. |
-| **CSRF désactivé** | HAUTE | `csrf.disable()` — acceptable pour API REST avec Basic Auth, mais risqué avec un client navigateur. |
-| **HTTP Basic Auth uniquement** | MOYENNE | Pas de JWT, OAuth2 ou token. Identifiants envoyés en chaque requête. |
-| **Entités comme objets de réponse** | HAUTE | Les entités sont retournées directement par les contrôleurs, exposant la structure interne. |
-| **Mot de passe dans le code source** | BASSE | `application.properties` contient `spring.datasource.password=Supnum` en clair. |
+| **CSRF désactivé** | HAUTE | `csrf.disable()` — acceptable pour API REST avec JWT, mais risqué avec un client navigateur. |
+| **Mot de passe dans le code source** | BASSE | `application-dev.properties` contient `spring.datasource.password=Supnum` en clair (local uniquement). |
 
 ### Risques de conception
 
 | Risque | Type | Détails |
 |------|------|---------|
-| **Problème N+1** | Performance | Tous les `@ManyToOne` utilisent `FetchType.LAZY`, mais `findAll()` peut déclencher N+1 lors de la sérialisation Jackson. |
-| **Pas de pagination** | Performance | Les endpoints de liste retournent `List<T>` sans pagination. |
-| **RuntimeException pour règles métier** | Conception | Les violations de règles métier lèvent des `RuntimeException` → erreur 500 au lieu de 409. |
+| **Problème N+1** | Performance | Les `@ManyToOne` en LAZY peuvent déclencher N+1 lors de la sérialisation. |
 | **`@Transactional` sur toute la classe** | Conception | `@Transactional` au niveau classe, trop large. |
 | **Absence de `dueDate`/`returnDate`** | Domaine | La table `borrow` n'a pas de colonnes temporelles. |
 | **Pas de validation d'unicité DB sur `Member.email`** | Données | Le schéma a `UNIQUE` sur email, mais JPA ne gère pas `DataIntegrityViolationException`. |
-| **Absence de DTOs de réponse** | Maintenabilité | Les entités exposées directement dans les réponses REST. |
-| **Optimistic locking non branché dans le service** | Concurrence | `@Version` déclaré sur `BookItem`, mais `BorrowService.borrowBook()` ne gère pas `OptimisticLockException`. |
+| **Optimistic locking non branché dans le service** | Concurrence | `@Version` déclaré sur `BookItem`, mais `BorrowService` ne gère pas `OptimisticLockException`. |
+| **Transition réservation→emprunt absente** | Domaine | Pas de promotion automatique PENDING → READY quand un exemplaire est retourné. |
+
+### Risques corrigés (résolus dans le refactoring récent)
+
+| Risque | Correctif |
+|------|---------|
+| **Entités comme objets de réponse** | DTOs de réponse (`dto/response/`) — plus d'exposition directe des entités JPA. `User.password` n'est plus sérialisé. |
+| **Absence de DTOs de réponse** | 7 DTOs de réponse créés (BookResponse, AuthorResponse, UserResponse, etc.). |
+| **RuntimeException pour règles métier** | `DuplicateResourceException` (409), `BusinessException` (400) — plus de 500 pour les erreurs métier. |
+| **Pas de pagination** | `Pageable` sur tous les endpoints findAll. |
+| **Utilisateurs in-memory** | Utilisateurs persistés en base via `User` entity + `UserDetailsServiceImpl`. |
+| **HTTP Basic Auth** | JWT Bearer token — plus d'envoi d'identifiants à chaque requête. |
+| **Mot de passe dans le code** | `SecurityConfig` ne contient plus d'utilisateurs en dur. |
+| **`new Entity()` + setters** | `@Builder` + builders dans tous les services. |
+| **Messages d'erreur en anglais** | Tous les messages en français (validation, exceptions, réponses). |
+| **200 OK pour les créations** | `201 Created` pour tous les `POST`. |
 
 ### Atténuations en place
-- `ResourceNotFoundException` retourne correctement 404.
-- `MethodArgumentNotValidException` gérée pour les échecs `@Valid` → 400 avec carte d'erreurs.
+- `ResourceNotFoundException` → 404, `DuplicateResourceException` → 409, `BusinessException` → 400.
+- `MethodArgumentNotValidException` → 400 avec carte d'erreurs détaillée.
 - Soft delete avec `@SQLRestriction` empêche l'exposition accidentelle des enregistrements supprimés.
-- Encodage BCrypt pour les utilisateurs in-memory.
+- Encodage BCrypt pour les mots de passe utilisateurs.
 - H2 ajouté comme dépendance de test pour permettre les tests sans MySQL.
+- Lombok configuré (annotation processor + `@Builder` sur toutes les entités).
 
 ---
 
 ## 📋 RÉSUMÉ
 
-**État d'avancement :** ~100% de la couche domaine spécifiée. Les quatre fichiers de tâches (#24238, #24139, #24014, #24157) sont implémentés et vérifiés. `./mvnw test` est vert sur H2.
+**État d'avancement :** ~95% du domaine spécifié implémenté. `./mvnw test` est vert sur H2.
 
 **Totaux du projet sur disque :**
-- 11 entités JPA (`BaseEntity` + 10 concrètes)
-- 7 enums
-- 12 repositories
-- 12 DAOs
-- 8 DTOs
-- 10 services
+- 13 entités JPA (`BaseEntity` + 12 concrètes)
+- 5 enums
+- 13 repositories
+- 16 DTOs (9 requête + 7 réponse)
+- 12 services
 - 14 contrôleurs
+- 4 exceptions
+- 4 classes de sécurité
 
-**Actions recommandées (hors scope des tâches spécifiées) :**
-1. `Pageable` sur tous les endpoints de liste `GET /api/<resource>`.
-2. DTOs de réponse / `@EntityGraph` pour les risques N+1.
-3. Endpoints CRUD Membre (utilise le `MemberDTO` existant).
-4. Gérer `OptimisticLockException` dans `BorrowService.borrowBook()` → retourner 409.
-5. Remplacer les `RuntimeException` métier par des exceptions domaine → 409 Conflict.
-6. Migrer de l'auth in-memory vers un `UserDetailsService` persistant.
-7. Migration de schéma pour la détection de retard (ajouter `dueDate` / `returnDate` à `borrow`).
-8. Transition réservation→emprunt (promouvoir automatiquement la position #1 à `READY`).
+**Actions recommandées restantes :**
+1. Gérer `OptimisticLockException` dans `BorrowService` → 409 Conflict.
+2. Transition réservation→emprunt (promouvoir position #1 à `READY`).
+3. Ajouter `dueDate` / `returnDate` à `Borrow` pour la détection de retard.
+4. Interfaces pour les services (découplage, mocking facilité).
+5. `@PreAuthorize` pour la sécurité fine par méthode.
+6. Tests unitaires / d'intégration supplémentaires.
