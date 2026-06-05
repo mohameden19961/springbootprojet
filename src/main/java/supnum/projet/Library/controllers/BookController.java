@@ -1,13 +1,14 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Book;
 import supnum.projet.Library.dto.BookDTO;
+import supnum.projet.Library.dto.response.BookResponse;
 import supnum.projet.Library.services.BookService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
@@ -20,22 +21,22 @@ public class BookController {
     }
 
     @GetMapping
-    public List<Book> getAll() {
-        return service.findAll();
+    public Page<BookResponse> getAll(Pageable pageable) {
+        return service.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getById(@PathVariable Long id) {
+    public ResponseEntity<BookResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Book> create(@Valid @RequestBody BookDTO dto) {
-        return ResponseEntity.ok(service.create(dto));
+    public ResponseEntity<BookResponse> create(@Valid @RequestBody BookDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> update(@PathVariable Long id, @Valid @RequestBody BookDTO dto) {
+    public ResponseEntity<BookResponse> update(@PathVariable Long id, @Valid @RequestBody BookDTO dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 

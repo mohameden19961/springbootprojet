@@ -1,8 +1,9 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.BookAuthor;
 import supnum.projet.Library.data.entities.enums.AuthorRole;
+import supnum.projet.Library.dto.response.BookAuthorResponse;
 import supnum.projet.Library.services.BookAuthorService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,16 +20,16 @@ public class BookAuthorController {
     }
 
     @GetMapping
-    public List<BookAuthor> getAuthors(@PathVariable Long bookId) {
+    public List<BookAuthorResponse> getAuthors(@PathVariable Long bookId) {
         return service.findAllByBook(bookId);
     }
 
     @PostMapping("/{authorId}")
-    public ResponseEntity<BookAuthor> addAuthor(
+    public ResponseEntity<BookAuthorResponse> addAuthor(
             @PathVariable Long bookId,
             @PathVariable Long authorId,
             @RequestParam(defaultValue = "MAIN_AUTHOR") AuthorRole role) {
-        return ResponseEntity.ok(service.addAuthorToBook(bookId, authorId, role));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addAuthorToBook(bookId, authorId, role));
     }
 
     @DeleteMapping("/{authorId}")

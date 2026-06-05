@@ -1,9 +1,12 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Reservation;
 import supnum.projet.Library.dto.ReservationDTO;
+import supnum.projet.Library.dto.response.ReservationResponse;
 import supnum.projet.Library.services.ReservationService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,27 +23,27 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<Reservation> getAll() {
-        return service.findAll();
+    public Page<ReservationResponse> getAll(Pageable pageable) {
+        return service.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Reservation> getById(@PathVariable Long id) {
+    public ResponseEntity<ReservationResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> reserve(@Valid @RequestBody ReservationDTO dto) {
-        return ResponseEntity.ok(service.reserve(dto));
+    public ResponseEntity<ReservationResponse> reserve(@Valid @RequestBody ReservationDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.reserve(dto));
     }
 
     @PostMapping("/{id}/cancel")
-    public ResponseEntity<Reservation> cancel(@PathVariable Long id) {
+    public ResponseEntity<ReservationResponse> cancel(@PathVariable Long id) {
         return ResponseEntity.ok(service.cancel(id));
     }
 
     @GetMapping("/queue/{bookId}")
-    public ResponseEntity<List<Reservation>> getQueue(@PathVariable Long bookId) {
+    public ResponseEntity<List<ReservationResponse>> getQueue(@PathVariable Long bookId) {
         return ResponseEntity.ok(service.getQueueForBook(bookId));
     }
 }

@@ -82,6 +82,8 @@ CREATE TABLE IF NOT EXISTS reservation (
     member_id BIGINT,
     book_id BIGINT,
     queue_position INT NOT NULL,
+    reservation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expiration_date DATETIME,
     status VARCHAR(20) NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member(id),
     FOREIGN KEY (book_id) REFERENCES book(id)
@@ -92,6 +94,9 @@ CREATE TABLE IF NOT EXISTS borrow (
     member_id BIGINT,
     book_item_id BIGINT,
     renewal_count INT DEFAULT 0,
+    borrow_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    due_date DATE NOT NULL,
+    return_date DATETIME,
     status VARCHAR(20) NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member(id),
     FOREIGN KEY (book_item_id) REFERENCES book_item(id)

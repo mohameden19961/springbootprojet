@@ -4,6 +4,7 @@ import supnum.projet.Library.data.entities.*;
 import supnum.projet.Library.data.entities.BookAuthor.BookAuthorId;
 import supnum.projet.Library.data.entities.enums.AuthorRole;
 import supnum.projet.Library.data.repositories.*;
+import supnum.projet.Library.dto.response.BookAuthorResponse;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,28 +27,42 @@ public class BookAuthorService {
 
     
 
-    public List<BookAuthor> findAllByBook(Long bookId) {
-    return bookAuthorRepository.findAll().stream()
-        .filter(ba -> ba.getBook() != null && ba.getBook().getId().equals(bookId))
-        .toList();
-}
-    public BookAuthor addAuthorToBook(Long bookId, Long authorId, AuthorRole role) {
+    public List<BookAuthorResponse> findAllByBook(Long bookId) {
+        return bookAuthorRepository.findByBookId(bookId).stream()
+            .map(this::toResponse)
+            .toList();
+    }
+
+    public BookAuthorResponse addAuthorToBook(Long bookId, Long authorId, AuthorRole role) {
         Book book = bookRepository.findById(bookId)
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé"));
         Author author = authorRepository.findById(authorId)
             .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé"));
 
-        BookAuthorId id = new BookAuthorId();
-        id.setBookId(bookId);
-        id.setAuthorId(authorId);
+        BookAuthorId id = new BookAuthorId(bookId, authorId);
 
-        BookAuthor bookAuthor = new BookAuthor();
-        bookAuthor.setId(id);
-        bookAuthor.setBook(book);
-        bookAuthor.setAuthor(author);
-        bookAuthor.setRole(role);
+        BookAuthor bookAuthor = BookAuthor.builder()
+            .id(id)
+            .book(book)
+            .author(author)
+            .role(role)
+            .build();
 
-        return bookAuthorRepository.save(bookAuthor);
+        return toResponse(bookAuthorRepository.save(bookAuthor));
+    }
+
+    private BookAuthorResponse toResponse(BookAuthor ba) {
+        BookAuthorResponse r = new BookAuthorResponse();
+        r.setRole(ba.getRole());
+        if (ba.getBook() != null) {
+            r.setBookId(ba.getBook().getId());
+            r.setBookTitle(ba.getBook().getTitle());
+        }
+        if (ba.getAuthor() != null) {
+            r.setAuthorId(ba.getAuthor().getId());
+            r.setAuthorName(ba.getAuthor().getName());
+        }
+        return r;
     }
 
     public void removeAuthorFromBook(Long bookId, Long authorId) {

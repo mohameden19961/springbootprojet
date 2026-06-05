@@ -2,8 +2,17 @@ package supnum.projet.Library.data.entities;
 
 import supnum.projet.Library.data.entities.enums.MemberType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
+@Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "member")
 @SQLRestriction("deleted = false")
@@ -22,13 +31,4 @@ public class Member extends BaseEntity {
 
     @Column(name = "max_borrows", nullable = false)
     private Integer maxBorrows;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public MemberType getMemberType() { return memberType; }
-    public void setMemberType(MemberType memberType) { this.memberType = memberType; }
-    public Integer getMaxBorrows() { return maxBorrows; }
-    public void setMaxBorrows(Integer maxBorrows) { this.maxBorrows = maxBorrows; }
 }

@@ -2,9 +2,20 @@ package supnum.projet.Library.data.entities;
 
 import supnum.projet.Library.data.entities.enums.ReservationStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import java.time.LocalDateTime;
+
+@Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "reservation")
 public class Reservation {
@@ -26,18 +37,15 @@ public class Reservation {
     @Column(name = "queue_position", nullable = false)
     private Integer queuePosition;
 
+    @Column(name = "reservation_date", nullable = false)
+    @Builder.Default
+    private LocalDateTime reservationDate = LocalDateTime.now();
+
+    @Column(name = "expiration_date")
+    private LocalDateTime expirationDate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private ReservationStatus status = ReservationStatus.PENDING;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Member getMember() { return member; }
-    public void setMember(Member member) { this.member = member; }
-    public Book getBook() { return book; }
-    public void setBook(Book book) { this.book = book; }
-    public Integer getQueuePosition() { return queuePosition; }
-    public void setQueuePosition(Integer queuePosition) { this.queuePosition = queuePosition; }
-    public ReservationStatus getStatus() { return status; }
-    public void setStatus(ReservationStatus status) { this.status = status; }
 }

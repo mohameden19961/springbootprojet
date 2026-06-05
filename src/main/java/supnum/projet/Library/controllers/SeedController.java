@@ -2,8 +2,8 @@ package supnum.projet.Library.controllers;
 
 import supnum.projet.Library.data.entities.Language;
 import supnum.projet.Library.data.entities.Nationality;
-import supnum.projet.Library.data.repositories.LanguageRepository;
-import supnum.projet.Library.data.repositories.NationalityRepository;
+import supnum.projet.Library.services.LanguageService;
+import supnum.projet.Library.services.NationalityService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,18 +16,18 @@ import java.util.Map;
 @RequestMapping("/api/admin/seed")
 public class SeedController {
 
-    private final LanguageRepository languageRepository;
-    private final NationalityRepository nationalityRepository;
+    private final LanguageService languageService;
+    private final NationalityService nationalityService;
 
-    public SeedController(LanguageRepository languageRepository, NationalityRepository nationalityRepository) {
-        this.languageRepository = languageRepository;
-        this.nationalityRepository = nationalityRepository;
+    public SeedController(LanguageService languageService, NationalityService nationalityService) {
+        this.languageService = languageService;
+        this.nationalityService = nationalityService;
     }
 
     @PostMapping
     public ResponseEntity<Map<String, Integer>> seed() {
-        int langCount = languageRepository.saveAll(languages()).size();
-        int natCount = nationalityRepository.saveAll(nationalities()).size();
+        int langCount = languageService.saveAll(languages()).size();
+        int natCount = nationalityService.saveAll(nationalities()).size();
 
         return ResponseEntity.ok(Map.of(
             "languages", langCount,
@@ -98,16 +98,10 @@ public class SeedController {
     }
 
     private Language lang(String code, String name) {
-        Language l = new Language();
-        l.setCode(code);
-        l.setName(name);
-        return l;
+        return Language.builder().code(code).name(name).build();
     }
 
     private Nationality nat(String code, String name) {
-        Nationality n = new Nationality();
-        n.setCode(code);
-        n.setName(name);
-        return n;
+        return Nationality.builder().code(code).name(name).build();
     }
 }

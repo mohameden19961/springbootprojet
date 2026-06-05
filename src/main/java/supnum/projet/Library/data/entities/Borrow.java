@@ -2,9 +2,21 @@ package supnum.projet.Library.data.entities;
 
 import supnum.projet.Library.data.entities.enums.BorrowStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "borrow")
 public class Borrow {
@@ -24,20 +36,21 @@ public class Borrow {
     private BookItem bookItem;
 
     @Column(name = "renewal_count", nullable = false)
+    @Builder.Default
     private Integer renewalCount = 0;
+
+    @Column(name = "borrow_date", nullable = false)
+    @Builder.Default
+    private LocalDateTime borrowDate = LocalDateTime.now();
+
+    @Column(name = "due_date", nullable = false)
+    private LocalDate dueDate;
+
+    @Column(name = "return_date")
+    private LocalDateTime returnDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private BorrowStatus status = BorrowStatus.ACTIVE;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Member getMember() { return member; }
-    public void setMember(Member member) { this.member = member; }
-    public BookItem getBookItem() { return bookItem; }
-    public void setBookItem(BookItem bookItem) { this.bookItem = bookItem; }
-    public Integer getRenewalCount() { return renewalCount; }
-    public void setRenewalCount(Integer renewalCount) { this.renewalCount = renewalCount; }
-    public BorrowStatus getStatus() { return status; }
-    public void setStatus(BorrowStatus status) { this.status = status; }
 }

@@ -1,13 +1,14 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Member;
 import supnum.projet.Library.dto.MemberDTO;
+import supnum.projet.Library.dto.response.MemberResponse;
 import supnum.projet.Library.services.MemberService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/members")
@@ -20,22 +21,22 @@ public class MemberController {
     }
 
     @GetMapping
-    public List<Member> getAll() {
-        return service.findAll();
+    public Page<MemberResponse> getAll(Pageable pageable) {
+        return service.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Member> getById(@PathVariable Long id) {
+    public ResponseEntity<MemberResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Member> create(@Valid @RequestBody MemberDTO dto) {
-        return ResponseEntity.ok(service.create(dto));
+    public ResponseEntity<MemberResponse> create(@Valid @RequestBody MemberDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Member> update(@PathVariable Long id, @Valid @RequestBody MemberDTO dto) {
+    public ResponseEntity<MemberResponse> update(@PathVariable Long id, @Valid @RequestBody MemberDTO dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 
