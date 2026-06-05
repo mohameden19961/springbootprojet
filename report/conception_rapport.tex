@@ -1,0 +1,894 @@
+\documentclass[12pt,a4paper]{article}
+
+% ------ Packages ------
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{mdframed}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{charter}
+
+% ------ Geometry ------
+\geometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2.5cm,
+  right=2.5cm,
+  headheight=80pt,
+  footskip=60pt
+}
+
+% ------ Colors ------
+\definecolor{navy}{HTML}{1B3A6B}
+\definecolor{gold}{HTML}{C8962A}
+\definecolor{vibrantgreen}{HTML}{4CAF50}
+\definecolor{darkgray}{HTML}{2D2D2D}
+\definecolor{lightgray}{HTML}{F5F5F5}
+\definecolor{mediumgray}{HTML}{E8E8E8}
+
+% ------ Book icon (TikZ fallback) ------
+\newcommand{\bookicon}{%
+\begin{tikzpicture}[scale=0.35]
+  \fill[navy!80] (0,0) rectangle (1.4,2);
+  \fill[navy!50] (0.1,0.05) rectangle (1.3,1.95);
+  \fill[white]   (0.25,0.3) rectangle (1.15,0.55);
+  \fill[white]   (0.25,0.65) rectangle (1.15,0.9);
+  \fill[white]   (0.25,1.0)  rectangle (1.15,1.25);
+  \fill[gold]    (0,0) rectangle (0.12,2);
+\end{tikzpicture}%
+}
+
+% ------ Header / Footer ------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\bookicon\quad\textcolor{navy}{\small\textbf{Institut Sup\'erieur du Num\'erique (SUPNUM)}}}
+\fancyhead[C]{}
+\fancyhead[R]{\textcolor{navy}{\small\textbf{Library Management System}}\quad\bookicon}
+\fancyfoot[L]{\textcolor{darkgray}{\small \textcopyright{} ProjSpring -- Confidentiel}}
+\fancyfoot[R]{\textcolor{darkgray}{\small \textcopyright{} ProjSpring 2026}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
+% ------ Section styling ------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{navy}}
+  {\thesection}{1em}{}[\vspace{-0.3em}\textcolor{navy}{\rule{\linewidth}{0.8pt}}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{navy}}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{darkgray}}
+  {\thesubsubsection}{1em}{}
+
+% ------ Table styling ------
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\newcommand{\tableheader}[1]{%
+  \cellcolor{navy}\color{white}\bfseries #1%
+}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% ------ Framed box for Vision ------
+\newmdenv[
+  backgroundcolor=navy!85,
+  fontcolor=white,
+  linewidth=0pt,
+  leftmargin=0pt,
+  rightmargin=0pt,
+  innertopmargin=15pt,
+  innerbottommargin=15pt,
+  innerleftmargin=15pt,
+  innerrightmargin=15pt,
+  roundcorner=6pt
+]{visionbox}
+
+% ------ Listing style ------
+\lstdefinestyle{jsonstyle}{
+  language={},
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{lightgray},
+  frame=single,
+  rulecolor=\color{navy!40},
+  breaklines=true,
+  showstringspaces=false,
+  numbers=left,
+  numberstyle=\tiny\color{darkgray},
+  keywordstyle=\color{navy},
+  stringstyle=\color{vibrantgreen!50!black},
+  commentstyle=\color{darkgray}
+}
+
+% ------ Document info ------
+\title{DOSSIER DE CONCEPTION}
+\author{ProjSpring}
+\date{Juin 2026}
+
+\begin{document}
+
+% ============================================================
+% PAGE DE GARDE
+% ============================================================
+\begin{titlepage}
+\begin{center}
+\vspace*{1cm}
+
+% Logos
+\begin{minipage}{0.45\textwidth}
+\begin{flushleft}
+{\large\bookicon}\\[0.3cm]
+\textcolor{navy}{\large\textbf{Institut Sup\'erieur du Num\'erique (SUPNUM)}}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.45\textwidth}
+\begin{flushright}
+{\large\bookicon}\\[0.3cm]
+\textcolor{navy}{\large\textbf{Library Management System}}
+\end{flushright}
+\end{minipage}
+
+\vspace{1.5cm}
+\textcolor{navy}{\rule{0.9\linewidth}{1.5pt}}
+\vspace{1cm}
+
+{\color{navy}\Huge\textbf{DOSSIER DE CONCEPTION}}\\[0.6cm]
+{\color{gold}\Large\textbf{Fonctionnelle et Technique}}\\[0.3cm]
+{\color{darkgray}\large\textit{Syst\`eme Intelligent de Gestion de Biblioth\`eque}}\\[0.6cm]
+
+\textcolor{navy}{\rule{0.9\linewidth}{1.5pt}}
+
+\vspace{1.2cm}
+
+\begin{minipage}{0.85\textwidth}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|>{\bfseries\color{navy}}l|X|}
+\hline
+\multicolumn{2}{|>{\columncolor{navy}}c|}{\color{white}\textbf{IDENTIT\'E DU PROJET}} \\
+\hline
+\textbf{Projet} & Syst\`eme Intelligent de Gestion de Biblioth\`eque (Library Management System) \\
+\hline
+\textbf{Version} & 1.0.0 \\
+\hline
+\textbf{Date} & Juin 2026 \\
+\hline
+\textbf{Stack technique} & Java 21, Spring Boot 4.0.6, Spring Data JPA, Spring Security, JWT, MySQL 8, PostgreSQL, Maven, Lombok \\
+\hline
+\textbf{Porteur} & \'Equipe ProjSpring \\
+\hline
+\end{tabularx}
+\end{center}
+\end{minipage}
+
+\vfill
+
+{\color{navy}\rule{\linewidth}{3pt}}
+\vspace{0.3cm}
+{\color{navy}\small ProjSpring -- Dossier de Conception -- Juin 2026}
+\end{center}
+\end{titlepage}
+
+% ============================================================
+% TABLE DES MATIÈRES
+% ============================================================
+\newpage
+\tableofcontents
+\newpage
+
+% ============================================================
+% 1. INTRODUCTION
+% ============================================================
+\section{Introduction}
+
+\subsection{Contexte}
+La gestion manuelle des biblioth\`eques pr\'esente des limites consid\'erables : perte de traces des emprunts, difficult\'e \`a localiser les ouvrages, files d'attente non structur\'ees et absence de visibilit\'e en temps r\'eel sur l'\'etat du fonds documentaire. Le pr\'esent projet vise \`a r\'epondre \`a ces d\'efis par la conception et le d\'eveloppement d'un syst\`eme informatique complet de gestion de biblioth\`eque.
+
+Ce projet s'inscrit dans le cadre d'une initiative visant \`a moderniser les infrastructures documentaires en proposant une solution open-source, modulaire et extensible.
+
+\subsection{Objectifs du document}
+Ce document a pour objectifs de~:
+\begin{itemize}[leftmargin=1.5em, label=\textcolor{navy}{$\bullet$}]
+  \item Pr\'esenter l'analyse fonctionnelle et technique du syst\`eme~;
+  \item D\'ecrire l'architecture et la mod\'elisation de la base de donn\'ees~;
+  \item D\'etailler les APIs REST expos\'ees~;
+  \item Planifier les phases de d\'eveloppement et la r\'epartition des t\^aches.
+\end{itemize}
+
+\subsection{P\'erim\`etre}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|C{3cm}|C{4cm}|X|}
+\hline
+\tableheader{Volet} & \tableheader{Inclus} & \tableheader{Exclus} \\
+\hline
+Fonctionnel & Gestion des livres, adh\'erents, emprunts, r\'eservations & Marketing, vente d'ouvrages \\
+\hline
+Technique & API REST, JWT, base de donn\'ees relationnelle, Docker & Application mobile native, IA \\
+\hline
+Utilisateurs & Biblioth\'ecaires, administrateurs, assistants & Usagers finaux en self-service \\
+\hline
+\end{tabularx}
+\end{center}
+
+% ============================================================
+% 2. PRÉSENTATION DU PROJET
+% ============================================================
+\section{Pr\'esentation du projet}
+
+\subsection{Description g\'en\'erale}
+\begin{visionbox}
+\centering
+\Large\textbf{Vision du projet}\\[0.4cm]
+\normalsize
+D\'evelopper une API REST modulaire, s\'ecuris\'ee et performante pour la gestion intelligente des biblioth\`eques, capable de g\'erer le catalogue documentaire, les emprunts, les r\'eservations et les adh\'erents, tout en respectant les r\`egles m\'etier et en offrant une extensibilit\'e maximale.
+\end{visionbox}
+
+\subsection{Probl\'ematique}
+Les biblioth\`eques traditionnelles font face \`a plusieurs difficult\'es~:
+\begin{itemize}[leftmargin=1.5em, label=\textcolor{navy}{$\bullet$}]
+  \item \textbf{Gestion manuelle} des emprunts et retards, source d'erreurs et d'inefficacit\'e~;
+  \item \textbf{Absence de r\'eservation structur\'ee} : les membres ne peuvent pas r\'eserver un ouvrage indisponible~;
+  \item \textbf{Quotas non contr\^ol\'es} : aucun suivi du nombre d'emprunts par adh\'erent~;
+  \item \textbf{Tra\c cabilit\'e limit\'ee} : impossible de conna\^{\i}tre l'historique complet d'un exemplaire~;
+  \item \textbf{S\'ecurit\'e insuffisante} : acc\`es non contr\^ol\'e aux donn\'ees sensibles.
+\end{itemize}
+
+\subsection{Objectifs}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|c|X|}
+\hline
+\tableheader{N\textsuperscript{o}} & \tableheader{Objectif} \\
+\hline
+1 & Automatiser le cycle d'emprunt et de retour des ouvrages \\
+\hline
+2 & Mettre en place un syst\`eme de r\'eservation FIFO avec file d'attente \\
+\hline
+3 & Appliquer des r\`egles m\'etier (quotas, prolongations, d\'elais) \\
+\hline
+4 & S\'ecuriser l'acc\`es par authentification JWT et r\^oles \\
+\hline
+5 & Assurer l'int\'egrit\'e des donn\'ees via le soft-delete et l'optimistic locking \\
+\hline
+6 & Exposer une API REST document\'ee et testable \\
+\hline
+\end{tabularx}
+\end{center}
+
+% ============================================================
+% 3. ANALYSE FONCTIONNELLE
+% ============================================================
+\newpage
+\section{Analyse fonctionnelle}
+
+\subsection{Acteurs du syst\`eme}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|C{3cm}|X|C{3cm}|}
+\hline
+\tableheader{Acteur} & \tableheader{Description} & \tableheader{R\^ole} \\
+\hline
+ADMIN & Administrateur syst\`eme avec tous les droits & G\`ere les utilisateurs, la configuration, les donn\'ees de r\'ef\'erence \\
+\hline
+LIBRARIAN & Biblioth\'ecaire habilit\'e & G\`ere les livres, adh\'erents, emprunts et r\'eservations \\
+\hline
+ASSISTANT & Assistant de biblioth\`eque & Effectue les op\'erations courantes (emprunt, retour) \\
+\hline
+USER & Consultant simple & Consulte le catalogue et son historique \\
+\hline
+\end{tabularx}
+\end{center}
+
+\subsection{Fonctionnalit\'es principales}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|C{0.8cm}|L{3cm}|X|L{2.5cm}|}
+\hline
+\tableheader{N\textsuperscript{o}} & \tableheader{Module} & \tableheader{Description} & \tableheader{Acteurs} \\
+\hline
+1 & Gestion du catalogue & CRUD livres, auteurs, cat\'egories, \'editeurs, langues & ADMIN, LIBRARIAN \\
+\hline
+2 & Gestion des exemplaires & Suivi des exemplaires physiques par code-barres et statut & ADMIN, LIBRARIAN \\
+\hline
+3 & Gestion des adh\'erents & Inscription, modification, quotas par type (STUDENT/TEACHER/EXTERNAL) & ADMIN, LIBRARIAN \\
+\hline
+4 & Pr\^et / Retour & Emprunt avec v\'erification de disponibilit\'e et quota, retour, prolongation & LIBRARIAN, ASSISTANT \\
+\hline
+5 & R\'eservation & File d'attente FIFO, annulation, consultation de la file & LIBRARIAN, ASSISTANT \\
+\hline
+6 & Authentification & Login JWT, gestion de profil, s\'ecurisation des routes & Tous \\
+\hline
+7 & Administration & Gestion des utilisateurs, seed des r\'ef\'erences & ADMIN \\
+\hline
+\end{tabularx}
+\end{center}
+
+% ============================================================
+% 4. MODÉLISATION DE LA BASE DE DONNÉES
+% ============================================================
+\newpage
+\section{Mod\'elisation de la base de donn\'ees}
+
+\subsection{Les tables}
+
+\subsubsection{Liste des entit\'es}
+Le syst\`eme repose sur \textbf{11 entit\'es JPA} et \textbf{5 \'enums}~:
+
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|c|L{3cm}|X|c|}
+\hline
+\tableheader{N\textsuperscript{o}} & \tableheader{Entit\'e} & \tableheader{Description} & \tableheader{Soft delete} \\
+\hline
+1 & \texttt{Language} & Langue (code ISO + nom) & Non \\
+2 & \texttt{Nationality} & Nationalit\'e (code ISO + nom) & Non \\
+3 & \texttt{Category} & Cat\'egorie th\'ematique de livre & Oui \\
+4 & \texttt{Publisher} & Maison d'\'edition & Oui \\
+5 & \texttt{Author} & Auteur li\'e \`a une nationalit\'e & Oui \\
+6 & \texttt{Book} & \'Oeuvre intellectuelle (ISBN unique) & Oui \\
+7 & \texttt{BookItem} & Exemplaire physique (code-barres unique, version locking) & Oui \\
+8 & \texttt{BookAuthor} & Relation N-N livre-auteur avec r\^ole & N/A \\
+9 & \texttt{Member} & Adh\'erent (email unique, type, quota) & Oui \\
+10 & \texttt{Borrow} & Emprunt (membre, exemplaire, dates, statut) & Non \\
+11 & \texttt{Reservation} & R\'eservation (membre, livre, position file) & Non \\
+12 & \texttt{User} & Utilisateur (auth) & N/A \\
+\hline
+\end{tabularx}
+\end{center}
+
+\vspace{0.5cm}
+\textbf{Enums~:} \texttt{AuthorRole} (MAIN\_AUTHOR, CO\_AUTHOR, EDITOR), \texttt{BookItemStatus} (AVAILABLE, BORROWED, RESERVED, LOST, DAMAGED), \texttt{BorrowStatus} (ACTIVE, RETURNED, OVERDUE, LOST), \texttt{MemberType} (STUDENT, TEACHER, EXTERNAL), \texttt{ReservationStatus} (PENDING, READY, CANCELLED, COMPLETED).
+
+\subsubsection{Sch\'ema des entit\'es principales}
+\begin{center}
+\begin{tikzpicture}[scale=0.7, transform shape]
+  \tikzstyle{entity}=[rectangle, draw=navy, fill=navy!15, minimum width=2.8cm, minimum height=0.8cm, rounded corners=2pt, font=\small\bfseries]
+  \tikzstyle{relation}=[rectangle, draw=gold, fill=gold!15, minimum width=2.2cm, minimum height=0.6cm, rounded corners=2pt, font=\scriptsize]
+  \tikzstyle{link}=[-latex, thick, color=navy!60]
+
+  % Entities
+  \node[entity] (book) at (0,6) {Book};
+  \node[entity] (author) at (-5,3) {Author};
+  \node[entity] (category) at (5,4) {Category};
+  \node[entity] (publisher) at (0,4) {Publisher};
+  \node[entity] (language) at (5,7) {Language};
+  \node[entity] (bookitem) at (0,2.5) {BookItem};
+  \node[entity] (member) at (-5,0) {Member};
+  \node[entity] (borrow) at (-1,0) {Borrow};
+  \node[entity] (reservation) at (3,0) {Reservation};
+  \node[entity] (nationality) at (-5,5.5) {Nationality};
+
+  % Relations
+  \draw[link] (book) -- node[left, font=\scriptsize] {N} node[right, font=\scriptsize] {1} (publisher);
+  \draw[link] (book) -- node[left, font=\scriptsize] {N} node[right, font=\scriptsize] {1} (language);
+  \draw[link] (book) -- node[left, font=\scriptsize] {N} node[right, font=\scriptsize] {1} (category);
+  \draw[link] (book) -- node[left, font=\scriptsize] {1} node[right, font=\scriptsize] {N} (bookitem);
+  \draw[link] (book) -- node[above, font=\scriptsize] {N} node[below, font=\scriptsize] {N} (author);
+  \draw[link] (author) -- node[left, font=\scriptsize] {N} node[right, font=\scriptsize] {1} (nationality);
+  \draw[link] (member) -- node[above, font=\scriptsize] {1} node[below, font=\scriptsize] {N} (borrow);
+  \draw[link] (bookitem) -- node[above, font=\scriptsize] {1} node[below, font=\scriptsize] {N} (borrow);
+  \draw[link] (member) -- node[above, font=\scriptsize] {1} node[below, font=\scriptsize] {N} (reservation);
+  \draw[link] (book) -- node[above, font=\scriptsize] {1} node[below, font=\scriptsize] {N} (reservation);
+\end{tikzpicture}
+\end{center}
+
+\subsection{MLD (Mod\`ele Logique de Donn\'ees)}
+Le sch\'ema relationnel ci-dessous d\'ecrit les tables et leurs relations~:
+
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\small
+\begin{tabularx}{\textwidth}{|c|c|l|}
+\hline
+\tableheader{Table} & \tableheader{Cl\'e primaire} & \tableheader{Cl\'es \'etrang\`eres} \\
+\hline
+\texttt{language} & \texttt{code (PK)} & -- \\
+\texttt{nationality} & \texttt{code (PK)} & -- \\
+\texttt{category} & \texttt{id (PK)} & -- \\
+\texttt{publisher} & \texttt{id (PK)} & -- \\
+\texttt{author} & \texttt{id (PK)} & \texttt{nationality\_code $\rightarrow$ nationality} \\
+\texttt{book} & \texttt{id (PK)} & \texttt{language\_code $\rightarrow$ language}, \texttt{category\_id $\rightarrow$ category}, \texttt{publisher\_id $\rightarrow$ publisher} \\
+\texttt{book\_item} & \texttt{id (PK)} & \texttt{book\_id $\rightarrow$ book} \\
+\texttt{book\_author} & \texttt{(book\_id, author\_id) (PK)} & \texttt{book\_id $\rightarrow$ book}, \texttt{author\_id $\rightarrow$ author} \\
+\texttt{member} & \texttt{id (PK)} & -- \\
+\texttt{borrow} & \texttt{id (PK)} & \texttt{member\_id $\rightarrow$ member}, \texttt{book\_item\_id $\rightarrow$ book\_item} \\
+\texttt{reservation} & \texttt{id (PK)} & \texttt{member\_id $\rightarrow$ member}, \texttt{book\_id $\rightarrow$ book} \\
+\texttt{library\_user} & \texttt{id (PK)} & -- \\
+\hline
+\end{tabularx}
+\end{center}
+
+\subsection{Diagramme de cas d'utilisation}
+\begin{center}
+\begin{tikzpicture}[scale=0.65, transform shape]
+  \tikzstyle{actor}=[rectangle, draw=navy, fill=navy!25, minimum width=2cm, minimum height=0.7cm, rounded corners=4pt, font=\small\bfseries]
+  \tikzstyle{usecase}=[ellipse, draw=gold, fill=gold!15, minimum width=2.5cm, minimum height=0.6cm, font=\footnotesize, inner sep=2pt]
+  \tikzstyle{include}=[-latex, thick, color=navy!60]
+
+  % Actors
+  \node[actor] (admin) at (-5,6) {Administrateur};
+  \node[actor] (librarian) at (-5,3) {Biblioth\'ecaire};
+  \node[actor] (assistant) at (-5,0) {Assistant};
+
+  % Use cases
+  \node[usecase] (uc1) at (2,7) {G\'erer les utilisateurs};
+  \node[usecase] (uc2) at (4,5.5) {G\'erer les livres};
+  \node[usecase] (uc3) at (6,4) {G\'erer les auteurs};
+  \node[usecase] (uc4) at (4,3) {G\'erer les adh\'erents};
+  \node[usecase] (uc5) at (3,1.5) {Emprunter};
+  \node[usecase] (uc6) at (5,0) {Retourner};
+  \node[usecase] (uc7) at (1,0) {R\'eserver};
+  \node[usecase] (uc8) at (6,1.5) {Consulter le catalogue};
+
+  % Links
+  \draw[include] (admin) -- (uc1);
+  \draw[include] (admin) -- (uc2);
+  \draw[include] (admin) -- (uc3);
+  \draw[include] (librarian) -- (uc2);
+  \draw[include] (librarian) -- (uc3);
+  \draw[include] (librarian) -- (uc4);
+  \draw[include] (librarian) -- (uc5);
+  \draw[include] (librarian) -- (uc6);
+  \draw[include] (librarian) -- (uc7);
+  \draw[include] (assistant) -- (uc5);
+  \draw[include] (assistant) -- (uc6);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Diagramme de s\'equence g\'en\'eral -- Emprunt d'un livre}
+\begin{center}
+\begin{tikzpicture}[scale=0.75, transform shape]
+  \tikzstyle{obj}=[rectangle, draw=navy, fill=navy!15,
+    minimum width=2.8cm, minimum height=0.65cm,
+    font=\small\bfseries]
+  \tikzstyle{fwd}=[-latex, thick, color=navy]
+  \tikzstyle{ret}=[-latex, thick, color=gold, dashed]
+
+  % --- lifeline headers ---
+  \node[obj] (C)  at (0,0)    {Client};
+  \node[obj] (CT) at (3.5,0)  {BorrowController};
+  \node[obj] (S)  at (7,0)    {BorrowService};
+  \node[obj] (DB) at (10.5,0) {Base de donn\'ees};
+
+  % --- vertical lifelines ---
+  \draw[dotted, color=navy!40] (0,-0.35)    -- (0,-11);
+  \draw[dotted, color=navy!40] (3.5,-0.35)  -- (3.5,-11);
+  \draw[dotted, color=navy!40] (7,-0.35)    -- (7,-11);
+  \draw[dotted, color=navy!40] (10.5,-0.35) -- (10.5,-11);
+
+  % --- messages ---
+  \draw[fwd] (0,-1)   -- (3.5,-1)
+    node[midway, above, font=\scriptsize] {POST /checkout};
+
+  \draw[fwd] (3.5,-2) -- (7,-2)
+    node[midway, above, font=\scriptsize] {borrowBook()};
+
+  \draw[fwd] (7,-3)   -- (10.5,-3)
+    node[midway, above, font=\scriptsize] {V\'erifier membre};
+  \draw[ret] (10.5,-3.7) -- (7,-3.7)
+    node[midway, above, font=\scriptsize] {OK};
+
+  \draw[fwd] (7,-4.5) -- (10.5,-4.5)
+    node[midway, above, font=\scriptsize] {V\'erifier exemplaire};
+  \draw[ret] (10.5,-5.2) -- (7,-5.2)
+    node[midway, above, font=\scriptsize] {AVAILABLE};
+
+  \draw[fwd] (7,-6)   -- (10.5,-6)
+    node[midway, above, font=\scriptsize] {V\'erifier quota};
+  \draw[ret] (10.5,-6.7) -- (7,-6.7)
+    node[midway, above, font=\scriptsize] {OK};
+
+  \draw[fwd] (7,-7.5) -- (10.5,-7.5)
+    node[midway, above, font=\scriptsize] {Mettre \`a jour statut};
+
+  \draw[fwd] (7,-8.3) -- (10.5,-8.3)
+    node[midway, above, font=\scriptsize] {Cr\'eer emprunt};
+  \draw[ret] (10.5,-9)   -- (7,-9)
+    node[midway, above, font=\scriptsize] {Borrow};
+
+  \draw[ret] (7,-9.8)    -- (3.5,-9.8)
+    node[midway, above, font=\scriptsize] {BorrowResponse};
+
+  \draw[ret] (3.5,-10.6) -- (0,-10.6)
+    node[midway, above, font=\scriptsize] {201 Created};
+\end{tikzpicture}
+\end{center}
+
+% ============================================================
+% 5. ARCHITECTURE GÉNÉRALE
+% ============================================================
+\newpage
+\section{Architecture g\'en\'erale du syst\`eme}
+
+\subsection{Vue d'ensemble}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|C{3.5cm}|X|C{3.5cm}|}
+\hline
+\tableheader{Couche Frontend} & \tableheader{Couche Backend (API)} & \tableheader{Base de donn\'ees} \\
+\hline
+Client HTTP (Postman, cURL, navigateur) & \texttt{Java 21 + Spring Boot 4.0.6} & MySQL 8 (dev) / PostgreSQL (prod) \\
+& Contr\^oleurs REST & H2 (tests) \\
+& Services m\'etier & \texttt{spring-jpa + Hibernate} \\
+& S\'ecurit\'e JWT & \\
+\hline
+\end{tabularx}
+\end{center}
+
+\subsection{Flux de communication}
+\begin{center}
+\begin{tikzpicture}[scale=0.65, transform shape]
+  \tikzstyle{layer}=[rectangle, draw=navy, fill=navy!15, minimum width=10cm, minimum height=0.9cm, font=\small\bfseries, rounded corners=4pt]
+  \tikzstyle{arrow}=[latex-latex, thick, color=navy!80]
+
+  \node[layer] (client) at (0,5) {Client HTTP (requ\^ete REST)};
+  \node[layer] (filter) at (0,3.5) {\textbf{S\'ecurit\'e} -- JwtAuthenticationFilter};
+  \node[layer] (controller) at (0,2) {\textbf{Contr\^oleurs} -- REST Controllers};
+  \node[layer] (service) at (0,0.5) {\textbf{Services} -- Business Logic + @Transactional};
+  \node[layer] (repo) at (0,-1) {\textbf{Repositories} -- Spring Data JPA};
+  \node[layer] (db) at (0,-2.5) {\textbf{Base de donn\'ees} -- MySQL / PostgreSQL};
+
+  \draw[arrow] (client) -- (filter);
+  \draw[arrow] (filter) -- (controller);
+  \draw[arrow] (controller) -- (service);
+  \draw[arrow] (service) -- (repo);
+  \draw[arrow] (repo) -- (db);
+\end{tikzpicture}
+\end{center}
+
+\subsection{D\'eploiement}
+Le syst\`eme est d\'eploy\'e via Docker avec l'architecture suivante~:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7, transform shape]
+  \tikzstyle{svc}=[rectangle, draw=navy, fill=navy!20, minimum width=3.5cm, minimum height=1cm, rounded corners=4pt, font=\small\bfseries]
+
+  \node[svc] (api) at (0,3) {API Spring Boot};
+  \node[svc] (mysql) at (0,0) {MySQL 8};
+  \node[svc] (phpmyadmin) at (4,0) {phpMyAdmin};
+
+  \draw[-latex, thick, color=navy!60] (api) -- (mysql);
+  \draw[-latex, thick, color=gold] (phpmyadmin) -- (mysql);
+
+  \node[font=\footnotesize, color=darkgray] at (0,4) {:8080};
+  \node[font=\footnotesize, color=darkgray] at (0,-0.8) {:3306};
+  \node[font=\footnotesize, color=darkgray] at (4,-0.8) {:8080};
+\end{tikzpicture}
+\end{center}
+
+Le \texttt{Dockerfile} utilise une construction multi-\'etapes~:
+\begin{itemize}[leftmargin=1.5em, label=\textcolor{green}{$\bullet$}]
+  \item \'Etape 1~: compilation avec \texttt{maven:3.9-eclipse-temurin-21}
+  \item \'Etape 2~: ex\'ecution avec \texttt{eclipse-temurin:21-jre} (image finale \textasciitilde 180MB)
+  \item Profil actif~: \texttt{prod} avec PostgreSQL
+\end{itemize}
+
+% ============================================================
+% 7. APIs PRINCIPALES
+% ============================================================
+\newpage
+\section{APIs principales (REST)}
+
+\subsection{Endpoints applications}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\small
+\begin{longtable}{|c|p{3.2cm}|p{2.8cm}|p{5cm}|}
+\hline
+\tableheader{M\'ethode} & \tableheader{Endpoint} & \tableheader{Contr\^oleur} & \tableheader{Description} \\
+\hline
+\endhead
+POST & \texttt{/api/auth/login} & AuthController & Authentification JWT \\
+PUT & \texttt{/api/auth/profile} & AuthController & Mise \`a jour identifiants \\
+GET & \texttt{/api/books} & BookController & Liste pagin\'ee des livres \\
+POST & \texttt{/api/books} & BookController & Cr\'eation d'un livre \\
+GET & \texttt{/api/books/\{id\}} & BookController & D\'etail d'un livre \\
+PUT & \texttt{/api/books/\{id\}} & BookController & Modification d'un livre \\
+DELETE & \texttt{/api/books/\{id\}} & BookController & Suppression logique \\
+GET & \texttt{/api/authors} & AuthorController & Liste pagin\'ee des auteurs \\
+POST & \texttt{/api/authors} & AuthorController & Cr\'eation d'un auteur \\
+PUT & \texttt{/api/authors/\{id\}} & AuthorController & Modification d'un auteur \\
+DELETE & \texttt{/api/authors/\{id\}} & AuthorController & Suppression logique \\
+GET & \texttt{/api/books/\{id\}/items} & BookItemController & Exemplaires d'un livre \\
+POST & \texttt{/api/books/\{id\}/items} & BookItemController & Ajout d'un exemplaire \\
+GET & \texttt{/api/books/\{id\}/authors} & BookAuthorController & Auteurs d'un livre \\
+POST & \texttt{/api/books/\{id\}/authors/\{aid\}} & BookAuthorController & Associer un auteur \\
+GET & \texttt{/api/members} & MemberController & Liste pagin\'ee des membres \\
+POST & \texttt{/api/members} & MemberController & Cr\'eation d'un membre \\
+GET & \texttt{/api/borrows} & BorrowController & Liste pagin\'ee des emprunts \\
+POST & \texttt{/api/borrows/checkout} & BorrowController & Emprunter un livre \\
+POST & \texttt{/api/borrows/\{id\}/return} & BorrowController & Retourner un livre \\
+POST & \texttt{/api/borrows/\{id\}/renew} & BorrowController & Prolonger un emprunt \\
+GET & \texttt{/api/reservations} & ReservationController & Liste pagin\'ee \\
+POST & \texttt{/api/reservations} & ReservationController & R\'eserver un livre \\
+POST & \texttt{/api/reservations/\{id\}/cancel} & ReservationController & Annuler une r\'eservation \\
+GET & \texttt{/api/reservations/queue/\{bookId\}} & ReservationController & File d'attente \\
+GET & \texttt{/api/categories} & CategoryController & Liste des cat\'egories \\
+GET & \texttt{/api/publishers} & PublisherController & Liste des \'editeurs \\
+GET & \texttt{/api/languages} & LanguageController & Liste des langues \\
+GET & \texttt{/api/nationalities} & NationalityController & Liste des nationalit\'es \\
+GET & \texttt{/api/admin/users} & AdminController & Utilisateurs (admin) \\
+POST & \texttt{/api/admin/users} & AdminController & Cr\'eer un utilisateur \\
+POST & \texttt{/api/admin/seed} & SeedController & Initialiser les r\'ef\'erences \\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection{Exemples JSON}
+
+\subsubsection{Cr\'eation d'un livre -- Requ\^ete}
+\begin{lstlisting}[style=jsonstyle]
+POST /api/books
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "title": "Le Petit Prince",
+  "isbn": "978-2-07-040850-4",
+  "languageCode": "FR",
+  "categoryId": 1,
+  "publisherId": 1
+}
+\end{lstlisting}
+
+\subsubsection{R\'eponse}
+\begin{lstlisting}[style=jsonstyle]
+HTTP/1.1 201 Created
+
+{
+  "id": 1,
+  "title": "Le Petit Prince",
+  "isbn": "978-2-07-040850-4",
+  "languageCode": "FR",
+  "languageName": "French",
+  "categoryId": 1,
+  "categoryName": "Litterature",
+  "publisherId": 1,
+  "publisherName": "Gallimard"
+}
+\end{lstlisting}
+
+\subsubsection{Emprunt d'un livre}
+\begin{lstlisting}[style=jsonstyle]
+POST /api/borrows/checkout?memberId=1&barcode=BK-001
+
+HTTP/1.1 201 Created
+
+{
+  "id": 1,
+  "memberId": 1,
+  "memberEmail": "jean@example.com",
+  "bookItemId": 1,
+  "bookItemBarcode": "BK-001",
+  "renewalCount": 0,
+  "borrowDate": "2026-06-05T10:30:00",
+  "dueDate": "2026-06-19",
+  "returnDate": null,
+  "status": "ACTIVE"
+}
+\end{lstlisting}
+
+\subsubsection{Authentification}
+\begin{lstlisting}[style=jsonstyle]
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password"
+}
+
+HTTP/1.1 200 OK
+
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
+  "username": "admin",
+  "role": "ADMIN"
+}
+\end{lstlisting}
+
+% ============================================================
+% 8. ARCHITECTURE TECHNIQUE
+% ============================================================
+\newpage
+\section{Architecture technique}
+
+\subsection{Structure du projet Spring Boot}
+L'arborescence du projet suit une architecture en couches classique~:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.65, transform shape]
+  \tikzstyle{dir}=[draw=navy, fill=navy!10, minimum width=7cm, minimum height=0.5cm, font=\small\ttfamily, anchor=west, rounded corners=2pt]
+  \tikzstyle{file}=[font=\small\ttfamily, anchor=west]
+
+  \node[dir] at (4,10) {src/main/java/supnum/projet/Library/};
+  \node[dir] at (4.5,9) {controllers/ -- 14 contr\^oleurs REST};
+  \node[dir] at (4.5,8.2) {data/};
+  \node[dir] at (5,7.6) {entities/ -- 12 entit\'es JPA};
+  \node[dir] at (5,7) {entities/enums/ -- 5 \'enums};
+  \node[dir] at (5,6.4) {repositories/ -- 10 repositories};
+  \node[dir] at (4.5,5.6) {dto/ -- 9 DTOs de requ\^ete + 7 response DTOs};
+  \node[dir] at (4.5,4.8) {services/ -- 12 services m\'etier};
+  \node[dir] at (4.5,4) {security/ -- JWT, filter, config};
+  \node[dir] at (4.5,3.2) {exceptions/ -- 4 classes + handler global};
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{D\'etails par couche}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|c|X|}
+\hline
+\tableheader{Couche} & \tableheader{Responsabilit\'e} \\
+\hline
+\textbf{Controllers} & Endpoints REST, validation (\texttt{@Valid}), mapping DTO $\leftrightarrow$ response \\
+\textbf{Services} & Logique m\'etier, transactions (\texttt{@Transactional}), r\`egles de gestion \\
+\textbf{Repositories} & Spring Data JPA, requ\^etes personnalis\'ees, pagination \\
+\textbf{Entities} & Mapping JPA, relations, soft delete, optimistic locking \\
+\textbf{Security} & Filtre JWT, encodage BCrypt, configuration Spring Security \\
+\textbf{Exceptions} & Gestion centralis\'ee des erreurs (404, 400, 409, 500) \\
+\hline
+\end{tabularx}
+\end{center}
+
+\subsection{Technologies et d\'ependances}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|c|X|c|}
+\hline
+\tableheader{Cat\'egorie} & \tableheader{Technologie} & \tableheader{Version} \\
+\hline
+Langage & Java (JDK) & 21 LTS \\
+Framework & Spring Boot & 4.0.6 \\
+ORM & Spring Data JPA / Hibernate & (g\'er\'e par Boot) \\
+S\'ecurit\'e & Spring Security + JWT (jjwt) & 0.12.6 \\
+Validation & Jakarta Validation (Hibernate Validator) & (g\'er\'e par Boot) \\
+Base de donn\'ees & MySQL (dev), PostgreSQL (prod), H2 (test) & 8 / 16 / 2 \\
+Build & Maven Wrapper & 3.9.15 \\
+Utilitaires & Lombok, DevTools & (g\'er\'e par Boot) \\
+Conteneurisation & Docker + Docker Compose & 24+ \\
+D\'eploiement & Render (Cloud) & -- \\
+\hline
+\end{tabularx}
+\end{center}
+
+% ============================================================
+% 9. PLANIFICATION
+% ============================================================
+\newpage
+\section{Planification du projet}
+
+\subsection{D\'ecoupage en phases}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|c|l|X|c|}
+\hline
+\tableheader{Phase} & \tableheader{Description} & \tableheader{Livrables} & \tableheader{Dur\'ee} \\
+\hline
+1 & Conception & Sp\'ecifications, MCD, maquettes & 1 semaine \\
+2 & Setup & Init projet, CI/CD, Docker, BDD & 3 jours \\
+3 & Core (entit\'es de r\'ef\'erence) & Language, Nationality, Category, Publisher, Author & 4 jours \\
+4 & Catalogue & Book, BookItem, BookAuthor & 5 jours \\
+5 & Membres \& Emprunts & Member, Borrow, r\`egles m\'etier & 5 jours \\
+6 & R\'eservations & Reservation, file FIFO, annulation & 4 jours \\
+7 & S\'ecurit\'e & Auth JWT, r\^oles, filtres & 3 jours \\
+8 & Tests \& D\'eploiement & Tests unitaires/int\'egration, docker, d\'eploiement & 4 jours \\
+\hline
+\end{tabularx}
+\end{center}
+
+\subsection{Planning d\'etaill\'e sur 4 semaines}
+\begin{center}
+\begin{tikzpicture}[scale=0.55, transform shape]
+  \tikzstyle{week}=[rectangle, draw=navy, minimum width=7cm, minimum height=0.5cm, font=\tiny\bfseries, anchor=west]
+  \tikzstyle{task}=[rectangle, draw=gold!70, fill=gold!20, minimum height=0.5cm, font=\tiny, anchor=west]
+
+  \node[week] at (0,6) {Semaine 1 -- Conception \& Setup};
+  \node[task, minimum width=3.5cm] at (0.2,5.4) {Analyse et sp\'ecifications};
+  \node[task, minimum width=3.5cm] at (3.7,5.4) {MCD et maquettes};
+  \node[task, minimum width=2.8cm] at (0.2,4.8) {Initialisation projet};
+  \node[task, minimum width=2.8cm] at (3,4.8) {Docker et CI/CD};
+  \node[task, minimum width=1.4cm] at (5.8,4.8) {BDD};
+
+  \node[week] at (0,3.5) {Semaine 2 -- Core \& Catalogue};
+  \node[task, minimum width=3cm] at (0.2,2.9) {Entit\'es de r\'ef\'erence};
+  \node[task, minimum width=4.2cm] at (3.2,2.9) {Books \& BookItems};
+  \node[task, minimum width=2cm] at (0.2,2.3) {Auteurs};
+  \node[task, minimum width=2cm] at (2.2,2.3) {Cat\'egories};
+  \node[task, minimum width=1.5cm] at (4.2,2.3) {\'Editeurs};
+
+  \node[week] at (0,1) {Semaine 3 -- Emprunts \& R\'eservations};
+  \node[task, minimum width=3.5cm] at (0.2,0.4) {Membres et quotas};
+  \node[task, minimum width=3.5cm] at (3.7,0.4) {Emprunts et retours};
+  \node[task, minimum width=1.8cm] at (0.2,-0.2) {Prolongations};
+  \node[task, minimum width=2.8cm] at (2,-0.2) {R\'eservations FIFO};
+
+  \node[week] at (0,-1.5) {Semaine 4 -- S\'ecurit\'e \& Finalisation};
+  \node[task, minimum width=3cm] at (0.2,-2.1) {Auth JWT};
+  \node[task, minimum width=2.5cm] at (3.2,-2.1) {R\^oles};
+  \node[task, minimum width=1.8cm] at (0.2,-2.7) {Tests};
+  \node[task, minimum width=2.5cm] at (2,-2.7) {D\'eploiement};
+  \node[task, minimum width=1.8cm] at (4.5,-2.7) {Doc};
+\end{tikzpicture}
+\end{center}
+
+\subsection{R\'epartition des responsabilit\'es}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|c|X|X|}
+\hline
+\tableheader{Membre} & \tableheader{Modules} & \tableheader{T\^eches} \\
+\hline
+Membre 1 & Security, BaseEntity, Exceptions & Configuration JWT, filtres, GlobalExceptionHandler, soft delete \\
+Membre 2 & R\'ef\'erences & Language, Nationality, Category, Publisher, Author (CRUD) \\
+Membre 3 & Catalogue & Book, BookItem (optimistic locking), BookAuthor \\
+Membre 4 & Membres \& Emprunts & Member, Borrow (quotas, prolongations, retours) \\
+Membre 5 & R\'eservations & Reservation (file FIFO, annulation, queue) \\
+\hline
+\end{tabularx}
+\end{center}
+
+% ============================================================
+% 10. CONCLUSION
+% ============================================================
+\newpage
+\section{Conclusion}
+
+Le pr\'esent dossier de conception a permis de formaliser l'ensemble des sp\'ecifications fonctionnelles et techniques du \textbf{Syst\`eme Intelligent de Gestion de Biblioth\`eque}.
+
+\subsection{Synth\`ese}
+Le syst\`eme propos\'e repose sur une architecture modulaire en couches, offrant~:
+\begin{itemize}[leftmargin=1.5em, label=\textcolor{navy}{$\bullet$}]
+  \item Une \textbf{API REST compl\`ete} couvrant l'ensemble du cycle de vie documentaire~;
+  \item \textbf{11 entit\'es JPA} et \textbf{5 \'enums} pour une mod\'elisation exhaustive du domaine~;
+  \item \textbf{14 contr\^oleurs} et \textbf{12 services} encapsulant la logique m\'etier~;
+  \item Une \textbf{s\'ecurit\'e robuste} via JWT avec gestion des r\^oles~;
+  \item Des \textbf{m\'ecanismes avanc\'es}~: soft delete, optimistic locking, file d'attente FIFO~;
+  \item Un \textbf{d\'eploiement conteneuris\'e} avec Docker et PostgreSQL.
+\end{itemize}
+
+\subsection{R\'ecapitulatif}
+\begin{center}
+\rowcolors{2}{white}{mediumgray}
+\begin{tabularx}{\textwidth}{|X|X|}
+\hline
+\tableheader{Axe} & \tableheader{Apport du projet} \\
+\hline
+Modernisation & Automatisation compl\`ete de la gestion documentaire \\
+Performance & API REST rapide avec pagination et cache JPA \\
+S\'ecurit\'e & Authentification JWT, r\^oles, validation des entr\'ees \\
+Extensibilit\'e & Architecture modulaire, pr\^ete pour l'ajout de fonctionnalit\'es \\
+Maintenabilit\'e & Code organis\'e en couches, tests H2, documentation \\
+\hline
+\end{tabularx}
+\end{center}
+
+\vspace{1cm}
+\begin{center}
+\textcolor{navy}{\rule{0.6\linewidth}{1pt}}\\[0.5cm]
+{\large\textbf{ProjSpring}}\\[0.2cm]
+{\small\textit{Syst\`eme Intelligent de Gestion de Biblioth\`eque}}\\[0.5cm]
+\textcolor{navy}{\rule{0.6\linewidth}{1pt}}
+\end{center}
+
+\end{document}
