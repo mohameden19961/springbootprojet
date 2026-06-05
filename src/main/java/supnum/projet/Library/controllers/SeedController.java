@@ -77,7 +77,7 @@ public class SeedController {
             nat("KR", "South Korean"), nat("KW", "Kuwaiti"),
             nat("KZ", "Kazakh"), nat("LB", "Lebanese"),
             nat("LU", "Luxembourger"), nat("MA", "Moroccan"),
-            nat("ML", "Malian"), nat("MT", "Maltese"),
+            nat("ML", "Malian"), nat("MR", "Mauritanian"), nat("MT", "Maltese"),
             nat("MX", "Mexican"), nat("MY", "Malaysian"),
             nat("NG", "Nigerian"), nat("NL", "Dutch"),
             nat("NO", "Norwegian"), nat("NZ", "New Zealander"),
