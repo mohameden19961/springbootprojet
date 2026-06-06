@@ -100,6 +100,7 @@ public class BorrowService {
         }
 
         borrow.setRenewalCount(borrow.getRenewalCount() + 1);
+        borrow.setDueDate(borrow.getDueDate().plusDays(14));
         return toResponse(borrowRepository.save(borrow));
     }
 

@@ -7,25 +7,35 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class LibraryApplication {
     public static void main(String[] args) {
         String url = System.getenv("SPRING_DATASOURCE_URL");
-        if (url != null) {
-            // Convertir postgresql:// en jdbc:postgresql:// avec port 5432
-            url = url.replace("postgresql://", "");
-            // url = "user:password@host/db"
-            String[] atSplit = url.split("@");
-            String userInfo = atSplit[0]; // user:password
-            String hostDb = atSplit[1];   // host/db
-            String[] hostDbSplit = hostDb.split("/");
-            String host = hostDbSplit[0];
-            String db = hostDbSplit[1];
-            String[] userPass = userInfo.split(":");
-            String user = userPass[0];
-            String password = userPass[1];
-            
-            String jdbcUrl = "jdbc:postgresql://" + host + ":5432/" + db;
-            System.setProperty("spring.datasource.url", jdbcUrl);
-            System.setProperty("spring.datasource.username", user);
-            System.setProperty("spring.datasource.password", password);
-            System.out.println("=== JDBC URL: " + jdbcUrl);
+        if (url != null && url.startsWith("postgresql://")) {
+            try {
+                String rest = url.substring("postgresql://".length());
+                // rest = "user:password@host/db" or "host/db"
+                String[] atSplit = rest.split("@", 2);
+                String hostPortDb;
+                String user = null;
+                String password = null;
+                if (atSplit.length == 2) {
+                    String[] userPass = atSplit[0].split(":", 2);
+                    user = userPass[0];
+                    password = userPass.length > 1 ? userPass[1] : "";
+                    hostPortDb = atSplit[1];
+                } else {
+                    hostPortDb = atSplit[0];
+                }
+                String[] hostDbSplit = hostPortDb.split("/", 2);
+                String host = hostDbSplit[0];
+                String db = hostDbSplit.length > 1 ? hostDbSplit[1] : "";
+
+                String jdbcUrl = "jdbc:postgresql://" + host + ":5432/" + db;
+                System.setProperty("spring.datasource.url", jdbcUrl);
+                if (user != null) {
+                    System.setProperty("spring.datasource.username", user);
+                    System.setProperty("spring.datasource.password", password);
+                }
+            } catch (Exception e) {
+                System.err.println("Impossible de parser SPRING_DATASOURCE_URL, utilisation des valeurs par défaut");
+            }
         }
         SpringApplication.run(LibraryApplication.class, args);
     }

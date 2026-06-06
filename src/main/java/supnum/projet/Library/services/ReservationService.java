@@ -35,6 +35,13 @@ public class ReservationService {
         Book book = bookRepository.findById(dto.getBookId())
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'id : " + dto.getBookId()));
 
+        boolean alreadyReserved = reservationRepository
+            .findByMemberAndBookAndStatus(member, book, ReservationStatus.PENDING)
+            .stream().anyMatch(r -> r.getStatus() == ReservationStatus.PENDING);
+        if (alreadyReserved) {
+            throw new BusinessException("Vous avez déjà une réservation en attente pour ce livre");
+        }
+
         int nextPosition = reservationRepository.findMaxQueuePositionForBook(book) + 1;
 
         Reservation reservation = Reservation.builder()
@@ -57,7 +64,16 @@ public class ReservationService {
         }
 
         reservation.setStatus(ReservationStatus.CANCELLED);
-        return toResponse(reservationRepository.save(reservation));
+        ReservationResponse response = toResponse(reservationRepository.save(reservation));
+
+        List<Reservation> queue = reservationRepository
+            .findByBookAndStatusOrderByQueuePositionAsc(reservation.getBook(), ReservationStatus.PENDING);
+        for (int i = 0; i < queue.size(); i++) {
+            queue.get(i).setQueuePosition(i + 1);
+        }
+        reservationRepository.saveAll(queue);
+
+        return response;
     }
 
     public List<ReservationResponse> getQueueForBook(Long bookId) {
