@@ -218,7 +218,7 @@ docker compose up -d mysql
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-L'API est accessible sur : `http://localhost:8081`
+L'API est accessible sur : `http://localhost:8082`
 
 ### Déploiement (profil prod)
 ```bash
@@ -258,6 +258,18 @@ java -jar target/Library-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
 | GET/POST | `/api/reservations[/{id}]` | Liste / Créer réservation |
 | POST | `/api/reservations/{id}/cancel` | Annuler réservation |
 | GET | `/api/reservations/queue/{bookId}` | File d'attente d'un livre |
+
+### Google Books (public)
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/external/books/search?q=&max=` | Recherche de livres |
+| GET | `/api/external/books/isbn/{isbn}` | Recherche par ISBN |
+
+### QR Code
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/qrcode/book-item/{id}?size=` | QR code d'un exemplaire |
+| GET | `/api/qrcode/text?text=&size=` | QR code pour texte personnalisé |
 
 ## 📖 Documentation Interactive (SpringDoc OpenAPI)
 
