@@ -1,7 +1,7 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Publisher;
 import supnum.projet.Library.dto.PublisherDTO;
+import supnum.projet.Library.dto.response.PublisherResponse;
 import supnum.projet.Library.services.PublisherService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -20,22 +20,22 @@ public class PublisherController {
     }
 
     @GetMapping
-    public Page<Publisher> getAll(Pageable pageable) {
+    public Page<PublisherResponse> getAll(Pageable pageable) {
         return service.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Publisher> getById(@PathVariable Long id) {
+    public ResponseEntity<PublisherResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Publisher> create(@Valid @RequestBody PublisherDTO dto) {
+    public ResponseEntity<PublisherResponse> create(@Valid @RequestBody PublisherDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Publisher> update(@PathVariable Long id, @Valid @RequestBody PublisherDTO dto) {
+    public ResponseEntity<PublisherResponse> update(@PathVariable Long id, @Valid @RequestBody PublisherDTO dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 

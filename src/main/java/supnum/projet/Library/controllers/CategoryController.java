@@ -1,7 +1,7 @@
 package supnum.projet.Library.controllers;
 
-import supnum.projet.Library.data.entities.Category;
 import supnum.projet.Library.dto.CategoryDTO;
+import supnum.projet.Library.dto.response.CategoryResponse;
 import supnum.projet.Library.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -20,22 +20,22 @@ public class CategoryController {
     }
 
     @GetMapping
-    public Page<Category> getAll(Pageable pageable) {
+    public Page<CategoryResponse> getAll(Pageable pageable) {
         return service.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getById(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Category> create(@Valid @RequestBody CategoryDTO dto) {
+    public ResponseEntity<CategoryResponse> create(@Valid @RequestBody CategoryDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> update(@PathVariable Long id, @Valid @RequestBody CategoryDTO dto) {
+    public ResponseEntity<CategoryResponse> update(@PathVariable Long id, @Valid @RequestBody CategoryDTO dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 

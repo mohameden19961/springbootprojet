@@ -2,6 +2,7 @@ package supnum.projet.Library.services;
 
 import supnum.projet.Library.data.entities.Category;
 import supnum.projet.Library.dto.CategoryDTO;
+import supnum.projet.Library.dto.response.CategoryResponse;
 import supnum.projet.Library.data.repositories.CategoryRepository;
 import supnum.projet.Library.exceptions.DuplicateResourceException;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
@@ -19,37 +20,47 @@ public class CategoryService {
         this.repository = repository;
     }
 
-    public Page<Category> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<CategoryResponse> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(this::toResponse);
     }
 
-    public Category create(CategoryDTO dto) {
+    public CategoryResponse create(CategoryDTO dto) {
         if(repository.findByName(dto.getName()).isPresent()) {
             throw new DuplicateResourceException("Une catégorie avec ce nom existe déjà");
         }
         Category cat = Category.builder()
             .name(dto.getName())
             .build();
-        return repository.save(cat);
+        return toResponse(repository.save(cat));
     }
 
-    public Category findById(Long id) {
+    public CategoryResponse findById(Long id) {
         return repository.findById(id)
+            .map(this::toResponse)
             .orElseThrow(() -> new ResourceNotFoundException("Catégorie non trouvée avec l'id : " + id));
     }
 
-    public Category update(Long id, CategoryDTO dto) {
-        Category cat = findById(id);
+    public CategoryResponse update(Long id, CategoryDTO dto) {
+        Category cat = repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Catégorie non trouvée avec l'id : " + id));
         if (!cat.getName().equals(dto.getName()) && repository.findByName(dto.getName()).isPresent()) {
             throw new DuplicateResourceException("Une catégorie avec ce nom existe déjà");
         }
         cat.setName(dto.getName());
-        return repository.save(cat);
+        return toResponse(repository.save(cat));
     }
 
     public void delete(Long id) {
-        Category cat = findById(id);
+        Category cat = repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Catégorie non trouvée avec l'id : " + id));
         cat.setDeleted(true);
         repository.save(cat);
+    }
+
+    private CategoryResponse toResponse(Category cat) {
+        CategoryResponse r = new CategoryResponse();
+        r.setId(cat.getId());
+        r.setName(cat.getName());
+        return r;
     }
 }

@@ -1,6 +1,7 @@
 package supnum.projet.Library.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class UserRegistrationDTO {
@@ -14,6 +15,7 @@ public class UserRegistrationDTO {
     private String password;
 
     @NotBlank(message = "Le rôle est requis")
+    @Pattern(regexp = "^(ADMIN|USER)$", message = "Le rôle doit être ADMIN ou USER")
     private String role;
 
     public String getUsername() { return username; }
