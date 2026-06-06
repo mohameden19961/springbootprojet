@@ -7,6 +7,8 @@ import supnum.projet.Library.dto.response.AuthorResponse;
 import supnum.projet.Library.data.repositories.AuthorRepository;
 import supnum.projet.Library.data.repositories.NationalityRepository;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,10 +25,12 @@ public class AuthorService {
         this.nationalityRepository = nationalityRepository;
     }
 
+    @Cacheable(value = "authors", key = "'all_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<AuthorResponse> findAll(Pageable pageable) {
         return authorRepository.findAll(pageable).map(this::toResponse);
     }
 
+    @CacheEvict(value = "authors", allEntries = true)
     public AuthorResponse create(AuthorDTO dto) {
         Nationality nationality = nationalityRepository.findById(dto.getNationalityCode())
             .orElseThrow(() -> new ResourceNotFoundException("Nationalité non trouvée avec le code : " + dto.getNationalityCode()));
@@ -38,12 +42,14 @@ public class AuthorService {
         return toResponse(authorRepository.save(author));
     }
 
+    @Cacheable(value = "authors", key = "'byId_' + #id")
     public AuthorResponse findById(Long id) {
         return authorRepository.findById(id)
             .map(this::toResponse)
             .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé avec l'id : " + id));
     }
 
+    @CacheEvict(value = "authors", allEntries = true)
     public AuthorResponse update(Long id, AuthorDTO dto) {
         Author author = authorRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé avec l'id : " + id));
@@ -54,6 +60,7 @@ public class AuthorService {
         return toResponse(authorRepository.save(author));
     }
 
+    @CacheEvict(value = "authors", allEntries = true)
     public void delete(Long id) {
         Author author = authorRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Auteur non trouvé avec l'id : " + id));

@@ -1,0 +1,3 @@
+Script started on 2026-06-05 20:50:32+00:00 [COMMAND="curl -s http://localhost:8082/api/reservations -H 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhYmR5Iiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzgwNjkyNjIyLCJleHAiOjE3ODA3NzkwMjJ9.fBchsp_9Lp7OHk-g5mbSjA21zRJTra2M71WbodSd-5gYDxJC5niEtlZYQpI-YruEgN95NvqBWZx4jEjxBYk80w' > /dev/null" <not executed on terminal>]
+
+Script done on 2026-06-05 20:50:32+00:00 [COMMAND_EXIT_CODE="0"]

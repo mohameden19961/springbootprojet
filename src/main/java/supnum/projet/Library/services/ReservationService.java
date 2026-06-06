@@ -7,6 +7,7 @@ import supnum.projet.Library.dto.response.ReservationResponse;
 import supnum.projet.Library.data.repositories.*;
 import supnum.projet.Library.exceptions.BusinessException;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
+import supnum.projet.Library.websocket.NotificationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,17 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
+    private final EmailService emailService;
 
-    public ReservationService(ReservationRepository resRepo, BookRepository bookRepo, MemberRepository memberRepo) {
+    public ReservationService(ReservationRepository resRepo, BookRepository bookRepo,
+                              MemberRepository memberRepo, NotificationService notificationService,
+                              EmailService emailService) {
         this.reservationRepository = resRepo;
         this.bookRepository = bookRepo;
         this.memberRepository = memberRepo;
+        this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     public ReservationResponse reserve(ReservationDTO dto) {
@@ -52,7 +59,10 @@ public class ReservationService {
             .reservationDate(LocalDateTime.now())
             .build();
 
-        return toResponse(reservationRepository.save(reservation));
+        Reservation saved = reservationRepository.save(reservation);
+        ReservationResponse response = toResponse(saved);
+        notificationService.notifyReservationCreated(saved, response);
+        return response;
     }
 
     public ReservationResponse cancel(Long reservationId) {
@@ -64,7 +74,9 @@ public class ReservationService {
         }
 
         reservation.setStatus(ReservationStatus.CANCELLED);
-        ReservationResponse response = toResponse(reservationRepository.save(reservation));
+        Reservation cancelled = reservationRepository.save(reservation);
+        ReservationResponse response = toResponse(cancelled);
+        notificationService.notifyReservationCancelled(cancelled, response);
 
         List<Reservation> queue = reservationRepository
             .findByBookAndStatusOrderByQueuePositionAsc(reservation.getBook(), ReservationStatus.PENDING);

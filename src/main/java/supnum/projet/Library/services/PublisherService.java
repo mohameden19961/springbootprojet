@@ -6,6 +6,8 @@ import supnum.projet.Library.dto.response.PublisherResponse;
 import supnum.projet.Library.data.repositories.PublisherRepository;
 import supnum.projet.Library.exceptions.DuplicateResourceException;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,10 +22,12 @@ public class PublisherService {
         this.repository = repository;
     }
 
+    @Cacheable(value = "publishers", key = "'all_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<PublisherResponse> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(this::toResponse);
     }
 
+    @CacheEvict(value = "publishers", allEntries = true)
     public PublisherResponse create(PublisherDTO dto) {
         if (repository.findByName(dto.getName()).isPresent()) {
             throw new DuplicateResourceException("Un éditeur avec ce nom existe déjà");
@@ -35,12 +39,14 @@ public class PublisherService {
         return toResponse(repository.save(publisher));
     }
 
+    @Cacheable(value = "publishers", key = "'byId_' + #id")
     public PublisherResponse findById(Long id) {
         return repository.findById(id)
             .map(this::toResponse)
             .orElseThrow(() -> new ResourceNotFoundException("Éditeur non trouvé avec l'id : " + id));
     }
 
+    @CacheEvict(value = "publishers", allEntries = true)
     public PublisherResponse update(Long id, PublisherDTO dto) {
         Publisher publisher = repository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Éditeur non trouvé avec l'id : " + id));
@@ -52,6 +58,7 @@ public class PublisherService {
         return toResponse(repository.save(publisher));
     }
 
+    @CacheEvict(value = "publishers", allEntries = true)
     public void delete(Long id) {
         Publisher publisher = repository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Éditeur non trouvé avec l'id : " + id));
