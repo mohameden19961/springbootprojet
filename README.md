@@ -123,13 +123,16 @@ Base de données (MySQL/PostgreSQL/H2)
 ```
 
 - **controllers/** — 16 contrôleurs REST
-- **services/** — 12 services métier
+- **services/** — 15 services métier (dont EmailService, NotificationService)
 - **dto/** — 12 DTOs + 9 DTOs de réponse
 - **data/entities/** — 13 entités JPA (dont BaseEntity, 5 enums)
 - **data/repositories/** — 13 interfaces Spring Data JPA
 - **dto/response/** — 9 DTOs de réponse (pas d'exposition directe des entités)
 - **security/** — Configuration JWT (Spring Security)
 - **exceptions/** — Gestion globale des erreurs (4 exceptions métier)
+- **websocket/** — Notifications temps réel via STOMP/SockJS
+- **config/** — Configuration globale (OpenAPI, Cache)
+- **scheduling/** — Tâches planifiées (vérification retards, expiration réservations)
 
 ## ⚙️ Profils de Configuration
 
@@ -255,6 +258,96 @@ java -jar target/Library-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
 | GET/POST | `/api/reservations[/{id}]` | Liste / Créer réservation |
 | POST | `/api/reservations/{id}/cancel` | Annuler réservation |
 | GET | `/api/reservations/queue/{bookId}` | File d'attente d'un livre |
+
+## 📖 Documentation Interactive (SpringDoc OpenAPI)
+
+L'API est documentée automatiquement avec Swagger UI :
+
+- **URL** : `http://localhost:8082/swagger-ui.html`
+- **Endpoints** : Tous les endpoints REST sont documentés avec schémas JSON
+- **Authentification** : Cliquez sur "Authorize" et entrez votre token JWT pour tester les endpoints sécurisés
+
+## 🔌 WebSocket — Notifications Temps Réel
+
+L'application utilise **STOMP over WebSocket (SockJS)** pour envoyer des notifications en direct.
+
+### Connexion
+```javascript
+const socket = new SockJS('/ws');
+const stomp = Stomp.over(socket);
+```
+
+### Topics disponibles
+
+| Topic | Destinataire | Événements |
+|---|---|---|
+| `/topic/notifications/{memberId}` | Membre connecté | Emprunt créé, retour confirmé, livre disponible, réservation annulée |
+| `/topic/admin` | Administrateur | Tous les événements (borrow, return, réservation) |
+
+### Exemple
+```javascript
+// Notifications personnelles d'un membre
+stomp.subscribe('/topic/notifications/1', msg => {
+  const event = JSON.parse(msg.body);
+  // { type: "BORROW_CREATED", message: "...", data: {...}, timestamp: "..." }
+});
+
+// Dashboard admin en direct
+stomp.subscribe('/topic/admin', msg => {
+  const event = JSON.parse(msg.body);
+});
+```
+
+## ⚡ Cache (Spring Cache + Caffeine)
+
+Un cache mémoire **Caffeine** est utilisé pour accélérer les lectures fréquentes :
+
+| Cache | Durée | Données |
+|---|---|---|
+| `books` | 10 min | Livres (liste paginée + par ID) |
+| `categories` | 10 min | Catégories |
+| `authors` | 10 min | Auteurs |
+| `languages` | 10 min | Langues |
+| `nationalities` | 10 min | Nationalités |
+| `publishers` | 10 min | Éditeurs |
+| `bookItems` | 10 min | Exemplaires |
+
+Les caches sont automatiquement invalidés lors des opérations d'écriture (create/update/delete).
+
+## 📧 Email (Spring Mail)
+
+Des notifications par email sont envoyées automatiquement :
+
+| Événement | Destinataire | Déclencheur |
+|---|---|---|
+| Confirmation d'emprunt | Membre | `POST /api/borrows/checkout` |
+| Confirmation de retour | Membre | `POST /api/borrows/{id}/return` |
+| Livre réservé disponible | Membre (1er file) | Retour d'un exemplaire |
+| Rappel de retard | Membre | Tâche planifiée (8h chaque jour) |
+
+**Configuration** :
+- **Dev** : MailHog (`localhost:1025`, sans auth)
+- **Prod** : SMTP via variables d'environnement (`MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`)
+
+## ⏰ Tâches Planifiées (Spring Scheduling)
+
+Les tâches suivantes s'exécutent automatiquement :
+
+| Horaire | Tâche | Action |
+|---|---|---|
+| `0 0 8 * * ?` (8h) | Vérification retards | Envoie un email pour chaque emprunt en retard |
+| `0 0 6 * * ?` (6h) | Expiration réservations | Annule les réservations PENDING de plus de 7 jours |
+
+## 📊 Monitoring (Spring Boot Actuator + Prometheus)
+
+Des endpoints de monitoring sont exposés :
+
+| Endpoint | Accès | Description |
+|---|---|---|
+| `/actuator/health` | Public | Health check de l'application |
+| `/actuator/info` | Public | Informations sur l'application |
+| `/actuator/metrics` | ADMIN | Métriques JVM, cache, etc. |
+| `/actuator/prometheus` | ADMIN | Métriques au format Prometheus |
 
 Bon développement à toute l'équipe ! Lisez vos fichiers Markdown personnels pour démarrer.
 

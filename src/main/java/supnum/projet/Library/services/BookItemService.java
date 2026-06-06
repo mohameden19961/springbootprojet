@@ -9,6 +9,8 @@ import supnum.projet.Library.data.repositories.BookItemRepository;
 import supnum.projet.Library.data.repositories.BookRepository;
 import supnum.projet.Library.exceptions.DuplicateResourceException;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,18 +28,21 @@ public class BookItemService {
         this.bookRepository = bookRepo;
     }
 
+    @Cacheable(value = "bookItems", key = "'byBook_' + #bookId")
     public List<BookItemResponse> findAllByBook(Long bookId) {
         Book book = bookRepository.findById(bookId)
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'id : " + bookId));
         return book.getBookItems().stream().map(this::toResponse).toList();
     }
 
+    @Cacheable(value = "bookItems", key = "'byId_' + #id")
     public BookItemResponse findById(Long id) {
         return bookItemRepository.findById(id)
             .map(this::toResponse)
             .orElseThrow(() -> new ResourceNotFoundException("Exemplaire non trouvé avec l'id : " + id));
     }
 
+    @CacheEvict(value = "bookItems", allEntries = true)
     public BookItemResponse create(Long bookId, BookItemDTO dto) {
         Book book = bookRepository.findById(bookId)
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'id : " + bookId));
@@ -55,6 +60,7 @@ public class BookItemService {
         return toResponse(bookItemRepository.save(item));
     }
 
+    @CacheEvict(value = "bookItems", allEntries = true)
     public BookItemResponse update(Long id, BookItemDTO dto) {
         BookItem item = bookItemRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Exemplaire non trouvé avec l'id : " + id));
@@ -71,6 +77,7 @@ public class BookItemService {
         return toResponse(bookItemRepository.save(item));
     }
 
+    @CacheEvict(value = "bookItems", allEntries = true)
     public void delete(Long id) {
         BookItem item = bookItemRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Exemplaire non trouvé avec l'id : " + id));

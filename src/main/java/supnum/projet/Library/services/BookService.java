@@ -6,6 +6,8 @@ import supnum.projet.Library.dto.response.BookResponse;
 import supnum.projet.Library.data.repositories.*;
 import supnum.projet.Library.exceptions.DuplicateResourceException;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,10 +29,12 @@ public class BookService {
         this.publisherRepository = pubRepo;
     }
 
+    @Cacheable(value = "books", key = "'all_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<BookResponse> findAll(Pageable pageable) {
         return bookRepository.findAll(pageable).map(this::toResponse);
     }
 
+    @CacheEvict(value = "books", allEntries = true)
     public BookResponse create(BookDTO dto) {
         if(bookRepository.findByIsbn(dto.getIsbn()).isPresent()) {
             throw new DuplicateResourceException("Un livre avec cet ISBN existe déjà");
@@ -53,12 +57,14 @@ public class BookService {
         return toResponse(bookRepository.save(book));
     }
 
+    @Cacheable(value = "books", key = "'byId_' + #id")
     public BookResponse findById(Long id) {
         return bookRepository.findById(id)
             .map(this::toResponse)
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'id : " + id));
     }
 
+    @CacheEvict(value = "books", allEntries = true)
     public BookResponse update(Long id, BookDTO dto) {
         Book book = bookRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'id : " + id));
@@ -81,6 +87,7 @@ public class BookService {
         return toResponse(bookRepository.save(book));
     }
 
+    @CacheEvict(value = "books", allEntries = true)
     public void delete(Long id) {
         Book book = bookRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'id : " + id));

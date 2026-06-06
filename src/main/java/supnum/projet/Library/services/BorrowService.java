@@ -6,6 +6,7 @@ import supnum.projet.Library.data.repositories.*;
 import supnum.projet.Library.dto.response.BorrowResponse;
 import supnum.projet.Library.exceptions.BusinessException;
 import supnum.projet.Library.exceptions.ResourceNotFoundException;
+import supnum.projet.Library.websocket.NotificationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,18 @@ public class BorrowService {
     private final MemberRepository memberRepository;
     private final BookItemRepository bookItemRepository;
     private final ReservationRepository reservationRepository;
+    private final NotificationService notificationService;
+    private final EmailService emailService;
 
     public BorrowService(BorrowRepository borrowRepo, MemberRepository memberRepo,
-                         BookItemRepository bookItemRepo, ReservationRepository reservationRepo) {
+                         BookItemRepository bookItemRepo, ReservationRepository reservationRepo,
+                         NotificationService notificationService, EmailService emailService) {
         this.borrowRepository = borrowRepo;
         this.memberRepository = memberRepo;
         this.bookItemRepository = bookItemRepo;
         this.reservationRepository = reservationRepo;
+        this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     public BorrowResponse borrowBook(Long memberId, String barcode) {
@@ -67,7 +73,15 @@ public class BorrowService {
             reservationRepository.saveAll(pending);
         }
 
-        return toResponse(borrowRepository.save(borrow));
+        Borrow saved = borrowRepository.save(borrow);
+        BorrowResponse response = toResponse(saved);
+        notificationService.notifyBorrowCreated(saved, response);
+        if (member.getEmail() != null) {
+            emailService.sendBorrowConfirmation(member.getEmail(),
+                item.getBook() != null ? item.getBook().getTitle() : "N/A",
+                saved.getDueDate().toString());
+        }
+        return response;
     }
 
     public BorrowResponse returnBook(Long borrowId) {
@@ -84,7 +98,31 @@ public class BorrowService {
         item.setStatus(BookItemStatus.AVAILABLE);
         bookItemRepository.save(item);
 
-        return toResponse(borrowRepository.save(borrow));
+        Borrow saved = borrowRepository.save(borrow);
+        BorrowResponse response = toResponse(saved);
+        notificationService.notifyBorrowReturned(saved, response);
+
+        Member member = borrow.getMember();
+        if (member != null && member.getEmail() != null) {
+            emailService.sendReturnConfirmation(member.getEmail(),
+                item.getBook() != null ? item.getBook().getTitle() : "N/A");
+        }
+
+        Book book = item.getBook();
+        if (book != null) {
+            reservationRepository
+                .findByBookAndStatusOrderByQueuePositionAsc(book, ReservationStatus.PENDING)
+                .stream()
+                .findFirst()
+                .ifPresent(next -> {
+                    notificationService.notifyBookAvailable(next.getMember().getId(), book);
+                    if (next.getMember() != null && next.getMember().getEmail() != null) {
+                        emailService.sendReservationAvailable(next.getMember().getEmail(), book.getTitle());
+                    }
+                });
+        }
+
+        return response;
     }
 
     public BorrowResponse renewBorrow(Long borrowId) {
