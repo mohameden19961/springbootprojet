@@ -349,6 +349,38 @@ Des endpoints de monitoring sont exposés :
 | `/actuator/metrics` | ADMIN | Métriques JVM, cache, etc. |
 | `/actuator/prometheus` | ADMIN | Métriques au format Prometheus |
 
+## 🌐 Google Books API — Recherche externe
+
+Recherche de livres via l'API Google Books :
+
+| Méthode | Endpoint | Description |
+|---|---|---|
+| GET | `/api/external/books/search?q=&max=` | Recherche par titre/auteur/isbn |
+| GET | `/api/external/books/isbn/{isbn}` | Recherche par ISBN exact |
+
+> **Note** : Endpoints publics (sans authentification)
+
+## 📱 QR Code — Génération
+
+Génération de QR codes pour les exemplaires :
+
+| Méthode | Endpoint | Description |
+|---|---|---|
+| GET | `/api/qrcode/book-item/{id}?size=` | QR code d'un exemplaire (JSON : id + barcode) |
+| GET | `/api/qrcode/text?text=&size=` | QR code pour un texte personnalisé |
+
+## 🐳 Docker Compose
+
+```bash
+docker compose up -d
+```
+
+| Service | Port | Accès |
+|---|---|---|
+| MySQL | `3306` | Base de données |
+| phpMyAdmin | `8080` | `http://localhost:8080` |
+| MailHog | `1025` (SMTP), `8025` (UI) | `http://localhost:8025` |
+
 Bon développement à toute l'équipe ! Lisez vos fichiers Markdown personnels pour démarrer.
 
 ## Contributions & Workflow Git
